@@ -1,0 +1,87 @@
+.dropdown-menu.show {
+  left: inherit;
+  right: 0;
+}
+
+.dashboard-table {
+  width: 70px;
+  height: 70px;
+  font-size: 30px;
+  border: 2px solid #00000099;
+  border-radius: 5px;
+  background-color: lightgrey;
+  color: #00000099;
+}
+
+.outline-green {
+  outline: 2px solid green;
+}
+
+.outline-yellow {
+  outline: 2px solid rgb(238, 200, 74);
+}
+
+.outline-red {
+  outline: 2px solid rgb(172, 4, 4);
+}
+
+.order-dash-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  border-right: 1px solid lightgrey;
+}
+
+.active-dinein {
+  background-color: #d1d1d1;
+}
+
+.order-type {
+  background-color: lightgrey;
+  border: 1px solid white;
+  cursor: pointer;
+}
+
+.order-type-active {
+  background-color: darkgrey;
+  border: 1px solid white;
+  color: white;
+  cursor: pointer;
+}
+
+.table-save {
+  background-color: rgb(65, 134, 65);
+  color: white;
+}
+
+.table-kot {
+  background-color: rgb(238, 200, 74);
+  color: white;
+}
+
+/* extra css */
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+.table-bordered {
+  border: 1px solid #dee2e6 !important;
+}
+.eBvtws:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+#menuData .row {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+  margin:10px 0;
+}
+.row.container-fluid .row{
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+  margin:10px 0 !important;
+  padding: 10px 0;
+}
+.users-list>li img{
+  width:100px !important;
+  height: 100px !important;
+}

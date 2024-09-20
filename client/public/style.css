@@ -1,0 +1,4 @@
+.dropdown-menu.show {
+  left: inherit;
+  right: 0;
+}
