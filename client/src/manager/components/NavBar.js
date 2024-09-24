@@ -29,14 +29,6 @@ export default function Navbar() {
             </li>
           </ul>
           <ul className="navbar-nav">
-          <li className="nav-item">
-              <Link
-                to={"/admin"}
-                className="btn btn-secondary nav-link mx-2"
-              >
-                Admin Panel
-              </Link>
-            </li>
             <li className="nav-item">
               <a
                 className="nav-link"

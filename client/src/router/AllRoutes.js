@@ -2,7 +2,7 @@ import React from "react";
 
 import { Routes, Route } from "react-router-dom";
 
-
+import UserHome from "../UserHome";
 import Login from "../Login";
 import Register from "../Register";
 import Logout from "../components/Logout";
@@ -74,7 +74,7 @@ import TempTesting from "../TempTesting";
 function AllRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<RestaurantDashboard />} />
+      <Route path="/" element={<UserHome />} />
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />

@@ -1,0 +1,54 @@
+.name {
+  font-size: 18px;
+  color: black;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.number {
+  font-size: 14px;
+  color: black;
+
+  margin-top: -10px;
+}
+
+/* dropdown icon hiding*/
+.dropdown-toggle::after {
+  display: none;
+}
+
+.room-card {
+  border: none;
+  /* background-color: #f8f9fa; */
+  border-radius: 16px 16px;
+  /* padding: 10px; */
+  /* margin: 0; */
+  padding: 0;
+}
+
+h3#date_header {
+  font-size: 20px;
+}
+
+.square {
+  height: 100px;
+  width: 100px;
+  background-color: blanchedalmond;
+  border-radius: 5px;
+}
+
+@media (max-width: 575px) {
+  h3#date_header {
+    font-size: 12px;
+  }
+
+  .btn-secondary {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 1399px) {
+  h3#date_header {
+    font-size: 18px;
+  }
+}

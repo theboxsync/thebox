@@ -9,7 +9,7 @@ export default function MenuBar() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/userdata",
+        `${process.env.REACT_APP_ADMIN_API}/userdata`,
         {
           withCredentials: true,
         }
@@ -52,7 +52,7 @@ export default function MenuBar() {
               >
                 <div className="image mt-2 mb-2">
                   <img
-                    src={`http://localhost:3001${userData.logo}`}
+                    src={`${process.env.REACT_APP_ADMIN_URL + userData.logo}`}
                     className="img-circle elevation-3"
                     alt="User Image"
                   />
@@ -73,37 +73,37 @@ export default function MenuBar() {
                 data-accordion="true"
               >
                 <li className="nav-item">
-                  <NavLink to={"/admin/dashboard"} className="nav-link">
+                  <NavLink to={"/dashboard"} className="nav-link">
                     <i className="nav-icon fas fa-tachometer-alt"></i>
                     <p style={{ fontSize: "15px" }}>Dashboard</p>
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/admin/order-history"} className="nav-link">
+                  <NavLink to={"/order-history"} className="nav-link">
                     <i className="nav-icon fas fa-shopping-cart"></i>
                     <p style={{ fontSize: "15px" }}>Order History</p>
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/admin/table-management"} className="nav-link">
+                  <NavLink to={"/table-management"} className="nav-link">
                     <i className="nav-icon fas fa-table"></i>
                     <p style={{ fontSize: "15px" }}>Table Management</p>
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/admin/manage-menu"} className="nav-link">
+                  <NavLink to={"/manage-menu"} className="nav-link">
                     <i className="nav-icon fas fa-solid fa-bars"></i>
                     <p style={{ fontSize: "15px" }}>Manage Menu</p>
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/admin/inventory"} className="nav-link">
+                  <NavLink to={"/inventory"} className="nav-link">
                     <i className="nav-icon fas fa-tag"></i>
                     <p style={{ fontSize: "15px" }}>Inventory</p>
                   </NavLink>
                 </li>
                 <li className="nav-item">
-                  <NavLink to={"/admin/staff"} className="nav-link">
+                  <NavLink to={"/staff"} className="nav-link">
                     <i className="nav-icon fas fa-user-tie"></i>
                     <p style={{ fontSize: "15px" }}>Staff</p>
                   </NavLink>

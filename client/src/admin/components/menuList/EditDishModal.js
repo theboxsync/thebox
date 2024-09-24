@@ -20,7 +20,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
         console.log(values);
         axios
           .put(
-            `http://admin.localhost:3001/api/updatemenu/${data._id}`,
+            `${process.env.REACT_APP_ADMIN_API}/updatemenu/${data._id}`,
             values,
             {
               withCredentials: true,

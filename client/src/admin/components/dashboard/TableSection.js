@@ -8,8 +8,9 @@ function TableSection({ setMainSection, setTableId, setOrderId }) {
 
   const fetchTableData = async () => {
     try {
+      console.log("URL : " + process.env.REACT_APP_ADMIN_API);
       const response = await axios.get(
-        "http://admin.localhost:3001/api/gettabledata",
+        `${process.env.REACT_APP_ADMIN_API}/gettabledata`,
         {
           withCredentials: true,
         }
@@ -17,7 +18,7 @@ function TableSection({ setMainSection, setTableId, setOrderId }) {
       setTableData(response.data);
     } catch (error) {
       console.log("Error fetching table data:", error);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function TableSection({ setMainSection, setTableId, setOrderId }) {
                   Add Manager
                 </button>
               </div>
-              {/* {tableData.map((table) => (
+              {tableData.map((table) => (
                 <div className="card-body p-0 m-2" key={table._id}>
                   <div className="m-3" style={{ fontWeight: "bold" }}>
                     {table.area}
@@ -69,73 +70,15 @@ function TableSection({ setMainSection, setTableId, setOrderId }) {
                   </ul>
                   <hr />
                 </div>
-              ))} */}
+              ))}
               <div className="row m-3">
-                9w
                 <div className="col-md-6">
-                  <div className="card m-2" style={{ minWidth: "18rem" }}>
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <img
-                          src="..."
-                          className="img-fluid rounded-start"
-                          alt="..."
-                        />
-                      </div>
-                      <div className="col-md-8">
-                        <div className="card-body">
-                          <h5 className="card-title">Card title</h5>
-                          <p className="card-text">
-                            This is a wider card with supporting text below as a
-                            natural lead-in to additional content. This content
-                            is a little bit longer.
-                          </p>
-                          <p className="card-text">
-                            <small className="text-body-secondary">
-                              Last updated 3 mins ago
-                            </small>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="card m-2" style={{ minWidth: "18rem" }}>
-                    <div className="row g-0">
-                      <div className="col-md-4">
-                        <img
-                          src="..."
-                          className="img-fluid rounded-start"
-                          alt="..."
-                        />
-                      </div>
-                      <div className="col-md-8">
-                        <div className="card-body">
-                          <h5 className="card-title">Card title</h5>
-                          <p className="card-text">
-                            This is a wider card with supporting text below as a
-                            natural lead-in to additional content. This content
-                            is a little bit longer.
-                          </p>
-                          <p className="card-text">
-                            <small className="text-body-secondary">
-                              Last updated 3 mins ago
-                            </small>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-md-6">
-                  <div className="card m-2" style={{ minWidth: "18rem" }}>
+                  <div className="card" style={{ maxWidth: 640 }}>
                     <div className="row g-0">
                       <div className="col-md-4">
                         <img
                           src="../../Logo/GJ0001.webp"
                           className="img-fluid rounded-start"
-                          alt="..."
                         />
                       </div>
                       <div className="col-md-8">
@@ -147,7 +90,62 @@ function TableSection({ setMainSection, setTableId, setOrderId }) {
                             is a little bit longer.
                           </p>
                           <p className="card-text">
-                            <small className="text-body-secondary">
+                            <small className="text-muted">
+                              Last updated 3 mins ago
+                            </small>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <div className="card" style={{ maxWidth: 640 }}>
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <img
+                          src="../../Logo/GJ0001.webp"
+                          className="img-fluid rounded-start"
+                        />
+                      </div>
+                      <div className="col-md-8">
+                        <div className="card-body">
+                          <h5 className="card-title">Card title</h5>
+                          <p className="card-text">
+                            This is a wider card with supporting text below as a
+                            natural lead-in to additional content. This content
+                            is a little bit longer.
+                          </p>
+                          <p className="card-text">
+                            <small className="text-muted">
+                              Last updated 3 mins ago
+                            </small>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card" style={{ maxWidth: 640 }}>
+                    <div className="row g-0">
+                      <div className="col-md-4">
+                        <img
+                          src="../../Logo/GJ0001.webp"
+                          className="img-fluid rounded-start"
+                        />
+                      </div>
+                      <div className="col-md-8">
+                        <div className="card-body">
+                          <h5 className="card-title">Card title</h5>
+                          <p className="card-text">
+                            This is a wider card with supporting text below as a
+                            natural lead-in to additional content. This content
+                            is a little bit longer.
+                          </p>
+                          <p className="card-text">
+                            <small className="text-muted">
                               Last updated 3 mins ago
                             </small>
                           </p>

@@ -6,7 +6,7 @@ function Logout() {
   const navigate = useNavigate();
   useEffect(() => {
     axios
-      .get("http://admin.localhost:3001/api/logout", { withCredentials: true })
+      .get(`${process.env.REACT_APP_ADMIN_API}/logout`, { withCredentials: true })
       .then((res) => {
         console.log("Logged Out");
         navigate("/login");

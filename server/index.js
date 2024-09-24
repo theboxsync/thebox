@@ -12,6 +12,7 @@ const adminRouter = require("./router/admin-router");
 const managerRouter = require("./router/manager-router");
 
 const PORT = process.env.PORT;
+const ORIGINS = process.env.ORIGINS ? process.env.ORIGINS.split(",") : [];
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://admin.localhost:3000", "http://manager.localhost:3000"],
+    origin: ORIGINS,
     credentials: true,
   })
 );

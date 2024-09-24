@@ -16,7 +16,7 @@ function ViewOrderHistory() {
   const fetchOrderData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/getorderhistory",
+        `${process.env.REACT_APP_ADMIN_API}/getorderhistory`,
         {
           withCredentials: true,
         }

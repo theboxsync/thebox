@@ -6,7 +6,7 @@ function TableDeleteModal({ show, handleClose, data, fetchTableData }) {
   const deleteTable = async () => {
     try {
       const response = await axios.delete(
-        `http://admin.localhost:3001/api/deletetable/${data.id}`,
+        `${process.env.REACT_APP_ADMIN_API}/deletetable/${data.id}`,
         {
           withCredentials: true,
         }

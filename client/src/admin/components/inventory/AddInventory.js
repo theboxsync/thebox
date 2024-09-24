@@ -27,7 +27,7 @@ function AddInventory({ setSection }) {
       onSubmit: (values) => {
         console.log(values);
         axios
-          .post("http://admin.localhost:3001/api/addinventory", values, {
+          .post(`${process.env.REACT_APP_ADMIN_API}/addinventory`, values, {
             withCredentials: true,
           })
           .then((res) => {

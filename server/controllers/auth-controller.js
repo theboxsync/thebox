@@ -7,7 +7,6 @@ const Order = require("../models/orderModal");
 const Customer = require("../models/customerModel");
 const Manager = require("../models/managerModel");
 
-
 const bcrypt = require("bcryptjs");
 
 let token;
@@ -41,7 +40,10 @@ const register = async (req, res) => {
     const statePrefix = req.body.state.toUpperCase();
 
     // Find the highest existing code for this country and state
-    const latestUser = await User.findOne ({$and:[{country:countryPrefix},{state:statePrefix}]}).limit(1)
+    const latestUser = await User.findOne({
+      $and: [{ country: countryPrefix }, { state: statePrefix }],
+    })
+      .limit(1)
       .sort({ createdAt: -1 })
       .exec();
     let sequenceNumber = 1;
@@ -57,7 +59,10 @@ const register = async (req, res) => {
       }
     }
 
-    const restaurantCode = `${statePrefix}${String(sequenceNumber).padStart(4,"0")}${countryPrefix}`;
+    const restaurantCode = `${statePrefix}${String(sequenceNumber).padStart(
+      4,
+      "0"
+    )}${countryPrefix}`;
 
     // Create the new user with the generated restaurant code
     const userdata = { ...req.body, restaurant_code: restaurantCode };
@@ -97,6 +102,50 @@ const login = async (req, res) => {
       });
       return res.status(200).json({ message: "Logged In" });
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const managerLogin = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { restaurant_code, username, password } = req.body;
+
+    // Find the user with the given restaurant_code
+    const user = await User.findOne({ restaurant_code });
+
+    if (!user) {
+      console.log("User not found");
+      return res.status(400).json({ message: "Invalid restaurant code" });
+    }
+    console.log("user : " + user);
+    // Find the manager with the given username and restaurant_id from the user model
+    const manager = await Manager.findOne({
+      username,
+      restaurant_id: user._id,
+    });
+
+    if (!manager) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Compare the password
+    const isMatch = await bcrypt.compare(password, manager.password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    // Generate JWT token
+    token = await user.generateAuthToken();
+    res.cookie("jwttoken", token, {
+      expires: new Date(Date.now() + 25892000000),
+      httpOnly: true,
+    });
+
+    // Send the token and success message
+    res.status(200).json({ message: "Logged In", token });
   } catch (error) {
     console.log(error);
   }
@@ -234,7 +283,7 @@ const getStaffData = (req, res) => {
   } catch (error) {
     console.log(error);
   }
-}
+};
 const addStaff = (req, res) => {
   try {
     console.log(req.body);
@@ -479,6 +528,7 @@ const addManager = (req, res) => {
 module.exports = {
   register,
   login,
+  managerLogin,
   logout,
   getUserData,
   emailCheck,

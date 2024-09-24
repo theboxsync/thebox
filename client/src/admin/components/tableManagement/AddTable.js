@@ -14,7 +14,7 @@ function AddTable({ setSection }) {
     onSubmit: (values) => {
       console.log(values);
       axios
-        .post("http://admin.localhost:3001/api/addtable", values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/addtable`, values, {
           withCredentials: true,
         })
         .then((res) => {

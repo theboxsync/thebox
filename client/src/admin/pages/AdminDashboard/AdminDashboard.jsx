@@ -19,7 +19,7 @@ export default function AdminDashboard() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/userdata",
+        `${process.env.REACT_APP_ADMIN_API}/userdata`,
         {
           withCredentials: true,
         }

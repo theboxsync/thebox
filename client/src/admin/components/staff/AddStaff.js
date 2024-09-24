@@ -27,7 +27,7 @@ function AddStaff({ setSection }) {
     onSubmit: (values) => {
       console.log(values);
       axios
-        .post("http://admin.localhost:3001/api/addstaff", values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/addstaff`, values, {
           withCredentials: true,
         })
         .then((res) => {

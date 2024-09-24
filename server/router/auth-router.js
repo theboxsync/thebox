@@ -9,6 +9,7 @@ router.route("/emailcheck").post(authController.emailCheck);
 router.route("/register").post(authController.register);
 
 router.route("/login").post(authController.login);
+router.route("/manager-login").post(authController.managerLogin);
 
 router.route("/logout").get(authController.logout);
 

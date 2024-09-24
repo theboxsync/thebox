@@ -7,7 +7,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/getmenudata",
+        `${process.env.REACT_APP_ADMIN_API}/getmenudata`,
         {
           withCredentials: true,
         }

@@ -13,7 +13,7 @@ function ViewMenu({ setSection }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/getmenudata",
+        `${process.env.REACT_APP_ADMIN_API}/getmenudata`,
         {
           withCredentials: true,
         }
@@ -41,7 +41,7 @@ function ViewMenu({ setSection }) {
   const editModal = (id) => {
     console.log(id);
     axios
-      .get(`http://admin.localhost:3001/api/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
       .then((res) => {
         setEditModalData(res.data);
         console.log(res.data);

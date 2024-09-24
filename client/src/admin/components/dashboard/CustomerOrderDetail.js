@@ -21,7 +21,7 @@ function CustomerOrderDetail({
   const fetchTableInfo = async () => {
     try {
       const response = await axios.get(
-        `http://admin.localhost:3001/api/gettabledata/${tableId}`,
+        `${process.env.REACT_APP_ADMIN_API}/gettabledata/${tableId}`,
         { withCredentials: true }
       );
       setTableInfo(response.data);
@@ -80,7 +80,7 @@ function CustomerOrderDetail({
     if (firstOrder.customer_id) {
       axios
         .get(
-          `http://admin.localhost:3001/api/getcustomerdata/${firstOrder.customer_id}`,
+          `${process.env.REACT_APP_ADMIN_API}/getcustomerdata/${firstOrder.customer_id}`,
           { withCredentials: true }
         )
         .then((response) => {
@@ -135,7 +135,7 @@ function CustomerOrderDetail({
     try {
       await axios
         .post(
-          "http://admin.localhost:3001/api/ordercontroller",
+          `${process.env.REACT_APP_ADMIN_API}/ordercontroller`,
           { table_id, orderInfo: updatedOrderInfo, customerInfo },
           { withCredentials: true }
         )

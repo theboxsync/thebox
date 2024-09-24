@@ -11,7 +11,7 @@ function OrderFullDetails() {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `http://admin.localhost:3001/api/getorderdata/${id}`,
+        `${process.env.REACT_APP_ADMIN_API}/getorderdata/${id}`,
         {
           withCredentials: true,
         }

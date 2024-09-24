@@ -5,7 +5,7 @@ import { Modal, Button } from "react-bootstrap";
 function DeleteDishModal({ show, handleClose, data, fetchMenuData }) {
   const deleteDish = (id) => {
     axios
-      .delete(`http://admin.localhost:3001/api/deltemenu/${id}`)
+      .delete(`${process.env.REACT_APP_ADMIN_API}/deltemenu/${id}`)
       .then((res) => {
         console.log(res.data);
         handleClose();

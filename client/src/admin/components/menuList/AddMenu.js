@@ -33,7 +33,7 @@ function AddMenu({ setSection }) {
     onSubmit: (values) => {
       console.log("Submitted", values);
       axios
-        .post("http://admin.localhost:3001/api/addmenu", values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/addmenu`, values, {
           withCredentials: true,
         })
         .then((res) => {

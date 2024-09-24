@@ -1,9 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 
-import Login from "../Login";
+import Login from "../admin/Login";
 import Register from "../Register";
-import Logout from "../components/Logout";
+import Logout from "../admin/components/Logout";
 import ForgotPassword from "../ForgotPassword";
 import OtpVerification from "../OtpVerification";
 import ChangePassword from "../ChangePassword";

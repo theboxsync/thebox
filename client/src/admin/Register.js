@@ -57,7 +57,7 @@ export default function Register(props) {
   const handleSubmit = () => {
     console.log(inputData);
     axios
-      .post("http://localhost:3001/api/register", inputData, {
+      .post(`${process.env.REACT_APP_ADMIN_API}/register`, inputData, {
         withCredentials: true,
       })
       .then((res) => {
