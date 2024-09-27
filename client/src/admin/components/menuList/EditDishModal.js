@@ -3,7 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
 
-import { editDish } from "../../schemas";
+import { editDish } from "../../../schemas";
 
 function EditDishModal({ show, handleClose, data, fetchMenuData }) {
   const dishInfo = {

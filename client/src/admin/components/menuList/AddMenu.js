@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
-import { addMenu } from "../../schemas";
+import { addMenu } from "../../../schemas";
 import { ButtonGroup, ToggleButton } from "react-bootstrap";
 
 function AddMenu({ setSection }) {

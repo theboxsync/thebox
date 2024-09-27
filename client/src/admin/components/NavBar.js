@@ -30,14 +30,6 @@ export default function Navbar() {
           </ul>
           <ul className="navbar-nav">
             <li className="nav-item">
-              <Link
-                to={"/manager"}
-                className="btn btn-secondary nav-link mx-2"
-              >
-                Manager Panel
-              </Link>
-            </li>
-            <li className="nav-item">
               <a
                 className="nav-link"
                 role="button"

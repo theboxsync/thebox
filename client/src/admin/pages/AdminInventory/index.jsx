@@ -6,8 +6,8 @@ import MenuBar from "../../components/MenuBar";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
-import ViewInventory from "../../../components/inventory/ViewInventory";
-import AddInventory from "../../../components/inventory/AddInventory";
+import ViewInventory from "../../components/inventory/ViewInventory";
+import AddInventory from "../../components/inventory/AddInventory";
 
 export default function AdminInventory() {
   const [section, setSection] = useState("ViewInventory");

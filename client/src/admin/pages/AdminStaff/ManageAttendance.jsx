@@ -1,14 +1,14 @@
 import React from "react";
 import "../../style.css";
 import { Link } from "react-router-dom";
-import Navbar from "../../../components/NavBar";
+import Navbar from "../../components/NavBar";
 
-import MenuBar from "../../../components/MenuBar";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import MenuBar from "../../components/MenuBar";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
-import EditPresentModal from "../../../components/staff/EditPresentModal";
-import EditAbsentModal from "../../../components/staff/EditAbsentModal";
+import EditPresentModal from "../../components/staff/EditPresentModal";
+import EditAbsentModal from "../../components/staff/EditAbsentModal";
 
 export default function ManageAttendance() {
   const [editPresentModalShow, setEditPresentModalShow] = React.useState(false);

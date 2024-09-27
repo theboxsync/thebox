@@ -67,7 +67,7 @@ function ViewStaff({ setSection }) {
                         onClick={() => setShowProfileModal(true)}
                       >
                         <img
-                          src={`${process.env.REACT_APP_MANAGER_URL}/uploads/staff/profile/${staffMember.photo}`}
+                          src={`${process.env.REACT_APP_MANAGER_API}/uploads/staff/profile/${staffMember.photo}`}
                           alt="User Image"
                         />
                         <p className="users-list-name link">

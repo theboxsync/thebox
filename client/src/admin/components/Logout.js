@@ -9,7 +9,7 @@ function Logout() {
       .get(`${process.env.REACT_APP_ADMIN_API}/logout`, { withCredentials: true })
       .then((res) => {
         console.log("Logged Out");
-        navigate("/login");
+        window.location.href = `${process.env.REACT_APP_URL}`;
       });
   });
   return <div></div>;

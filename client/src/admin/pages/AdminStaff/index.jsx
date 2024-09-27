@@ -6,8 +6,8 @@ import MenuBar from "../../components/MenuBar";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
-import ViewStaff from "../../../components/staff/ViewStaff";
-import AddStaff from "../../../components/staff/AddStaff";
+import ViewStaff from "../../components/staff/ViewStaff";
+import AddStaff from "../../components/staff/AddStaff";
 
 export default function AdminStaff() {
     const [section, setSection] = useState("ViewStaff");

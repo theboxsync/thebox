@@ -6,8 +6,8 @@ import MenuBar from "../../components/MenuBar";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
-import ViewMenu from "../../../components/menuList/ViewMenu";
-import AddMenu from "../../../components/menuList/AddMenu";
+import ViewMenu from "../../components/menuList/ViewMenu";
+import AddMenu from "../../components/menuList/AddMenu";
 
 export default function AdminManageMenu() {
   const [section, setSection] = useState("ViewMenu");

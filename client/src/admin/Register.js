@@ -1,4 +1,4 @@
-import "./register.css";
+import "../register.css";
 
 import React, { useEffect, useState, StrictMode } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,7 +63,7 @@ export default function Register(props) {
       .then((res) => {
         if (res.data.message === "Registered") {
           console.log("Registered Here ");
-          navigate("/admin");
+          navigate("/");
         }
       })
       .catch((err) => console.log(err));

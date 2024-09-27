@@ -49,12 +49,13 @@ export default function Login(props) {
     ) {
       alert("Please fill all the fields");
     } else {
-      console.log(inputData); // Log to check the input data
+      console.log("Input data: ", inputData); // Log to check the input data
       axios
         .post(`${process.env.REACT_APP_MANAGER_API}/manager-login`, inputData, {
           withCredentials: true,
         })
         .then((res) => {
+          console.log(res.data);
           if (res.data.message === "Logged In") {
             navigate("/dashboard");
           } else {
@@ -156,13 +157,6 @@ export default function Login(props) {
             <div className="mb-1 text-right">
               <Link to="/forgot-password" className="text-dark">
                 <b> Forgot password ? </b>
-              </Link>
-            </div>
-
-            <div className="line my-4"></div>
-            <div className="mb-0 text-center">
-              <Link to="/register" className="text-dark">
-                <b> Sign Up </b>
               </Link>
             </div>
           </div>

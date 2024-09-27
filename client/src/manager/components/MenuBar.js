@@ -52,7 +52,7 @@ export default function MenuBar() {
               >
                 <div className="image mt-2 mb-2">
                   <img
-                    src={`${process.env.REACT_APP_MANAGER_URL + userData.logo}`}
+                    src={`${process.env.REACT_APP_MANAGER_API + "/uploads/" + userData.logo}`}
                     className="img-circle elevation-3"
                     alt="User Image"
                   />

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
-import { addInventory } from "../../schemas";
+import { addInventory } from "../../../schemas";
 
 function AddInventory({ setSection }) {
   const data = {

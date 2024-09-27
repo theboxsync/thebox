@@ -117,7 +117,7 @@ const managerLogin = async (req, res) => {
 
     if (!user) {
       console.log("User not found");
-      return res.status(400).json({ message: "Invalid restaurant code" });
+      return res.json({ message: "Invalid restaurant code" });
     }
     console.log("user : " + user);
     // Find the manager with the given username and restaurant_id from the user model
@@ -127,14 +127,14 @@ const managerLogin = async (req, res) => {
     });
 
     if (!manager) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.json({ message: "Invalid Username" });
     }
 
     // Compare the password
     const isMatch = await bcrypt.compare(password, manager.password);
 
     if (!isMatch) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.json({ message: "Invalid Password" });
     }
 
     // Generate JWT token

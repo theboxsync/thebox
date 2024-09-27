@@ -1,10 +1,10 @@
 import React from "react";
 import "../../style.css";
-import Navbar from "../../../components/NavBar";
+import Navbar from "../../components/NavBar";
 
-import MenuBar from "../../../components/MenuBar";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import MenuBar from "../../components/MenuBar";
+import Header from "../../components/Header";
+import Footer from "../../components/Footer";
 
 export default function UpdateInventory() {
   return (

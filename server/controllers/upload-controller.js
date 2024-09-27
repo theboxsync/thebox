@@ -1,8 +1,10 @@
 // backend/controllers/upload-controller.js
 
 const uploadLogo = (req, res) => {
+  
   try {
-    res.json({ logo: req.file.filename });
+    res.json({ logo: req.file.filename, message: "File uploaded successfully" });
+    console.log("Logo Uploaded");
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -2,7 +2,7 @@ import React from "react";
 import { Routes, Route } from "react-router-dom";
 
 import Login from "../admin/Login";
-import Register from "../Register";
+import Register from "../admin/Register";
 import Logout from "../admin/components/Logout";
 import ForgotPassword from "../ForgotPassword";
 import OtpVerification from "../OtpVerification";
