@@ -65,7 +65,7 @@ export default function Login(props) {
           <div className="card card-outline card-secondary">
             <div className="card-header text-center">
               <p className="title">
-                <b>THE</b>BOX
+                <b>THE</b>ROX
               </p>
             </div>
             <div className="card-body">
