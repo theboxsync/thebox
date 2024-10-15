@@ -108,7 +108,7 @@ export default function Register(props) {
               style={{ borderBottom: "none" }}
             >
               <p className="title">
-                <b>THE</b>BOX
+                <b>THE</b>BOXSYNC
               </p>
             </div>
           </div>
