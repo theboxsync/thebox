@@ -6,7 +6,6 @@ import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
 import ViewStaff from "../../components/staff/ViewStaff";
-import AddStaff from "../../components/staff/AddStaff";
 
 export default function ManagerStaff() {
     const [section, setSection] = useState("ViewStaff");

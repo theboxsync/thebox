@@ -284,6 +284,19 @@ const getStaffData = (req, res) => {
     console.log(error);
   }
 };
+
+const getStaffDataById = (req, res) => {
+  try {
+    const staffId = req.params.id;
+    Staff.findOne({ _id: staffId })
+      .then((data) => {
+        res.json(data);     
+      })
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const addStaff = (req, res) => {
   try {
     console.log(req.body);
@@ -554,4 +567,5 @@ module.exports = {
   showKOTs,
   orderHistory,
   addManager,
+  getStaffDataById,
 };

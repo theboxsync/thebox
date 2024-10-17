@@ -26,6 +26,7 @@ router
 router.route("/addinventory").post(authMiddleware, authController.addInvetory);
 
 router.route("/staffdata").get(authMiddleware, authController.getStaffData);
+router.route("/staffdata/:id").get(authMiddleware, authController.getStaffDataById);
 router.route("/addstaff").post(authMiddleware, authController.addStaff);
 
 router.route("/addtable").post(authMiddleware, authController.addTable);
