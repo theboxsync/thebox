@@ -30,6 +30,10 @@ const addMenu = new Schema({
       unit: {
         type: String,
       },
+      is_special: {
+        type: Boolean,
+        default: false,
+      }
     }
   ]
 });

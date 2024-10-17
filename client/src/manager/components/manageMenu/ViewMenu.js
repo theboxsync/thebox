@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SpecialDishModal from "./SpecialDishModal";
+import RemoveSpecialModal from "./RemoveSpecialModal";
+import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
 
 function ViewMenu({ setSection }) {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showSpecialModal, setShowSpecialModal] = useState(false);
+  const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [menuData, setMenuData] = useState([]);
 
   const fetchMenuData = async () => {
@@ -24,6 +25,32 @@ function ViewMenu({ setSection }) {
   useEffect(() => {
     fetchMenuData();
   }, []);
+
+  const [specialDishModalData, setSpecialDishModalData] = useState({});
+  const specialDishModal = (id) => {
+    console.log(id);
+    axios
+      .get(`${process.env.REACT_APP_MANAGER_API}/getmenudata/${id}`)
+      .then((res) => {
+        setSpecialDishModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowSpecialModal(true);
+  };
+
+  const [removeSpecialModalData, setRemoveSpecialModalData] = useState({});
+  const removeSpecialModal = (id) => {
+    console.log(id);
+    axios
+      .get(`${process.env.REACT_APP_MANAGER_API}/getmenudata/${id}`)
+      .then((res) => {
+        setRemoveSpecialModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowRemoveSpecialModal(true);
+  };
 
   return (
     <>
@@ -62,17 +89,33 @@ function ViewMenu({ setSection }) {
                       <div className="col-md-6">{dish.dish_name}</div>
                       <div className="col-md-2">{dish.dish_price}</div>
                       <div className="col-md-4">
-                        <button
-                          type="button"
-                          className="btn bg-transparent special_Dish_btn"
-                          title="Special Menu"
-                          onClick={() => {}}
-                        >
-                          <i
-                            style={{ color: "black" }}
-                            className="fas fa-utensils"
-                          />
-                        </button>
+                        {dish.is_special ? (
+                          // If dish.is_special is true, show the "Remove Special Dish" div
+                          <div
+                            className="bg-transparent m-1"
+                            title="Remove Special Dish"
+                            style={{ cursor: "pointer", width: "32px" }}
+                            onClick={() => removeSpecialModal(dish._id)}
+                          >
+                            <img
+                              src={utensilsslash}
+                              alt="Remove Special Dish"
+                            />
+                          </div>
+                        ) : (
+                          // If dish.is_special is false, show the "Set Special Dish" button
+                          <button
+                            type="button"
+                            className="btn bg-transparent special_Dish_btn"
+                            title="Set Special Dish"
+                            onClick={() => specialDishModal(dish._id)}
+                          >
+                            <i
+                              style={{ color: "black", fontSize: "22px" }}
+                              className="fas fa-utensils"
+                            />
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -86,7 +129,14 @@ function ViewMenu({ setSection }) {
       <SpecialDishModal
         show={showSpecialModal}
         handleClose={() => setShowSpecialModal(false)}
-        // data={modalData}
+        data={specialDishModalData}
+        fetchMenuData={fetchMenuData}
+      />
+
+      <RemoveSpecialModal
+        show={showRemoveSpecialModal}
+        handleClose={() => setShowRemoveSpecialModal(false)}
+        data={removeSpecialModalData}
         fetchMenuData={fetchMenuData}
       />
     </>

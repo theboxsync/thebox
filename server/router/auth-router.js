@@ -20,8 +20,10 @@ router.route("/getmenudata").get(authMiddleware, authController.getMenuData);
 router.route("/getmenudata/:id").get(authController.getMenuDataById);
 router.route("/updatemenu/:id").put(authMiddleware, authController.updateMenu);
 router
-  .route("/deltemenu/:id")
+  .route("/deletemenu/:id")
   .delete(authMiddleware, authController.deleteMenu);
+router.route("/setspecialdish/:id").put(authMiddleware, authController.setSpecialMenu);
+router.route("/removespecialdish/:id").put(authMiddleware, authController.removeSpecialMenu);
 
 router.route("/addinventory").post(authMiddleware, authController.addInvetory);
 

@@ -112,7 +112,6 @@ const managerLogin = async (req, res) => {
     console.log(req.body);
     const { restaurant_code, username, password } = req.body;
 
-    // Find the user with the given restaurant_code
     const user = await User.findOne({ restaurant_code });
 
     if (!user) {
@@ -120,7 +119,6 @@ const managerLogin = async (req, res) => {
       return res.json({ message: "Invalid restaurant code" });
     }
     console.log("user : " + user);
-    // Find the manager with the given username and restaurant_id from the user model
     const manager = await Manager.findOne({
       username,
       restaurant_id: user._id,
@@ -130,21 +128,18 @@ const managerLogin = async (req, res) => {
       return res.json({ message: "Invalid Username" });
     }
 
-    // Compare the password
     const isMatch = await bcrypt.compare(password, manager.password);
 
     if (!isMatch) {
       return res.json({ message: "Invalid Password" });
     }
 
-    // Generate JWT token
     token = await user.generateAuthToken();
     res.cookie("jwttoken", token, {
       expires: new Date(Date.now() + 25892000000),
       httpOnly: true,
     });
 
-    // Send the token and success message
     res.status(200).json({ message: "Logged In", token });
   } catch (error) {
     console.log(error);
@@ -233,10 +228,16 @@ const getMenuDataById = (req, res) => {
 const updateMenu = (req, res) => {
   try {
     const dishId = req.params.id;
-    const updatedDish = req.body;
+    const { dish_name, dish_price } = req.body; // Extract only the fields to be updated
+
     Menu.updateOne(
       { "dishes._id": dishId }, // Find the menu document containing the dish with the specified ID
-      { $set: { "dishes.$": updatedDish } } // Update the dish with the specified ID in the dishes array
+      {
+        $set: {
+          "dishes.$.dish_name": dish_name, // Update the dish name
+          "dishes.$.dish_price": dish_price // Update the dish price
+        }
+      }
     )
       .then((data) => res.json(data))
       .catch((err) => res.json(err));
@@ -261,6 +262,41 @@ const deleteMenu = (req, res) => {
   }
 };
 
+const setSpecialMenu = (req, res) => {
+  try {
+    console.log(req.params.id);
+    const dishId = req.params.id;
+    Menu.updateOne({ "dishes._id": dishId }, { $set: {
+      "dishes.$.is_special": true
+    } })
+      .then((data) => {
+        console.log(data);
+        res.json(data)
+      })
+      .catch((err) => res.json(err));
+  } catch {
+    console.log(error);
+    res.status(500).send("An error occurred");
+  }
+}
+
+const removeSpecialMenu = (req, res) => {
+  try {
+    console.log(req.params.id);
+    const dishId = req.params.id;
+    Menu.updateOne({ "dishes._id": dishId }, { $set: {
+      "dishes.$.is_special": false
+    } })
+      .then((data) => {
+        console.log(data);
+        res.json(data)
+      })
+      .catch((err) => res.json(err));
+  } catch {
+    console.log(error);
+    res.status(500).send("An error occurred");
+  }
+}
 const addInvetory = (req, res) => {
   try {
     console.log(req.body);
@@ -542,6 +578,8 @@ module.exports = {
   deleteTable,
   getMenuData,
   deleteMenu,
+  setSpecialMenu,
+  removeSpecialMenu,
   getMenuDataById,
   updateMenu,
   addOrder,
