@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import StaffProfileModal from "./StaffProfileModal";
-import StaffDeleteModal from "./StaffDeleteModal";
 import axios from "axios";
 
 function ViewStaff({ setSection }) {
   const [staff, setStaff] = useState([]);
+  const [selectedStaffId, setSelectedStaffId] = useState(null); // Add state to track selected staff ID
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     // Fetch staff data from the backend
@@ -28,6 +26,11 @@ function ViewStaff({ setSection }) {
     fetchStaff();
   }, []);
 
+  const handleProfileClick = (id) => {
+    setSelectedStaffId(id);
+    setShowProfileModal(true);
+  };
+
   return (
     <>
       <section className="content" id="viewStaff">
@@ -39,32 +42,14 @@ function ViewStaff({ setSection }) {
                   <h3 style={{ fontWeight: "bold" }} className="card-title">
                     Manage Staff
                   </h3>
-                  <div className="card-tools">
-                    <button
-                      type="button"
-                      className="btn btn-block btn-dark"
-                      id="addStaffBtn"
-                      onClick={() => setSection("AddStaff")}
-                    >
-                      <img src="../dist/img/icon/add.svg" alt="Add" /> Add Staff
-                    </button>
-                  </div>
-                  <div className="card-tools mx-2">
-                    <Link to={"/staff/attendance"}>
-                      <button type="button" className="btn btn-block btn-dark">
-                        <img src="../dist/img/icon/add.svg" alt="Attendance" />{" "}
-                        Attendance
-                      </button>
-                    </Link>
-                  </div>
                 </div>
                 <div className="card-body p-0">
                   <ul className="users-list clearfix">
                     {staff.map((staffMember) => (
                       <li
-                        key={staffMember.staff_id}
+                        key={staffMember._id}
                         className="col-md-2"
-                        onClick={() => setShowProfileModal(true)}
+                        onClick={() => handleProfileClick(staffMember._id)} 
                       >
                         <img
                           src={`${process.env.REACT_APP_MANAGER_API}/uploads/staff/profile/${staffMember.photo}`}
@@ -86,12 +71,7 @@ function ViewStaff({ setSection }) {
       <StaffProfileModal
         show={showProfileModal}
         handleClose={() => setShowProfileModal(false)}
-        handleDelete={() => setShowDeleteModal(true)}
-      />
-
-      <StaffDeleteModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
+        staffId={selectedStaffId}
       />
     </>
   );

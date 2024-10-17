@@ -1,9 +1,29 @@
-import React from "react";
+import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Modal, Button, Table } from "react-bootstrap";
+import axios from "axios";
 
 
-function StaffProfileModal({ show, handleClose, handleDelete }) {
+function StaffProfileModal({ show, handleClose, staffId }) {
+  const [staffData, setStaffData] = useState({});
+  useEffect(() => {
+    console.log(staffId);
+    // async function fetchStaffData() {
+    //   try {
+    //     const response = await axios.get(
+    //       `${process.env.REACT_APP_MANAGER_API}/staffdata/${staffId}`,
+    //       {
+    //         withCredentials: true,
+    //       }
+    //     );
+    //     setStaffData(response.data);
+    //   } catch (error) {
+    //     console.error("Error fetching staff data:", error);
+    //   }
+    // }
+
+    // fetchStaffData();
+  }, []);
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -70,14 +90,6 @@ function StaffProfileModal({ show, handleClose, handleDelete }) {
       <Modal.Footer>
         <Button variant="dark" onClick={handleClose}>
           <img src="../dist/img/icon/cancel.svg" alt="Cancel" /> Cancel
-        </Button>
-        <Link to="/staff/update">
-          <Button variant="dark">
-            <img src="../dist/img/icon/edit.svg" alt="Edit" /> Edit
-          </Button>
-        </Link>
-        <Button variant="dark" onClick={handleDelete}>
-          <img src="../dist/img/icon/delete.svg" alt="Delete" /> Delete
         </Button>
       </Modal.Footer>
     </Modal>

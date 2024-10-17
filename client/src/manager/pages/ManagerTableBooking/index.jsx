@@ -9,7 +9,6 @@ import Footer from "../../components/Footer";
 
 import ViewBooking from "../../components/tableBooking/ViewBooking";
 import AddBooking from "../../components/tableBooking/AddBooking";
-import BookingRequests from "../../components/tableBooking/BookingRequests";
 
 export default function ManagerTableBooking() {
   const navigate = useNavigate();
@@ -21,8 +20,6 @@ export default function ManagerTableBooking() {
         return <ViewBooking setSection={setSection} />;
       case "AddBooking":
         return <AddBooking setSection={setSection} />;
-      case "BookingRequests":
-        return <BookingRequests setSection={setSection} />;
     }
   };
 
