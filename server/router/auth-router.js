@@ -25,7 +25,11 @@ router
 router.route("/setspecialdish/:id").put(authMiddleware, authController.setSpecialMenu);
 router.route("/removespecialdish/:id").put(authMiddleware, authController.removeSpecialMenu);
 
+router.route("/getinventorydata").get(authMiddleware, authController.getInventoryData);
+router.route("/getinventorydata/:id").get(authMiddleware, authController.getInventoryDataById);
 router.route("/addinventory").post(authMiddleware, authController.addInvetory);
+router.route("/deleteinventory/:id").delete(authMiddleware, authController.deleteInventory);
+router.route("/updateinventory/:id").put(authMiddleware, authController.updateInventory);
 
 router.route("/staffdata").get(authMiddleware, authController.getStaffData);
 router.route("/staffdata/:id").get(authMiddleware, authController.getStaffDataById);

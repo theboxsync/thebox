@@ -1,19 +1,58 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-import DeleteBillModal from "./DeleteBillModal";
+import axios from "axios";
+import DeleteInventoryModal from "./DeleteInventoryModal";
 import FilterModal from "./FilterModal";
 
 function ViewInventory({ setSection }) {
-  // Ensure correct casing for component names
   const navigate = useNavigate();
-  const viewDetails = () => {
-    navigate("/inventory/details");
+
+  const [inventoryData, setInventoryData] = useState([]);
+
+  const fetchInventoryData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getinventorydata`,
+        {
+          withCredentials: true,
+        }
+      );
+      setInventoryData(response.data);
+    } catch (error) {
+      console.log("Error fetching inventory data:", error);
+    }
   };
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  useEffect(() => {
+    fetchInventoryData();
+  }, []);
 
+  const viewInventoryDetails = (id) => {
+    navigate(`/inventory/details/${id}`);
+  };
+
+  const [selectedDeleteInventory, setSelectedDeleteInventory] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showFilterModal, setShowFilterModal] = useState(false);
+
+  const deleteModal = (id) => {
+    setSelectedDeleteInventory(id);
+    setShowDeleteModal(true)
+  }
+
+  // Utility function to format date to IST
+  const formatToIST = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
 
   return (
     <>
@@ -57,42 +96,43 @@ function ViewInventory({ setSection }) {
                     >
                       <thead>
                         <tr>
-                          <th>Date</th>
-                          <th>Bill No.</th>
-                          <th>Vendor</th>
-                          <th>Category</th>
-                          <th>Total Amount</th>
-                          <th>Unpaid Amount</th>
+                          <th>Requested Date</th>
+                          <th>Items</th>
+                          <th>Status</th>
                           <th>Action</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>15/03/2024</td>
-                          <td>12345</td>
-                          <td>Dmart1</td>
-                          <td>Grocery</td>
-                          <td>5000</td>
-                          <td>0</td>
-                          <td>
-                            <button
-                              type="button"
-                              className="btn btn-transparent bg-transparent"
-                              onClick={viewDetails}
-                            >
-                              <img src="../../dist/img/icon/eye-b.svg" />
-                            </button>
-                            <button
-                              type="button"
-                              className="btn btn-transparent bg-transparent"
-                              data-bs-toggle="modal"
-                              data-bs-target="#deleteBillModal"
-                              onClick={() => setShowDeleteModal(true)}
-                            >
-                              <img src="../../dist/img/icon/delete-b.svg" />
-                            </button>
-                          </td>
-                        </tr>
+                        {inventoryData.map((data) => (
+                          <tr key={data._id}>
+                            <td>{formatToIST(data.request_date)}</td>
+                            <td>
+                              {data.items.map((item) => (
+                                <p key={item._id}>
+                                  {item.item_name} - {item.item_quantity}{" "}
+                                  {item.unit}
+                                </p>
+                              ))}
+                            </td>
+                            <td>{data.status}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-transparent bg-transparent"
+                                onClick={() => viewInventoryDetails(data._id)}
+                              >
+                                <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-transparent bg-transparent"
+                                onClick={() => deleteModal(data._id)}
+                              >
+                                <img src="../../dist/img/icon/delete-b.svg" alt="Delete" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -107,9 +147,11 @@ function ViewInventory({ setSection }) {
         show={showFilterModal}
         handleClose={() => setShowFilterModal(false)}
       />
-      <DeleteBillModal
+      <DeleteInventoryModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
+        id = { selectedDeleteInventory }
+        fetchInventoryData={fetchInventoryData}
       />
     </>
   );

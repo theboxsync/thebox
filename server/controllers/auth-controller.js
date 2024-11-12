@@ -235,8 +235,8 @@ const updateMenu = (req, res) => {
       {
         $set: {
           "dishes.$.dish_name": dish_name, // Update the dish name
-          "dishes.$.dish_price": dish_price // Update the dish price
-        }
+          "dishes.$.dish_price": dish_price, // Update the dish price
+        },
       }
     )
       .then((data) => res.json(data))
@@ -266,46 +266,123 @@ const setSpecialMenu = (req, res) => {
   try {
     console.log(req.params.id);
     const dishId = req.params.id;
-    Menu.updateOne({ "dishes._id": dishId }, { $set: {
-      "dishes.$.is_special": true
-    } })
+    Menu.updateOne(
+      { "dishes._id": dishId },
+      {
+        $set: {
+          "dishes.$.is_special": true,
+        },
+      }
+    )
       .then((data) => {
         console.log(data);
-        res.json(data)
+        res.json(data);
       })
       .catch((err) => res.json(err));
   } catch {
     console.log(error);
     res.status(500).send("An error occurred");
   }
-}
+};
 
 const removeSpecialMenu = (req, res) => {
   try {
     console.log(req.params.id);
     const dishId = req.params.id;
-    Menu.updateOne({ "dishes._id": dishId }, { $set: {
-      "dishes.$.is_special": false
-    } })
+    Menu.updateOne(
+      { "dishes._id": dishId },
+      {
+        $set: {
+          "dishes.$.is_special": false,
+        },
+      }
+    )
       .then((data) => {
         console.log(data);
-        res.json(data)
+        res.json(data);
       })
       .catch((err) => res.json(err));
   } catch {
     console.log(error);
     res.status(500).send("An error occurred");
   }
-}
+};
+
+const getInventoryData = (req, res) => {
+  try {
+    Inventory.find({ restaurant_id: req.user })
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getInventoryDataById = (req, res) => {
+  try {
+    const inventoryId = req.params.id;
+    Inventory.findOne({ _id: inventoryId })
+      .then((data) => {
+        res.json(data);
+      })
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const addInvetory = (req, res) => {
   try {
     console.log(req.body);
-    const inventoryData = { ...req.body, hotel_id: req.user };
+    const inventoryData = { ...req.body, restaurant_id: req.user };
     Inventory.create(inventoryData)
       .then((data) => res.json(data))
       .catch((err) => res.json(err));
   } catch (error) {
     console.log(error);
+  }
+};
+
+const updateInventory = async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  try {
+    // Find the inventory item by ID and update it with the new data
+    const updatedInventory = await Inventory.findByIdAndUpdate(
+      id,
+      updatedData,
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Run schema validators for updated fields
+      }
+    );
+
+    if (!updatedInventory) {
+      return res.status(404).json({ message: "Inventory item not found" });
+    }
+
+    res.status(200).json({
+      message: "Inventory updated successfully",
+      data: updatedInventory,
+    });
+  } catch (error) {
+    console.error("Error updating inventory:", error);
+    res.status(500).json({ message: "Failed to update inventory", error });
+  }
+};
+
+const deleteInventory = (req, res) => {
+  try {
+    const inventoryId = req.params.id; // This is the inventory ID you want to delete
+    Inventory.deleteOne({ _id: inventoryId })
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("An error occurred");
   }
 };
 
@@ -324,10 +401,9 @@ const getStaffData = (req, res) => {
 const getStaffDataById = (req, res) => {
   try {
     const staffId = req.params.id;
-    Staff.findOne({ _id: staffId })
-      .then((data) => {
-        res.json(data);     
-      })
+    Staff.findOne({ _id: staffId }).then((data) => {
+      res.json(data);
+    });
   } catch (error) {
     console.log(error);
   }
@@ -582,7 +658,11 @@ module.exports = {
   getUserData,
   emailCheck,
   addMenu,
+  getInventoryData,
+  getInventoryDataById,
   addInvetory,
+  deleteInventory,
+  updateInventory,
   getStaffData,
   addStaff,
   getTableData,

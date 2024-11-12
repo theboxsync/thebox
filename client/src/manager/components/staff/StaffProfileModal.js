@@ -4,26 +4,8 @@ import { Modal, Button, Table } from "react-bootstrap";
 import axios from "axios";
 
 
-function StaffProfileModal({ show, handleClose, staffId }) {
-  const [staffData, setStaffData] = useState({});
-  useEffect(() => {
-    console.log(staffId);
-    // async function fetchStaffData() {
-    //   try {
-    //     const response = await axios.get(
-    //       `${process.env.REACT_APP_MANAGER_API}/staffdata/${staffId}`,
-    //       {
-    //         withCredentials: true,
-    //       }
-    //     );
-    //     setStaffData(response.data);
-    //   } catch (error) {
-    //     console.error("Error fetching staff data:", error);
-    //   }
-    // }
-
-    // fetchStaffData();
-  }, []);
+function StaffProfileModal({ show, handleClose, data }) {
+  
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -32,56 +14,59 @@ function StaffProfileModal({ show, handleClose, staffId }) {
       <Modal.Body>
         <div className="text-center">
           <img
-            src="../../Logo/GJ0001.webp"
+            src={`${process.env.REACT_APP_MANAGER_API}/uploads/staff/profile/${data.photo}`}
             style={{ width: 128, height: 128 }}
-            alt="User Image"
+            alt="Staff Image"
           />
-          <p style={{ color: "black", fontSize: 18, fontWeight: "bold" }}>
-            Pranay
-          </p>
+          <div className="mt-3" style={{ color: "black", fontSize: 18, fontWeight: "bold" }}>
+            {data.f_name + " " + data.l_name}
+          </div>
+          <div className="mb-3" style={{ color: "black", fontSize: 14, fontWeight: "bold" }}>
+            ({data.position})
+          </div>
         </div>
         <div className="">
           <Table responsive>
             <tbody>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Staff ID</td>
-                <td>0001</td>
+                <td>{data.staff_id}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Birthdate</td>
-                <td>23-05-2002</td>
+                <td>{data.birth_date}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Address</td>
-                <td>Tavra, Bharuch, Gujarat</td>
+                <td>{data.address}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Phone No</td>
-                <td>8980117634</td>
+                <td>{data.phone_no}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Email</td>
-                <td>pranaygohil2@gmail.com</td>
+                <td>{data.email}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Joining Date</td>
-                <td>01-03-2024</td>
+                <td>{data.joining_date}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Position</td>
-                <td>Owner</td>
+                <td>{data.position}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Salary</td>
-                <td>100000</td>
+                <td>{data.salary}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Document Type</td>
-                <td>National Identity Card</td>
+                <td>{data.document_type}</td>
               </tr>
               <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>ID Card Number</td>
-                <td>159515951159</td>
+                <td>{data.id_number}</td>
               </tr>
             </tbody>
           </Table>

@@ -48,7 +48,7 @@ function AdminProfile() {
                     <div className="text-center">
                       <img
                         className="profile-user-img img-fluid img-circle"
-                        src="../Logo/<?php echo $user['logo']; ?>"
+                        src={`${process.env.REACT_APP_ADMIN_API + "/uploads/" + userData.logo}`}
                         alt="User profile picture"
                       />
                     </div>

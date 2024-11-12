@@ -1,11 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import StaffProfileModal from "./StaffProfileModal";
 import StaffDeleteModal from "./StaffDeleteModal";
 
 function ViewStaff({ setSection }) {
+  const [staff, setStaff] = useState([]);
+  const [selectedStaffData, setSelectedStaffData] = useState({}); 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const fetchStaff = async function () {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/staffdata`,
+        {
+          withCredentials: true,
+        }
+      );
+      setStaff(response.data);
+    } catch (error) {
+      console.error("Error fetching staff data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStaff();
+  }, []);
+
+  const handleProfileClick = async (id) => {
+    axios
+      .get(`${process.env.REACT_APP_ADMIN_API}/staffdata/${id}`)
+      .then((res) => {
+        setSelectedStaffData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowProfileModal(true);
+    console.log(selectedStaffData);
+  };
   return (
     <>
       <section className="content" id="viewStaff">
@@ -37,13 +70,21 @@ function ViewStaff({ setSection }) {
                 </div>
                 <div className="card-body p-0">
                   <ul className="users-list clearfix">
-                    <li
-                      className="col-md-2"
-                      onClick={() => setShowProfileModal(true)}
-                    >
-                      <img src="../../Logo/GJ0001.webp" alt="User Image" />
-                      <p className="users-list-name link">Pranay</p>
-                    </li>
+                    {staff.map((staffMember) => (
+                      <li
+                        key={staffMember._id}
+                        className="col-md-2"
+                        onClick={() => handleProfileClick(staffMember._id)}
+                      >
+                        <img
+                          src={`${process.env.REACT_APP_ADMIN_API}/uploads/staff/profile/${staffMember.photo}`}
+                          alt="Staff Image"
+                        />
+                        <p className="users-list-name link">
+                          {staffMember.f_name + " " + staffMember.l_name}
+                        </p>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
@@ -52,9 +93,19 @@ function ViewStaff({ setSection }) {
         </div>
       </section>
 
-      <StaffProfileModal show={showProfileModal} handleClose={() => setShowProfileModal(false)} handleDelete={() => setShowDeleteModal(true)} />
+      <StaffProfileModal
+        show={showProfileModal}
+        handleClose={() => {
+          setShowProfileModal(false);
+          setSelectedStaffData({});
+        }}
+        data={selectedStaffData}
+      />
 
-      <StaffDeleteModal show={showDeleteModal} handleClose={() => setShowDeleteModal(false)} />
+      <StaffDeleteModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+      />
     </>
   );
 }

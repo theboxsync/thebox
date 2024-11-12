@@ -82,6 +82,19 @@ const editDish = Yup.object({
     .matches(/[0-9]$/, "Price must be number"),
 });
 
+const requestInventory = Yup.object({
+  items : Yup.array().of(
+    Yup.object().shape({
+      item_name: Yup.string().required("Item Name is required"),
+      unit: Yup.string().required("Unit is required"),
+      item_quantity: Yup.string()
+        .required("Item Quantity is required")
+        .matches(/[0-9]$/, "Quantity must be number"),
+    })
+  ),
+  status: Yup.string().required("Status is required"),
+});
+
 const addInventory = Yup.object({
   bill_date: Yup.string().required("Bill Date is required"),
   bill_number: Yup.string().required("Bill Number is required"),
@@ -111,6 +124,7 @@ export {
   signupSchema3,
   addTable,
   addMenu,
+  requestInventory,
   addInventory,
   editDish,
   addManager,

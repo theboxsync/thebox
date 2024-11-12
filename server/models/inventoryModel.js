@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const addinventory = new Schema({
+  request_date: {
+    type: Date,
+    default: Date.now,
+  },
   bill_date: {
     type: Date,
   },
@@ -25,22 +29,26 @@ const addinventory = new Schema({
   unpaid_amount: {
     type: Number,
   },
-  item_name: {
+  items : [
+    {
+      item_name: {
+        type: String,
+      },
+      unit: {
+        type: String,
+      },
+      item_quantity: {
+        type: Number,
+      },
+      item_price: {
+        type: Number,
+      },
+    }
+  ],
+  status: {
     type: String,
   },
-  unit: {
-    type: String,
-  },
-  item_quantity: {
-    type: Number,
-  },
-  item_price: {
-    type: Number,
-  },
-  approve_status: {
-    type: Number,
-  },
-  hotel_id: {
+  restaurant_id: {
     type: String,
   },
 });

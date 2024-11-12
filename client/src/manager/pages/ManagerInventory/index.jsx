@@ -30,7 +30,6 @@ export default function ManagerInventory() {
             <div className="row mb-2"></div>
           </div>
         </div>
-        <Header />
         <div>{sectionDisplay()}</div>
 
         <Footer />

@@ -1,5 +1,5 @@
 import React from "react";
-import "../../style.css";
+import "../../../style.css";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
@@ -26,7 +26,7 @@ export default function UpdateStaff() {
             action=""
             method="POST"
             className="needs-validation"
-            onsubmit="return validate()"
+            onSubmit="return validate()"
             encType="multipart/form-data"
             autoComplete="off"
             noValidate=""
@@ -153,7 +153,7 @@ export default function UpdateStaff() {
                         className="form-control"
                         maxLength={10}
                         pattern="[0-9]{10}"
-                        onkeyup="this.value=this.value.replace(/[^0-9]/g,'');"
+                        onKeyUp={(e) => e.target.value = e.target.value.replace(/[^0-9]/g, '')}
                         required=""
                       />
                       <label className="invalid-feedback">
@@ -250,12 +250,13 @@ export default function UpdateStaff() {
                         id="inputStatus"
                         name="id_type"
                         className="form-select custom-select"
+                        value=""
                         required=""
                       >
                         <option disabled="" value="">
                           Select one
                         </option>
-                        <option value={1} selected="">
+                        <option value={1}>
                           National Identity Card
                         </option>
                         <option disabled="" value={2}>

@@ -86,20 +86,20 @@ function DashboardSection({
                   </div>
                   <ul className="row" style={{ listStyle: "none" }}>
                     {table.tables.map((table) => (
-                      <li
-                        key={table._id}
-                        onClick={() => onClickTable(table._id)}
-                      >
+                      <li key={table._id}>
                         <div className="container">
                           <div
                             className={`dashboard-table d-flex justify-content-center align-items-center ${
                               table.current_status === "Save"
                                 ? "table-save"
                                 : table.current_status === "KOT" ||
-                                  table.current_status === "KOT and Print"
+                                  table.current_status === "KOT and Print" || 
+                                  table.current_status === "Order Delevered"
                                 ? "table-kot"
                                 : ""
                             }`}
+                            onClick={() => onClickTable(table._id)}
+                            style={{ cursor: "pointer" }}
                           >
                             <div align="center">{table.table_no}</div>
                           </div>

@@ -4,31 +4,37 @@ import axios from "axios";
 
 function ViewStaff({ setSection }) {
   const [staff, setStaff] = useState([]);
-  const [selectedStaffId, setSelectedStaffId] = useState(null); // Add state to track selected staff ID
+  const [selectedStaffData, setSelectedStaffData] = useState({}); 
   const [showProfileModal, setShowProfileModal] = useState(false);
 
-  useEffect(() => {
-    // Fetch staff data from the backend
-    async function fetchStaff() {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_MANAGER_API}/staffdata`,
-          {
-            withCredentials: true,
-          }
-        );
-        setStaff(response.data);
-      } catch (error) {
-        console.error("Error fetching staff data:", error);
-      }
+  const fetchStaff = async function () {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/staffdata`,
+        {
+          withCredentials: true,
+        }
+      );
+      setStaff(response.data);
+    } catch (error) {
+      console.error("Error fetching staff data:", error);
     }
+  };
 
+  useEffect(() => {
     fetchStaff();
   }, []);
 
-  const handleProfileClick = (id) => {
-    setSelectedStaffId(id);
+  const handleProfileClick = async (id) => {
+    axios
+      .get(`${process.env.REACT_APP_MANAGER_API}/staffdata/${id}`)
+      .then((res) => {
+        setSelectedStaffData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
     setShowProfileModal(true);
+    console.log(selectedStaffData);
   };
 
   return (
@@ -49,14 +55,14 @@ function ViewStaff({ setSection }) {
                       <li
                         key={staffMember._id}
                         className="col-md-2"
-                        onClick={() => handleProfileClick(staffMember._id)} 
+                        onClick={() => handleProfileClick(staffMember._id)}
                       >
                         <img
                           src={`${process.env.REACT_APP_MANAGER_API}/uploads/staff/profile/${staffMember.photo}`}
-                          alt="User Image"
+                          alt="Staff Image"
                         />
                         <p className="users-list-name link">
-                          {staffMember.f_name}
+                          {staffMember.f_name + " " + staffMember.l_name}
                         </p>
                       </li>
                     ))}
@@ -70,8 +76,11 @@ function ViewStaff({ setSection }) {
 
       <StaffProfileModal
         show={showProfileModal}
-        handleClose={() => setShowProfileModal(false)}
-        staffId={selectedStaffId}
+        handleClose={() => {
+          setShowProfileModal(false);
+          setSelectedStaffData({});
+        }}
+        data={selectedStaffData}
       />
     </>
   );
