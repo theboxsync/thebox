@@ -25,6 +25,10 @@ const orderSchema = new Schema({
       special_notes: {
         type: String,
       },
+      status: {
+        type: String, //Prepairing, Completed
+        default: "Prepairing",
+      },
     },
   ],
   order_status: {

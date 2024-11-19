@@ -58,6 +58,7 @@ function CustomerOrderDetail({
           quantity: item.quantity,
           dish_price: item.dish_price,
           special_notes: item.special_notes || "",
+          status: item.status,
         })),
         order_status: firstOrder.order_status,
         customer_id: firstOrder.customer_id,
@@ -170,6 +171,9 @@ function CustomerOrderDetail({
               <th scope="col" className="text-right">
                 Price
               </th>
+              <th scope="col" className="text-center">
+                Status
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -199,6 +203,11 @@ function CustomerOrderDetail({
                     <small style={{ textDecoration: "underline" }}>
                       &#8377; {item.dish_price}
                     </small>
+                  </td>
+                  <td className="text-center">
+                    <label className="my-0">
+                      {item.status}
+                    </label>
                   </td>
                 </tr>
               ))}

@@ -61,6 +61,8 @@ router
   .get(authMiddleware, authController.getCustomerData);
 
 router.route("/showkots").get(authMiddleware, authController.showKOTs);
+router.route("/updatedishstatus").put(authMiddleware, authController.updateDishStatus);
+router.route("/updatealldishstatus").put(authMiddleware, authController.updateAllDishStatus);
 
 router
   .route("/getorderhistory")

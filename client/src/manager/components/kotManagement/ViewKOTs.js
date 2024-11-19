@@ -21,6 +21,33 @@ function ViewKOTs() {
   useEffect(() => {
     fetchOrderData();
   }, []);
+
+  const updateDishStatus = async (orderId, dishId) => {
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_MANAGER_API}/updatedishstatus`,
+        { orderId, dishId, status: "Completed" },
+        { withCredentials: true }
+      );
+      fetchOrderData(); 
+    } catch (error) {
+      console.log("Error updating dish status:", error);
+    }
+  };
+
+  const updateAllDishStatus = async (orderId) => {
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_MANAGER_API}/updatealldishstatus`,
+        { orderId, status: "Completed" },
+        { withCredentials: true }
+      );
+      fetchOrderData(); 
+    } catch (error) {
+      console.log("Error updating all dish statuses:", error);
+    }
+  };
+
   return (
     <>
       <section className="content" id="viewMenu">
@@ -30,16 +57,6 @@ function ViewKOTs() {
               <div className="card">
                 <div className="card-header">
                   <h3 className="card-title">Manage Kots</h3>
-                  {/* <div className="card-tools">
-                    <button
-                      type="button"
-                      className="btn btn-block btn-dark"
-                      id="addBtn"
-                      onClick={() => setSection("AddMenu")}
-                    >
-                      <img src="../../dist/img/add.svg" alt="Add" /> Add Dishes
-                    </button>
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -49,7 +66,10 @@ function ViewKOTs() {
           {kotData.map((data) => (
             <div key={data._id} className="col-md-4">
               <div className="card m-2">
-                <h4 className="card-header" style={{borderBottom:"none"}}> {data.customer_name} </h4>
+                <h4 className="card-header" style={{ borderBottom: "none" }}>
+                  {" "}
+                  {data.customer_name}{" "}
+                </h4>
                 <div className="card-body">
                   <div className="d-flex justify-content-around m-2">
                     <h5>Area: {data.table_area}</h5>
@@ -72,14 +92,21 @@ function ViewKOTs() {
                     <div key={dish._id} className="row">
                       <div className="col-md-6">{dish.dish_name}</div>
                       <div className="col-md-2">{dish.quantity}</div>
-                      <div className="col-md-4">
-                        <button
-                          type="button"
-                          className="btn bg-transparent"
-                          title="Order Completed"
-                        >
-                         <img src="../dist/img/Completed-b.svg"/>  
-                        </button>
+                      <div className="col-md-4 d-flex">
+                        {dish.status === "Prepairing" ? (
+                          <button
+                            type="button"
+                            className="btn"
+                            title="Completed"
+                            onClick={() => updateDishStatus(data._id, dish._id)}
+                          >
+                            Completed
+                          </button>
+                        ) : dish.status === "Completed" ? (
+                          <img src="../dist/img/Completed-b.svg" />
+                        ) : (
+                          ""
+                        )}
                       </div>
                     </div>
                   ))}
@@ -88,7 +115,12 @@ function ViewKOTs() {
                     <span className="font-weight-bold">Comment : </span>
                     <span>{data.comment}</span>
                   </div>
-                  <button type="button" className="btn" title="Order Completed">
+                  <button
+                    type="button"
+                    className="btn"
+                    title="Order Completed"
+                    onClick={() => updateAllDishStatus(data._id)}
+                  >
                     All Complete
                   </button>
                 </div>

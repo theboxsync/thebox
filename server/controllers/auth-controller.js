@@ -629,6 +629,37 @@ const showKOTs = async (req, res) => {
   }
 };
 
+const updateDishStatus = async (req, res) => {
+  try {
+    const { orderId, dishId, status } = req.body;
+
+    await Order.updateOne(
+      { _id: orderId, "order_items._id": dishId },
+      { $set: { "order_items.$.status": status } }
+    );
+
+    res.status(200).json({ success: true, message: "Dish status updated." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error updating dish status.", error });
+  }
+};
+
+const updateAllDishStatus = async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+
+    await Order.updateOne(
+      { _id: orderId },
+      { $set: { "order_items.$[].status": status } }
+    );
+
+    res.status(200).json({ success: true, message: "All dish statuses updated." });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error updating all dish statuses.", error });
+  }
+};
+
+
 const orderHistory = async (req, res) => {
   try {
     const orderData = await Order.find({ restaurant_id: req.user });
@@ -683,6 +714,8 @@ module.exports = {
   getOrderData,
   getCustomerData,
   showKOTs,
+  updateDishStatus,
+  updateAllDishStatus,
   orderHistory,
   addManager,
   getStaffDataById,
