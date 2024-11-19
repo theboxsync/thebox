@@ -3,12 +3,21 @@ import axios from "axios";
 
 function OrderMenuShow({ addItemToOrder }) {
   const [menuData, setMenuData] = useState([]);
+  const [searchText, setSearchText] = useState("");
+  const [mealType, setMealType] = useState(""); // Meal type filter
+  const [category, setCategory] = useState(""); // Category filter
+  const [categories, setCategories] = useState([]);
 
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_MANAGER_API}/getmenudata`,
         {
+          params: {
+            mealType, // Send selected meal type
+            category, // Send selected category
+            searchText, // Send search text
+          },
           withCredentials: true,
         }
       );
@@ -20,22 +29,75 @@ function OrderMenuShow({ addItemToOrder }) {
 
   useEffect(() => {
     fetchMenuData();
+  }, [mealType, category, searchText]); // Refetch data when filters change
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getmenucategories`,
+        {
+          withCredentials: true,
+        }
+      );
+      setCategories(response.data);
+    } catch (error) {
+      console.log("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
   }, []);
+
+  // Filter dishes based on search text, meal type, and category
+  const filteredMenuData = menuData.map((data) => ({
+    ...data,
+    dishes: data.dishes.filter(
+      (dish) =>
+        dish.dish_name.toLowerCase().includes(searchText.toLowerCase()) &&
+        (mealType === "" || data.meal_type === mealType) &&
+        (category === "" || data.category === category) // Category filter
+    ),
+  }));
 
   return (
     <div className="col-md-6 border-right h-100">
       <div className="d-flex w-100 justify-content-around">
+        {/* Search Input */}
         <input
           type="text"
           className="form-control m-3"
           placeholder="Search Item"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
         />
-        <input
-          type="text"
+
+        {/* Meal Type Filter Dropdown */}
+        <select
           className="form-control m-3"
-          placeholder="Shortcut Code"
-        />
+          value={mealType}
+          onChange={(e) => setMealType(e.target.value)}
+        >
+          <option value="">All Meal Types</option>
+          <option value="veg">Veg</option>
+          <option value="egg">Egg</option>
+          <option value="non-veg">Non-Veg</option>
+        </select>
+
+        {/* Category Filter Dropdown */}
+        <select
+          className="form-control m-3"
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="">All Categories</option>
+          {categories.map((category, index) => (
+            <option key={index} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
       </div>
+
       <div
         style={{
           overflowX: "hidden",
@@ -44,10 +106,10 @@ function OrderMenuShow({ addItemToOrder }) {
         }}
       >
         <div className="row">
-          {menuData.map((data) => (
-            <>
+          {filteredMenuData.map((data) => (
+            <React.Fragment key={data._id}>
               {data.dishes.map((dish) => (
-                <div key={data._id} className="col-md-6">
+                <div key={dish._id} className="col-md-6">
                   <div
                     className={`card m-2 ${
                       data.meal_type === "veg"
@@ -80,7 +142,7 @@ function OrderMenuShow({ addItemToOrder }) {
                   </div>
                 </div>
               ))}
-            </>
+            </React.Fragment>
           ))}
         </div>
       </div>

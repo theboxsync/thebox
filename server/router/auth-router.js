@@ -17,6 +17,7 @@ router.route("/userdata").get(authMiddleware, authController.getUserData);
 
 router.route("/addmenu").post(authMiddleware, authController.addMenu);
 router.route("/getmenudata").get(authMiddleware, authController.getMenuData);
+router.route("/getmenucategories").get(authMiddleware, authController.getMenuCategories);
 router.route("/getmenudata/:id").get(authController.getMenuDataById);
 router.route("/updatemenu/:id").put(authMiddleware, authController.updateMenu);
 router

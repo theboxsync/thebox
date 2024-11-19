@@ -3,6 +3,7 @@ import axios from "axios";
 
 function OrderMenuShow({ addItemToOrder }) {
   const [menuData, setMenuData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   const fetchMenuData = async () => {
     try {
@@ -22,6 +23,14 @@ function OrderMenuShow({ addItemToOrder }) {
     fetchMenuData();
   }, []);
 
+  // Filter dishes based on search text
+  const filteredMenuData = menuData.map((data) => ({
+    ...data,
+    dishes: data.dishes.filter((dish) =>
+      dish.dish_name.toLowerCase().includes(searchText.toLowerCase())
+    ),
+  }));
+
   return (
     <div className="col-md-6 border-right h-100">
       <div className="d-flex w-100 justify-content-around">
@@ -29,6 +38,8 @@ function OrderMenuShow({ addItemToOrder }) {
           type="text"
           className="form-control m-3"
           placeholder="Search Item"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)} // Update search text
         />
         <input
           type="text"
@@ -44,10 +55,10 @@ function OrderMenuShow({ addItemToOrder }) {
         }}
       >
         <div className="row">
-          {menuData.map((data) => (
-            <>
+          {filteredMenuData.map((data) => (
+            <div key={data._id} className="col-md-12">
               {data.dishes.map((dish) => (
-                <div key={data._id} className="col-md-6">
+                <div key={dish._id} className="col-md-6">
                   <div
                     className={`card m-2 ${
                       data.meal_type === "veg"
@@ -59,7 +70,7 @@ function OrderMenuShow({ addItemToOrder }) {
                     style={{ backgroundColor: "#f0f0f0" }}
                   >
                     <div className="card-body">
-                      <div key={dish._id} className="row">
+                      <div className="row">
                         <div className="col-md-6">{dish.dish_name}</div>
                         <div className="col-md-3 text-center">
                           &#8377; {dish.dish_price}
@@ -80,7 +91,7 @@ function OrderMenuShow({ addItemToOrder }) {
                   </div>
                 </div>
               ))}
-            </>
+            </div>
           ))}
         </div>
       </div>

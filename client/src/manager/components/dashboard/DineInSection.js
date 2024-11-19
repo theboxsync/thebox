@@ -90,14 +90,14 @@ function DineInSection({
           >
             <MdNoteAlt size={30} />
           </div>
-          <div
+          {/* <div
             className={`text-center order-dash-menu ${
               orderConfiguration === "AssignWaiter" ? "active-dinein" : ""
             }`}
             onClick={() => handleChangeConfiguration("AssignWaiter")}
           >
             <IoIosRestaurant size={30} />
-          </div>
+          </div> */}
         </div>
       </div>
 

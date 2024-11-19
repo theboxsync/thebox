@@ -29,7 +29,7 @@ function ViewKOTs() {
         { orderId, dishId, status: "Completed" },
         { withCredentials: true }
       );
-      fetchOrderData(); 
+      fetchOrderData();
     } catch (error) {
       console.log("Error updating dish status:", error);
     }
@@ -42,7 +42,7 @@ function ViewKOTs() {
         { orderId, status: "Completed" },
         { withCredentials: true }
       );
-      fetchOrderData(); 
+      fetchOrderData();
     } catch (error) {
       console.log("Error updating all dish statuses:", error);
     }
@@ -71,10 +71,17 @@ function ViewKOTs() {
                   {data.customer_name}{" "}
                 </h4>
                 <div className="card-body">
-                  <div className="d-flex justify-content-around m-2">
-                    <h5>Area: {data.table_area}</h5>
-                    <h5>Table No.: {data.table_no}</h5>
-                  </div>
+                  {data.order_type === "Dine In" ? (
+                    <div className="d-flex justify-content-around m-2">
+                      <h5>Area: {data.table_area}</h5>
+                      <h5>Table No.: {data.table_no}</h5>
+                    </div>
+                  ) : (
+                    <div className="d-flex justify-content-around m-2">
+                      <h5>{data.order_type}</h5>
+                    </div>
+                  )}
+
                   {/* <hr /> */}
                   <div className="row">
                     <div className="col-md-6">

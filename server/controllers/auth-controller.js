@@ -3,7 +3,7 @@ const Table = require("../models/tableModel");
 const Menu = require("../models/menuListModel");
 const Inventory = require("../models/inventoryModel");
 const Staff = require("../models/staffModel");
-const Order = require("../models/orderModal");
+const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Manager = require("../models/managerModel");
 
@@ -198,18 +198,48 @@ const addMenu = (req, res) => {
   }
 };
 
-const getMenuData = (req, res) => {
+const getMenuData = async (req, res) => {
   try {
-    Menu.find({ hotel_id: req.user })
-      .then((data) => {
-        res.json(data);
-      })
-      .catch((err) => res.json(err));
+    // Extract query parameters
+    const { mealType, category, searchText } = req.query;
+
+    // Build the query object
+    const query = { hotel_id: req.user };
+
+    // Add mealType filter if provided
+    if (mealType) {
+      query.meal_type = mealType;
+    }
+
+    // Add category filter if provided
+    if (category) {
+      query.category = category;
+    }
+
+    // Add searchText filter if provided
+    if (searchText) {
+      query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; // Case-insensitive regex
+    }
+
+    // Fetch filtered menu data
+    const menuData = await Menu.find(query);
+    res.json(menuData);
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching menu data:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
+const getMenuCategories = async (req, res) => {
+  try {
+    // Retrieve unique category names
+    const categories = await Menu.distinct("category", { hotel_id: req.user });
+    res.json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 const getMenuDataById = (req, res) => {
   try {
     const dishId = req.params.id;
@@ -558,6 +588,7 @@ const orderController = async (req, res) => {
     let orderData = { ...req.body.orderInfo, restaurant_id: req.user };
     const tableId = req.body.table_id;
     const customerInfo = req.body.customerInfo;
+    let savedOrder;
 
     if (customerInfo.phone !== "" || customerInfo.email !== "") {
       const customer = new Customer(customerInfo);
@@ -566,48 +597,55 @@ const orderController = async (req, res) => {
       orderData = { ...orderData, customer_id: savedCustomer._id };
     }
 
-    // Find the table
-    const tableDocument = await Table.findOne({ "tables._id": tableId });
+    if (tableId != "") {
+      // Find the table
+      const tableDocument = await Table.findOne({ "tables._id": tableId });
 
-    if (!tableDocument) {
-      return res.status(404).json({ message: "Table not found" });
-    }
+      if (!tableDocument) {
+        return res.status(404).json({ message: "Table not found" });
+      }
 
-    const table = tableDocument.tables.id(tableId);
+      const table = tableDocument.tables.id(tableId);
 
-    if (!table) {
-      return res.status(404).json({ message: "Table not found" });
-    }
+      if (!table) {
+        return res.status(404).json({ message: "Table not found" });
+      }
 
-    let savedOrder;
+      if (table.current_status === "Empty" || table.order_id === null) {
+        const newOrder = new Order(orderData);
+        savedOrder = await newOrder.save();
+        table.current_status = savedOrder.order_status;
+        table.order_id = savedOrder._id;
+      } else {
+        savedOrder = await Order.findByIdAndUpdate(table.order_id, orderData, {
+          new: true,
+        });
+        if (savedOrder.order_status !== "Paid") {
+          table.current_status = savedOrder.order_status;
+        } else {
+          table.current_status = "Empty";
+          table.order_id = null;
+        }
+      }
 
-    if (table.current_status === "Empty" || table.order_id === null) {
+      // Save the updated table document
+      await tableDocument.save();
+      res.status(200).json({
+        status: "success",
+        message: "Order processed successfully",
+        order: savedOrder,
+        table: tableDocument,
+      });
+    } else {
       const newOrder = new Order(orderData);
       savedOrder = await newOrder.save();
 
-      table.current_status = savedOrder.order_status;
-      table.order_id = savedOrder._id;
-    } else {
-      savedOrder = await Order.findByIdAndUpdate(table.order_id, orderData, {
-        new: true,
+      res.status(200).json({
+        status: "success",
+        message: "Order processed successfully",
+        order: savedOrder,
       });
-      if (savedOrder.order_status !== "Paid") {
-        table.current_status = savedOrder.order_status;
-      } else {
-        table.current_status = "Empty";
-        table.order_id = null;
-      }
     }
-
-    // Save the updated table document
-    await tableDocument.save();
-
-    res.status(200).json({
-      status: "success",
-      message: "Order processed successfully",
-      order: savedOrder,
-      table: tableDocument,
-    });
   } catch (error) {
     console.error("Error processing order:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -640,7 +678,9 @@ const updateDishStatus = async (req, res) => {
 
     res.status(200).json({ success: true, message: "Dish status updated." });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error updating dish status.", error });
+    res
+      .status(500)
+      .json({ success: false, message: "Error updating dish status.", error });
   }
 };
 
@@ -653,12 +693,17 @@ const updateAllDishStatus = async (req, res) => {
       { $set: { "order_items.$[].status": status } }
     );
 
-    res.status(200).json({ success: true, message: "All dish statuses updated." });
+    res
+      .status(200)
+      .json({ success: true, message: "All dish statuses updated." });
   } catch (error) {
-    res.status(500).json({ success: false, message: "Error updating all dish statuses.", error });
+    res.status(500).json({
+      success: false,
+      message: "Error updating all dish statuses.",
+      error,
+    });
   }
 };
-
 
 const orderHistory = async (req, res) => {
   try {
@@ -701,6 +746,7 @@ module.exports = {
   updateTable,
   deleteTable,
   getMenuData,
+  getMenuCategories,
   deleteMenu,
   setSpecialMenu,
   removeSpecialMenu,

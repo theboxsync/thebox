@@ -102,7 +102,7 @@ function OrderSection({
                     className="btn btn-block btn-dark"
                     onClick={() => setMainSection("DashboardSection")}
                   >
-                    Table Section
+                    Go To Dashboard
                   </button>
                 </div>
               </div>
