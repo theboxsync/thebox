@@ -7,12 +7,11 @@ import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
-import TableSection from "../../components/dashboard/TableSection";
+import DashboardSection from "../../components/dashboard/DashboardSection";
 import AddManager from "../../components/dashboard/AddManager";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [orderId, setOrderId] = useState("");
 
   const [userData, setUserData] = useState("");
 
@@ -39,13 +38,13 @@ export default function AdminDashboard() {
   }, []);
 
   
-  const [mainSection, setMainSection] = useState("TableSection");
+  const [mainSection, setMainSection] = useState("DashboardSection");
 
   const displayMainSection = () => {
     switch (mainSection) {
-      case "TableSection":
+      case "DashboardSection":
         return (
-          <TableSection setMainSection={setMainSection}/>
+          <DashboardSection setMainSection={setMainSection}/>
         );
       case "AddManager":
         return (

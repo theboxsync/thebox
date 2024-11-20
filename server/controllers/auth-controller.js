@@ -169,6 +169,60 @@ const getUserData = async (req, res) => {
   }
 };
 
+const getManagerData = async (req, res) => {
+  try {
+    if (req.user != null) {
+      const manager = req.user;
+      const managerdata = await Manager.find({ restaurant_id: manager._id });
+      res.send(managerdata);
+    } else {
+      res.send("Null");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getManagerDataById = async (req, res) => {
+  try {
+    const manager = await Manager.findById(req.params.id);
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
+    }
+    res.json(manager);
+  } catch (error) {
+    console.error("Error fetching manager:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const updateManager = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const manager = await Manager.findById(id);
+    if (!manager) {
+      return res.status(404).json({ message: "Manager not found" });
+    }
+    const updatedManager = await Manager.findByIdAndUpdate(
+      id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.json(updatedManager);
+  } catch (error) {
+    console.error("Error updating manager:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const deleteManager = async (req, res) => {
+  Manager.findByIdAndDelete(req.params.id)
+    .then((data) => res.json(data))
+    .catch((err) =>
+      res.status(500).json({ message: "Error deleting manager", error: err })
+    );
+};
+
 const addMenu = (req, res) => {
   try {
     console.log(req.body);
@@ -732,6 +786,10 @@ module.exports = {
   managerLogin,
   logout,
   getUserData,
+  getManagerData,
+  getManagerDataById,
+  updateManager,
+  deleteManager,
   emailCheck,
   addMenu,
   getInventoryData,

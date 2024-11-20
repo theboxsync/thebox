@@ -118,6 +118,10 @@ const addManager = Yup.object({
   password: Yup.string().required("Password is required"),
 });
 
+const editManager = Yup.object({
+  username: Yup.string().required("Username is required"),
+});
+
 export {
   signupSchema1,
   signupSchema2,
@@ -128,4 +132,5 @@ export {
   addInventory,
   editDish,
   addManager,
+  editManager,
 };

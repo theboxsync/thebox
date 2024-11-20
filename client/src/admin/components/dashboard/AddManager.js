@@ -18,7 +18,7 @@ function AddManager({ setMainSection }) {
         })
         .then((res) => {
           console.log(res.data);
-          setMainSection("TableSection");
+          setMainSection("DashboardSection");
         })
         .catch((err) => {
           console.log(err);
@@ -37,7 +37,7 @@ function AddManager({ setMainSection }) {
                   type="button"
                   className="btn float-right"
                   onClick={() => {
-                    setMainSection("TableSection");
+                    setMainSection("DashboardSection");
                   }}
                 >
                   Close
