@@ -5,6 +5,7 @@ import Login from "../admin/Login";
 import Register from "../admin/Register";
 import Logout from "../admin/components/Logout";
 import ForgotPassword from "../ForgotPassword";
+import ForgotAdminPassword from "../admin/ForgotAdminPassword";
 import OtpVerification from "../OtpVerification";
 import ChangePassword from "../ChangePassword";
 import RegistrationComplete from "../RegistrationComplete";
@@ -18,6 +19,7 @@ import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
 import UpdateStaff from "../admin/pages/AdminStaff/UpdateStaff";
 import AdminTable from "../admin/pages/AdminTable";
+import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
 
 function AdminRoutes() {
   return (
@@ -27,7 +29,7 @@ function AdminRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/forgot-password" element={<ForgotAdminPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/registration-complete" element={<RegistrationComplete />} />
@@ -42,6 +44,7 @@ function AdminRoutes() {
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update" element={<UpdateStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />
+      <Route path="/change-manager-password" element={<ChangeManagerPassword />} />
     </Routes>
   );
 }

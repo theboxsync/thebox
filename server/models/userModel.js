@@ -45,6 +45,12 @@ const userSchema = new Schema({
     default: Date.now,
     index: true,
   },
+  otp: {
+    type: Number,
+  },
+  otpExpiry: {
+    type: Date,
+  },
   // start_date: {
   //   type: Date,
   // },

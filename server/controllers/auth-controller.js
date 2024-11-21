@@ -7,6 +7,8 @@ const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Manager = require("../models/managerModel");
 
+// const { sendEmail } = require("../utils/emailService");
+
 const bcrypt = require("bcryptjs");
 
 let token;
@@ -155,6 +157,81 @@ const logout = async (req, res) => {
   }
 };
 
+const sendAdminOtp = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email not found." });
+    }
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000); // 6-digit OTP
+    user.otp = otp;
+    user.otpExpiry = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+    await user.save();
+
+    // Send OTP via email
+    // await sendEmail({
+    //   to: email,
+    //   subject: "Your OTP for Password Reset",
+    //   text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    // });
+
+    res.json({ message: "OTP sent to your email." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred while sending OTP." });
+  }
+};
+
+const verifyAdminOtp = async (req, res) => {
+  const { email, otp } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email not found." });
+    }
+
+    if (user.otp !== parseInt(otp, 10) || Date.now() > user.otpExpiry) {
+      return res.status(400).json({ message: "Invalid or expired OTP." });
+    }
+
+    // OTP is valid
+    res.json({ message: "OTP verified successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "An error occurred while verifying OTP." });
+  }
+};
+
+const resetAdminPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Email not found." });
+    }
+
+    user.password = newPassword;
+
+    // Clear OTP fields
+    user.otp = null;
+    user.otpExpiry = null;
+    await user.save();
+
+    res.json({ message: "Password reset successfully." });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .json({ message: "An error occurred while resetting password." });
+  }
+};
+
 const getUserData = async (req, res) => {
   try {
     if (req.user != null) {
@@ -221,6 +298,29 @@ const deleteManager = async (req, res) => {
     .catch((err) =>
       res.status(500).json({ message: "Error deleting manager", error: err })
     );
+};
+
+const changeManagerPassword = async (req, res) => {
+  const { adminPassword, newPassword, managerId } = req.body;
+
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user); // Assuming admin is logged in
+    if (!admin) return res.status(404).json({ message: "Admin not found." });
+
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch)
+      return res.status(401).json({ message: "Invalid admin password." });
+
+    // Hash new password and update manager password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await Manager.findByIdAndUpdate(managerId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Manager password updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred." });
+  }
 };
 
 const addMenu = (req, res) => {
@@ -785,11 +885,15 @@ module.exports = {
   login,
   managerLogin,
   logout,
+  sendAdminOtp,
+  verifyAdminOtp,
+  resetAdminPassword,
   getUserData,
   getManagerData,
   getManagerDataById,
   updateManager,
   deleteManager,
+  changeManagerPassword,
   emailCheck,
   addMenu,
   getInventoryData,

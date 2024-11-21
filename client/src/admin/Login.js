@@ -10,29 +10,8 @@ export default function Login(props) {
   const data = { email: "", password: "" };
   const [inputData, setInputData] = useState(data);
   const [wrongMsg, setWrongMsg] = useState();
-  const [flag, setFlag] = useState(false);
 
   const navigate = useNavigate();
-  const [userData, setUserData] = useState("");
-
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/userdata`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.data != "Null") {
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.log("Error fetching user data:", error);
-    }
-  };
-  useEffect(() => {
-    fetchUserData();
-  }, []);
 
   function handleData(e) {
     const name = e.target.name;
@@ -125,11 +104,7 @@ export default function Login(props) {
                     <i className="fas fa-unlock mr-2"></i> Login
                   </button>
                 </div>
-                <div>
-                  <span>
-                    <b className="text-danger">{wrongMsg}</b>
-                  </span>
-                </div>
+                <div className="alert alert-danger">{wrongMsg}</div>
               </form>
 
               <div className="mb-1 text-right">

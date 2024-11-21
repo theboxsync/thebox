@@ -13,6 +13,10 @@ router.route("/manager-login").post(authController.managerLogin);
 
 router.route("/logout").get(authController.logout);
 
+router.route("/sendadminotp").post(authController.sendAdminOtp);
+router.route("/verifyadminotp").post(authController.verifyAdminOtp);
+router.route("/resetadminpassword").post(authController.resetAdminPassword);
+
 router.route("/userdata").get(authMiddleware, authController.getUserData);
 router.route("/getmanagerdata").get(authMiddleware, authController.getManagerData);
 router.route("/getmanagerdata/:id").get(authController.getManagerDataById);
@@ -20,6 +24,7 @@ router.route("/updatemanager/:id").put(authMiddleware, authController.updateMana
 router
   .route("/deletemanager/:id")
   .delete(authMiddleware, authController.deleteManager);
+router.route("/changemanagerpassword").post(authMiddleware, authController.changeManagerPassword);
 
 router.route("/addmenu").post(authMiddleware, authController.addMenu);
 router.route("/getmenudata").get(authMiddleware, authController.getMenuData);
