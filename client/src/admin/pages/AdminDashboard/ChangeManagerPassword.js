@@ -17,6 +17,7 @@ function ChangeManagerPassword() {
   const [success, setSuccess] = useState("");
 
   if (!managerId) {
+    console.log("Manager ID not found in state");
     navigate("/");
   }
 

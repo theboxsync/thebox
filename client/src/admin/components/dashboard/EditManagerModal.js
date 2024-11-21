@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
@@ -35,6 +35,12 @@ function EditManagerModal({ show, handleClose, data, fetchManagerData }) {
     },
   });
 
+  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+
+  const navigateToChangePassword = () => {
+    navigate("/change-manager-password", { state: { managerId: data._id } });
+  };
+
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
@@ -64,10 +70,9 @@ function EditManagerModal({ show, handleClose, data, fetchManagerData }) {
             </Button>
           </Form.Group>
           <Form.Group className="mb-3">
-            <Link to="/change-manager-password" className="mx-2">
-              {" "}
-              Do you want to change manager password?{" "}
-            </Link>
+            <div className="mt-3" onClick={navigateToChangePassword} style={{ cursor: "pointer", color: "cornflowerblue" }}>
+              Do you want to change manager password?
+            </div>
           </Form.Group>
         </Form>
       </Modal.Body>
