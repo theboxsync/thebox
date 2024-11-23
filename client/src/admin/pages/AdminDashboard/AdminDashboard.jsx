@@ -7,6 +7,9 @@ import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
+import RemoveSpecialModal from "../../components/dashboard/RemoveSpecialModal";
+import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
+
 import DashboardSection from "../../components/dashboard/DashboardSection";
 import AddManager from "../../components/dashboard/AddManager";
 
@@ -14,6 +17,9 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState("");
+  const [showSpecialModal, setShowSpecialModal] = useState(false);
+  const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
+  const [specialDishes, setSpecialDishes] = useState([]);
 
   const fetchUserData = async () => {
     try {
@@ -32,24 +38,54 @@ export default function AdminDashboard() {
       console.log("Error fetching user data:", error);
     }
   };
+
+  const fetchSpecialDishes = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/getmenudata`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      // Flatten the special dishes into a single array
+      const specialDishes = response.data
+        .flatMap((category) => category.dishes)
+        .filter((dish) => dish.is_special);
+
+      setSpecialDishes(specialDishes);
+    } catch (error) {
+      console.log("Error fetching special dishes:", error);
+    }
+  };
+
   useEffect(() => {
     fetchUserData();
+    fetchSpecialDishes();
     console.log(userData);
   }, []);
 
-  
+  const [removeSpecialModalData, setRemoveSpecialModalData] = useState({});
+  const removeSpecialModal = (id) => {
+    console.log(id);
+    axios
+      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
+      .then((res) => {
+        setRemoveSpecialModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowRemoveSpecialModal(true);
+  };
+
   const [mainSection, setMainSection] = useState("DashboardSection");
 
   const displayMainSection = () => {
     switch (mainSection) {
       case "DashboardSection":
-        return (
-          <DashboardSection setMainSection={setMainSection}/>
-        );
+        return <DashboardSection setMainSection={setMainSection} />;
       case "AddManager":
-        return (
-          <AddManager setMainSection={setMainSection}/>
-        );
+        return <AddManager setMainSection={setMainSection} />;
       default:
         return null;
     }
@@ -63,41 +99,54 @@ export default function AdminDashboard() {
       <div className="content-wrapper p-2">
         {displayMainSection()}
 
-        <section className="content">
+        <section className="content mb-5" id="viewMenu">
           <div className="container-fluid">
-            <div className="row">
-              <div className="col-md-12">
+            <div className="row" style={{ borderBottom: "0px" }}>
+              <div className="col-12">
                 <div className="card">
                   <div className="card-header">
-                    <h3 className="card-title">Today's Special Menu</h3>
-                  </div>
-                  <div className="card-body p-0">
-                    <ul className="row users-list clearfix">
-                      <li className="col-lg-3 col-md-4 col-sm-6 col-12">
-                        <img
-                          src="../../Logo/GJ0001.webp"
-                          style={{
-                            borderRadius: "16px 16px 0px 0px",
-                            width: "auto",
-                            height: "156px",
-                          }}
-                          alt="Today's Special"
-                        />
-                        <div className="m-3 text-left">
-                          <p className="users-list-name name">Panner Masala</p>
-                          <p className="users-list-name number">Price :220₹</p>
-                        </div>
-                      </li>
-                    </ul>
-                    {/* <div>{userData._id}</div> */}
+                    <h3 className="card-title">Special Dishes</h3>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <div className="row container-fluid" id="menuData">
+            {specialDishes.map((dish) => (
+              <div key={dish._id} className="col-md-4 mb-5">
+                <div className="card m-2">
+                  <div className="card-body">
+                    <div className="row">
+                      <div className="col-md-6">
+                        <b>{dish.dish_name}</b>
+                      </div>
+                      <div className="col-md-2">{dish.dish_price}</div>
+                      <div className="col-md-4">
+                        <div
+                          className="bg-transparent m-1"
+                          title="Remove Special Dish"
+                          style={{ cursor: "pointer", width: "32px" }}
+                          onClick={() => removeSpecialModal(dish._id)}
+                        >
+                          <img src={utensilsslash} alt="Remove Special Dish" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </section>
         <Footer />
       </div>
+
+      <RemoveSpecialModal
+        show={showRemoveSpecialModal}
+        handleClose={() => setShowRemoveSpecialModal(false)}
+        data={removeSpecialModalData}
+        fetchMenuData={fetchSpecialDishes}
+      />
     </div>
   );
 }
