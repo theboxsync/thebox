@@ -7,6 +7,20 @@ import { ButtonGroup, ToggleButton } from "react-bootstrap";
 function AddMenu({ setSection }) {
   const [mealTypeValue, setMealTypeValue] = useState("veg");
   const [showAdvancedOptions, setShowAdvancedOptions] = useState([false]);
+  const [categories, setCategories] = useState([]);
+
+  const fetchCategories = async () => {
+    axios
+      .get(`${process.env.REACT_APP_ADMIN_API}/getmenucategories`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setCategories(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching categories:", err);
+      });
+  };
 
   const mealTypes = [
     { name: "Veg", value: "veg" },
@@ -21,7 +35,6 @@ function AddMenu({ setSection }) {
       dishes: [
         {
           dish_name: "",
-          dish_img: "",
           dish_price: "",
           description: "",
           quantity: "",
@@ -48,7 +61,7 @@ function AddMenu({ setSection }) {
   });
 
   useEffect(() => {
-    console.log("Use Effect Caleed");
+    fetchCategories();
     setShowAdvancedOptions(formik.values.dishes.map(() => false));
   }, []);
 
@@ -57,7 +70,6 @@ function AddMenu({ setSection }) {
       ...formik.values.dishes,
       {
         dish_name: "",
-        dish_img: "",
         dish_price: "",
         description: "",
         quantity: "",
@@ -65,6 +77,19 @@ function AddMenu({ setSection }) {
       },
     ]);
     setShowAdvancedOptions([...showAdvancedOptions, false]);
+  };
+
+  const removeDish = (index) => {
+    const updatedDishes = [...formik.values.dishes];
+    const updatedShowAdvancedOptions = [...showAdvancedOptions];
+
+    // Remove the dish at the specified index
+    updatedDishes.splice(index, 1);
+    updatedShowAdvancedOptions.splice(index, 1);
+
+    // Update formik and advanced options state
+    formik.setFieldValue("dishes", updatedDishes);
+    setShowAdvancedOptions(updatedShowAdvancedOptions);
   };
 
   const radioButtonHandler = (event) => {
@@ -92,7 +117,7 @@ function AddMenu({ setSection }) {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Manage Menu</h3>
+                <h3 className="card-title">Add Menu</h3>
                 <div className="card-tools">
                   <button
                     type="button"
@@ -112,26 +137,15 @@ function AddMenu({ setSection }) {
       <div className="container-fluid">
         <div className="row">
           <div className="col-md-12">
-            <div className="card card-secondary">
-              <div className="card-header">
-                <h3 className="card-title">Manage Menu</h3>
-                <div className="card-tools">
-                  <button
-                    type="button"
-                    className="btn btn-tool"
-                    data-card-widget="collapse"
-                    title="Collapse"
-                  >
-                    <i className="fas fa-minus" />
-                  </button>
-                </div>
-              </div>
+            <div className="card card-secondary m-3">
+              
               {/* form start  */}
               <form
                 autoComplete="off"
                 method="POST"
                 encType="multipart/form-data"
                 onSubmit={formik.handleSubmit}
+                className="m-3"
               >
                 <div className="card-body">
                   <div className="row">
@@ -141,13 +155,19 @@ function AddMenu({ setSection }) {
                         role="combobox"
                         className="form-control"
                         name="category"
+                        id="category"
+                        list="categoryOptions" // Link input to datalist by its id
                         value={formik.values.category}
                         onChange={formik.handleChange}
                         onBlur={formik.handleBlur}
                         required
                       />
-                      <datalist id="browsers" role="listbox">
-                        <option value="Sabji">Sabji</option>
+                      <datalist id="categoryOptions" role="listbox">
+                        {categories.map((category, index) => (
+                          <option key={index} value={category}>
+                            {category}
+                          </option>
+                        ))}
                       </datalist>
                       <label className="text-danger">
                         {formik.errors.category && formik.touched.category
@@ -184,6 +204,7 @@ function AddMenu({ setSection }) {
                       </ButtonGroup>
                     </div>
                   </div>
+                  <hr style={{ borderTop: "2px solid lightgrey" }}/>
                   {formik.values.dishes.map((dish, index) => (
                     <div key={index} className="px-3 ">
                       <div className="row">
@@ -225,34 +246,19 @@ function AddMenu({ setSection }) {
                               : null}
                           </label>
                         </div>
-                        <div className="form-group col-md-4 mb-0">
-                          <label htmlFor={`dishes.${index}.dish_img`}>
-                            Image
-                          </label>
-                          <input
-                            type="file"
-                            className="form-control"
-                            name={`dishes.${index}.dish_img`}
-                            onChange={(e) => {
-                              const file = e.currentTarget.files[0];
-                              const url = URL.createObjectURL(file);
-                              console.log(url);
-                              formik.setFieldValue(
-                                `dishes.${index}.dish_img`,
-                                url
-                              );
-                            }}
-                            onBlur={formik.handleBlur}
-                          />
-                          <label className="text-danger">
-                            {formik.errors.dishes?.[index]?.dish_img &&
-                            formik.touched.dishes?.[index]?.dish_img
-                              ? formik.errors.dishes[index].dish_img
-                              : null}
-                          </label>
+                        <div className="col-md-4">
+                          <div className="float-right">
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={() => removeDish(index)}
+                            >
+                              Remove
+                            </button>
+                          </div>
                         </div>
                       </div>
-                      <div className="row m-2">
+                      <div className="row my-3">
                         <div className="form-group col-md-4 mb-0">
                           <label htmlFor={`dishes.${index}.description`}>
                             Description
@@ -333,6 +339,7 @@ function AddMenu({ setSection }) {
                       <hr style={{ borderTop: "2px solid lightgrey" }} />
                     </div>
                   ))}
+
                   <div className="form-group">
                     <button
                       type="button"

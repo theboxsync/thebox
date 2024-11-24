@@ -54,7 +54,6 @@ const addMenu = Yup.object().shape({
   dishes: Yup.array().of(
     Yup.object().shape({
       dish_name: Yup.string().required("Dish Name is required"),
-      dish_img: Yup.string().required("Image is required"),
       dish_price: Yup.string()
         .required("Price is required")
         .matches(/[0-9]$/, "Price must be a number"),

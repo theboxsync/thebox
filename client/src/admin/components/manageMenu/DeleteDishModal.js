@@ -21,8 +21,8 @@ function DeleteDishModal({ show, handleClose, data, fetchMenuData }) {
         <Modal.Title id="deleteDishModalLabel">Delete Dish</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h5>Are you sure you want to delete this Dish?</h5>
-        <input type="text" name="delete_dish_id" value={data.id} />
+        <h5>Are you sure you want to delete <strong>{data.dish_name}</strong> Dish?</h5>
+        <input type="hidden" name="delete_dish_id" value={data.id} />
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>

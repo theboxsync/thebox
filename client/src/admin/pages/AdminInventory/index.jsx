@@ -3,7 +3,6 @@ import "../../../style.css";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 import ViewInventory from "../../components/inventory/ViewInventory";
@@ -30,7 +29,6 @@ export default function AdminInventory() {
             <div className="row mb-2"></div>
           </div>
         </div>
-        <Header />
         <div>{sectionDisplay()}</div>
 
         <Footer />

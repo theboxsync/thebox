@@ -17,7 +17,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState("");
-  const [showSpecialModal, setShowSpecialModal] = useState(false);
   const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [specialDishes, setSpecialDishes] = useState([]);
 
@@ -62,7 +61,6 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchUserData();
     fetchSpecialDishes();
-    console.log(userData);
   }, []);
 
   const [removeSpecialModalData, setRemoveSpecialModalData] = useState({});
