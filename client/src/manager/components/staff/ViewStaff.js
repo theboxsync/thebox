@@ -61,9 +61,11 @@ function ViewStaff({ setSection }) {
                           src={`${process.env.REACT_APP_MANAGER_API}/uploads/staff/profile/${staffMember.photo}`}
                           alt="Staff Image"
                         />
-                        <p className="users-list-name link">
+                        <p className="users-list-name link mt-2">
                           {staffMember.f_name + " " + staffMember.l_name}
+                          <small className="users-list-date">{staffMember.position}</small>
                         </p>
+                        
                       </li>
                     ))}
                   </ul>

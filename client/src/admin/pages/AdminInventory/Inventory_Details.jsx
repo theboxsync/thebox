@@ -5,7 +5,6 @@ import "../../style.css";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export default function InventoryDetails() {
@@ -23,8 +22,6 @@ export default function InventoryDetails() {
             <div className="row mb-2"></div>
           </div>
         </div>
-
-        <Header />
 
         <section className="content">
           <div className="container-fluid">

@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 import EditPresentModal from "../../components/staff/EditPresentModal";
@@ -24,9 +23,6 @@ export default function ManageAttendance() {
             <div className="row mb-2"></div>
           </div>
         </div>
-        {/* Header */}
-        <Header />
-        {/* /.content */}
 
         <section className="content">
           <div className="container-fluid">

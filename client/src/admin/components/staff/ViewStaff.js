@@ -6,7 +6,7 @@ import StaffDeleteModal from "./StaffDeleteModal";
 
 function ViewStaff({ setSection }) {
   const [staff, setStaff] = useState([]);
-  const [selectedStaffData, setSelectedStaffData] = useState({}); 
+  const [selectedStaffData, setSelectedStaffData] = useState({});
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -29,16 +29,17 @@ function ViewStaff({ setSection }) {
   }, []);
 
   const handleProfileClick = async (id) => {
-    axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/staffdata/${id}`)
-      .then((res) => {
-        setSelectedStaffData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err));
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/staffdata/${id}`
+      );
+      setSelectedStaffData(response.data);
+    } catch (error) {
+      console.log(error);
+    }
     setShowProfileModal(true);
-    console.log(selectedStaffData);
   };
+
   return (
     <>
       <section className="content" id="viewStaff">
@@ -60,13 +61,6 @@ function ViewStaff({ setSection }) {
                       <img src="../dist/img/icon/add.svg" /> Add Staff
                     </button>
                   </div>
-                  <div className="card-tools mx-2">
-                    <Link to={"/staff/attendance"}>
-                      <button type="button" className="btn btn-block btn-dark">
-                        <img src="../dist/img/icon/add.svg" /> Attendance
-                      </button>
-                    </Link>
-                  </div>
                 </div>
                 <div className="card-body p-0">
                   <ul className="users-list clearfix">
@@ -80,8 +74,11 @@ function ViewStaff({ setSection }) {
                           src={`${process.env.REACT_APP_ADMIN_API}/uploads/staff/profile/${staffMember.photo}`}
                           alt="Staff Image"
                         />
-                        <p className="users-list-name link">
+                        <p className="users-list-name link mt-2">
                           {staffMember.f_name + " " + staffMember.l_name}
+                          <small className="users-list-date">
+                            {staffMember.position}
+                          </small>
                         </p>
                       </li>
                     ))}
@@ -100,11 +97,17 @@ function ViewStaff({ setSection }) {
           setSelectedStaffData({});
         }}
         data={selectedStaffData}
+        deletestaff={() => {
+          setShowProfileModal(false);
+          setShowDeleteModal(true);
+        }}
       />
 
       <StaffDeleteModal
         show={showDeleteModal}
         handleClose={() => setShowDeleteModal(false)}
+        data={selectedStaffData}
+        fetchStaff={fetchStaff}
       />
     </>
   );

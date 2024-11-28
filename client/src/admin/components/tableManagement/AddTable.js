@@ -4,7 +4,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { addTable } from "../../../schemas";
 
-function AddTable({ setSection }) {
+const AddTable = ({ setSection }) => {
   const formik = useFormik({
     initialValues: {
       area: "",
@@ -27,6 +27,7 @@ function AddTable({ setSection }) {
     },
   });
 
+  // Function to add more tables
   const addMoreTable = () => {
     formik.setFieldValue("tables", [
       ...formik.values.tables,
@@ -34,8 +35,15 @@ function AddTable({ setSection }) {
     ]);
   };
 
+  // Function to remove a table
+  const removeTable = (index) => {
+    const updatedTables = [...formik.values.tables];
+    updatedTables.splice(index, 1); // Remove the table at the specified index
+    formik.setFieldValue("tables", updatedTables);
+  };
+
   return (
-    <section className="content" id="addTable">
+    <section className="content m-3" id="addTable">
       <div className="container-fluid">
         <div className="row">
           <div className="col-12">
@@ -67,20 +75,7 @@ function AddTable({ setSection }) {
           <div className="row">
             <div className="col-md-12">
               <div className="card card-secondary">
-                <div className="card-header">
-                  <h3 className="card-title">Manage Table</h3>
-                  <div className="card-tools">
-                    <button
-                      type="button"
-                      className="btn btn-tool"
-                      data-card-widget="collapse"
-                      title="Collapse"
-                    >
-                      <i className="fas fa-minus" />
-                    </button>
-                  </div>
-                </div>
-                <div className="card-body">
+                <div className="card-body m-3">
                   <div className="row">
                     <div className="col-md-4">
                       <div className="form-group">
@@ -106,42 +101,55 @@ function AddTable({ setSection }) {
                       </div>
                     </div>
                   </div>
+                  <hr style={{ borderTop: "2px solid lightgrey" }} />
                   {formik.values.tables.map((table, index) => (
-                    <div className="row" key={index}>
-                      <div className="form-group col-md-4">
-                        <label htmlFor="table_no">Table No</label>
-                        <input
-                          type="text"
-                          name={`tables.${index}.table_no`}
-                          className="form-control"
-                          value={table.table_no}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                        />
-                        <label className="text-danger">
-                          {formik.errors.tables?.[index]?.table_no &&
-                          formik.touched.tables?.[index]?.table_no
-                            ? formik.errors.tables[index].table_no
-                            : null}
-                        </label>
+                    <div key={index}>
+                      <div className="row m-3">
+                        <div className="form-group col-md-4">
+                          <label htmlFor="table_no">Table No</label>
+                          <input
+                            type="text"
+                            name={`tables.${index}.table_no`}
+                            className="form-control"
+                            value={table.table_no}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                          />
+                          <label className="text-danger">
+                            {formik.errors.tables?.[index]?.table_no &&
+                            formik.touched.tables?.[index]?.table_no
+                              ? formik.errors.tables[index].table_no
+                              : null}
+                          </label>
+                        </div>
+                        <div className="form-group col-md-4">
+                          <label htmlFor="max_person">Max Person</label>
+                          <input
+                            type="number"
+                            name={`tables.${index}.max_person`}
+                            className="form-control"
+                            value={table.max_person}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                          />
+                          <label className="text-danger">
+                            {formik.errors.tables?.[index]?.max_person &&
+                            formik.touched.tables?.[index]?.max_person
+                              ? formik.errors.tables[index].max_person
+                              : null}
+                          </label>
+                        </div>
+                        <div className="form-group col-md-4">
+                          <button
+                            type="button"
+                            className="btn btn-danger mt-4 float-right"
+                            onClick={() => removeTable(index)}
+                          >
+                            Remove
+                          </button>
+                        </div>
                       </div>
-                      <div className="form-group col-md-4">
-                        <label htmlFor="max_person">Max Person</label>
-                        <input
-                          type="number"
-                          name={`tables.${index}.max_person`}
-                          className="form-control"
-                          value={table.max_person}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                        />
-                        <label className="text-danger">
-                          {formik.errors.tables?.[index]?.max_person &&
-                          formik.touched.tables?.[index]?.max_person
-                            ? formik.errors.tables[index].max_person
-                            : null}
-                        </label>
-                      </div>
+                      <hr style={{ borderTop: "2px solid lightgrey" }} />
                     </div>
                   ))}
                   <div id="newElementId" className="form-group" />
@@ -170,6 +178,6 @@ function AddTable({ setSection }) {
       </div>
     </section>
   );
-}
+};
 
 export default AddTable;

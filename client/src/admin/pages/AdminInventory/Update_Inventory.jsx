@@ -3,7 +3,6 @@ import "../../style.css";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 export default function UpdateInventory() {
@@ -17,8 +16,6 @@ export default function UpdateInventory() {
             <div className="row mb-2"></div>
           </div>
         </div>
-
-        <Header />
 
         <section className="content">
           <form

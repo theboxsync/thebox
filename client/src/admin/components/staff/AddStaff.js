@@ -1,42 +1,72 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { addStaff } from "../../../schemas";
 
 function AddStaff({ setSection }) {
-  const staffData = {
-    staff_id: "",
-    f_name: "",
-    l_name: "",
-    birth_date: "",
-    joining_date: "",
-    address: "",
-    phone_no: "",
-    email: "",
-    salary: "",
-    photo: "",
-    document_type: "",
-    id_number: "",
-    front_image: "",
-    back_image: "",
-  };
+  const [fileUploadError, setFileUploadError] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [frontImagePreview, setFrontImagePreview] = useState(null);
+  const [backImagePreview, setBackImagePreview] = useState(null);
 
   const formik = useFormik({
-    initialValues: staffData,
-    onSubmit: (values) => {
-      console.log(values);
-      axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addstaff`, values, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data);
-          setSection("ViewStaff");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    initialValues: {
+      staff_id: "",
+      f_name: "",
+      l_name: "",
+      birth_date: "",
+      joining_date: "",
+      address: "",
+      phone_no: "",
+      email: "",
+      salary: "",
+      position: "",
+      photo: "",
+      document_type: "",
+      id_number: "",
+      front_image: "",
+      back_image: "",
+    },
+    validationSchema: addStaff,
+    onSubmit: async (values) => {
+      try {
+        // Step 1: Upload files
+        const formData = new FormData();
+        if (values.photo) formData.append("photo", values.photo);
+        if (values.front_image)
+          formData.append("front_image", values.front_image);
+        if (values.back_image) formData.append("back_image", values.back_image);
+
+        const uploadResponse = await axios.post(
+          `${process.env.REACT_APP_ADMIN_API}/uploadstaff`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+          }
+        );
+
+        // Add uploaded file paths to the values
+        const { photo, front_image, back_image } = uploadResponse.data;
+        values.photo = photo;
+        values.front_image = front_image;
+        values.back_image = back_image;
+
+        // Step 2: Submit staff data
+        const addResponse = await axios.post(
+          `${process.env.REACT_APP_ADMIN_API}/addstaff`,
+          values,
+          { withCredentials: true }
+        );
+
+        console.log("Staff added successfully:", addResponse.data);
+        setSection("ViewStaff");
+      } catch (err) {
+        console.error("Error during file upload or staff submission:", err);
+        setFileUploadError(
+          "File upload or staff submission failed. Please try again."
+        );
+      }
     },
   });
   return (
@@ -56,17 +86,6 @@ function AddStaff({ setSection }) {
                   >
                     <img src="../dist/img/icon/view.svg" /> View Staff
                   </button>
-                </div>
-                <div className="card-tools mx-2">
-                  <Link to={"/staff/attendance"}>
-                    <button
-                      type="button"
-                      className="btn btn-block btn-dark"
-                      id="addAttendanceBtn1"
-                    >
-                      <img src="../dist/img/icon/add.svg" /> Attendance
-                    </button>
-                  </Link>
                 </div>
               </div>
             </div>
@@ -107,9 +126,11 @@ function AddStaff({ setSection }) {
                         value={formik.values.staff_id}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid Staff ID
-                      </label>
+                      {formik.touched.staff_id && formik.errors.staff_id ? (
+                        <label className="text-danger">
+                          * {formik.errors.staff_id}
+                        </label>
+                      ) : null}
                     </div>
                     <div className="form-group col-md-4">
                       <label htmlFor="fname">First Name</label>
@@ -120,9 +141,11 @@ function AddStaff({ setSection }) {
                         value={formik.values.f_name}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid First Name
-                      </label>
+                      {formik.touched.f_name && formik.errors.f_name ? (
+                        <label className="text-danger">
+                          * {formik.errors.f_name}
+                        </label>
+                      ) : null}
                     </div>
                     <div className="form-group col-md-4">
                       <label htmlFor="lname">Last Name</label>
@@ -133,9 +156,11 @@ function AddStaff({ setSection }) {
                         value={formik.values.l_name}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid Last Name
-                      </label>
+                      {formik.touched.l_name && formik.errors.l_name ? (
+                        <label className="text-danger">
+                          * {formik.errors.l_name}
+                        </label>
+                      ) : null}
                     </div>
                   </div>
                   <div className="row">
@@ -148,9 +173,11 @@ function AddStaff({ setSection }) {
                         value={formik.values.birth_date}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid Birth Date
-                      </label>
+                      {formik.touched.birth_date && formik.errors.birth_date ? (
+                        <label className="text-danger">
+                          * {formik.errors.birth_date}
+                        </label>
+                      ) : null}
                     </div>
                     <div className="form-group col-md-6">
                       <label htmlFor="jdate">Joining Date</label>
@@ -161,9 +188,12 @@ function AddStaff({ setSection }) {
                         value={formik.values.joining_date}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid Joining Date
-                      </label>
+                      {formik.touched.joining_date &&
+                      formik.errors.joining_date ? (
+                        <label className="text-danger">
+                          * {formik.errors.joining_date}
+                        </label>
+                      ) : null}
                     </div>
                   </div>
                   <div className="form-group">
@@ -175,9 +205,11 @@ function AddStaff({ setSection }) {
                       value={formik.values.address}
                       onChange={formik.handleChange}
                     />
-                    <label className="invalid-feedback">
-                      Please enter a valid Address
-                    </label>
+                    {formik.touched.address && formik.errors.address ? (
+                      <label className="text-danger">
+                        * {formik.errors.address}
+                      </label>
+                    ) : null}
                   </div>
                   <div className="form-group">
                     <label htmlFor="mobile">Contact No.</label>
@@ -188,9 +220,11 @@ function AddStaff({ setSection }) {
                       value={formik.values.phone_no}
                       onChange={formik.handleChange}
                     />
-                    <label className="invalid-feedback">
-                      Please enter a valid Phone Number
-                    </label>
+                    {formik.touched.phone_no && formik.errors.phone_no ? (
+                      <label className="text-danger">
+                        * {formik.errors.phone_no}
+                      </label>
+                    ) : null}
                   </div>
                   <div className="form-group">
                     <label htmlFor="email">Email</label>
@@ -202,9 +236,11 @@ function AddStaff({ setSection }) {
                       value={formik.values.email}
                       onChange={formik.handleChange}
                     />
-                    <label className="invalid-feedback">
-                      Please enter a valid Email
-                    </label>
+                    {formik.touched.email && formik.errors.email ? (
+                      <label className="text-danger">
+                        * {formik.errors.email}
+                      </label>
+                    ) : null}
                   </div>
                   <div className="row">
                     <div className="form-group col-md-6">
@@ -223,9 +259,11 @@ function AddStaff({ setSection }) {
                         <option value="Owner">Owner</option>
                         <option value="Manager">Manager</option>
                       </datalist>
-                      <label className="invalid-feedback">
-                        Please enter a valid Position
-                      </label>
+                      {formik.touched.position && formik.errors.position ? (
+                        <label className="text-danger">
+                          * {formik.errors.position}
+                        </label>
+                      ) : null}
                     </div>
                     <div className="form-group col-6">
                       <label htmlFor="salary">Salary</label>
@@ -238,9 +276,11 @@ function AddStaff({ setSection }) {
                         value={formik.values.salary}
                         onChange={formik.handleChange}
                       />
-                      <label className="invalid-feedback">
-                        Please enter a valid Salary
-                      </label>
+                      {formik.touched.salary && formik.errors.salary ? (
+                        <label className="text-danger">
+                          * {formik.errors.salary}
+                        </label>
+                      ) : null}
                     </div>
                   </div>
                 </div>
@@ -269,12 +309,28 @@ function AddStaff({ setSection }) {
                       id="photo"
                       name="photo"
                       className="form-control"
-                      value={formik.values.photo}
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        formik.setFieldValue("photo", file);
+                        if (file) {
+                          setPhotoPreview(URL.createObjectURL(file));
+                        }
+                      }}
                     />
-                    <input type="hidden" name="base64photo" id="base64photo" />
-                    <label className="invalid-feedback">
-                      Please choose a valid Image
-                    </label>
+                    {photoPreview && (
+                      <img
+                        src={photoPreview}
+                        alt="Photo Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxWidth: "150px" }}
+                      />
+                    )}
+                    {formik.touched.photo && formik.errors.photo ? (
+                      <label className="text-danger">
+                        * {formik.errors.photo}
+                      </label>
+                    ) : null}
                   </div>
                   <div className="form-group">
                     <label htmlFor="inputStatus">ID Card Type</label>
@@ -292,9 +348,12 @@ function AddStaff({ setSection }) {
                       <option value="Pan Card">Pan Card</option>
                       <option value="Voter Card">Voter Card</option>
                     </select>
-                    <label className="invalid-feedback">
-                      Please select a valid ID card type
-                    </label>
+                    {formik.touched.document_type &&
+                    formik.errors.document_type ? (
+                      <label className="text-danger">
+                        * {formik.errors.document_type}
+                      </label>
+                    ) : null}
                   </div>
                   <div className="form-group" id="idCardNumberDiv">
                     <label htmlFor="id_card">ID Card Number</label>
@@ -305,39 +364,71 @@ function AddStaff({ setSection }) {
                       value={formik.values.id_number}
                       onChange={formik.handleChange}
                     />
-                    <label className="invalid-feedback" id="idCardError">
-                      Please enter a valid ID Number
-                    </label>
+                    {formik.touched.id_number && formik.errors.id_number ? (
+                      <label className="text-danger">
+                        * {formik.errors.id_number}
+                      </label>
+                    ) : null}
                   </div>
-                  <div className="form-group" id="idImageDiv">
+                  <div className="form-group">
                     <label htmlFor="id_image_front">ID Card Front Image</label>
                     <input
                       type="file"
                       id="id_image_front"
                       name="front_image"
                       className="form-control"
-                      accept="image/jpeg,image/png,application/pdf"
-                      value={formik.values.front_image}
-                      onChange={formik.handleChange}
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        formik.setFieldValue("front_image", file);
+                        if (file) {
+                          setFrontImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
                     />
-                    <label className="invalid-feedback">
-                      Please upload a valid image (jpg, png, jpeg or pdf)
-                    </label>
+                    {frontImagePreview && (
+                      <img
+                        src={frontImagePreview}
+                        alt="Front Image Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxWidth: "150px" }}
+                      />
+                    )}
+                    {formik.touched.front_image && formik.errors.front_image ? (
+                      <label className="text-danger">
+                        * {formik.errors.front_image}
+                      </label>
+                    ) : null}
                   </div>
-                  <div className="form-group" id="idImageBackDiv">
+                  <div className="form-group">
                     <label htmlFor="id_image_back">ID Card Back Image</label>
                     <input
                       type="file"
                       id="id_image_back"
                       name="back_image"
                       className="form-control"
-                      accept="image/jpeg,image/png,application/pdf"
-                      value={formik.values.back_image}
-                      onChange={formik.handleChange}
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        formik.setFieldValue("back_image", file);
+                        if (file) {
+                          setBackImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
                     />
-                    <label className="invalid-feedback">
-                      Please upload a valid image (jpg, png, jpeg or pdf)
-                    </label>
+                    {backImagePreview && (
+                      <img
+                        src={backImagePreview}
+                        alt="Back Image Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxWidth: "150px" }}
+                      />
+                    )}
+                    {formik.touched.back_image && formik.errors.back_image ? (
+                      <label className="text-danger">
+                        * {formik.errors.back_image}
+                      </label>
+                    ) : null}
                   </div>
                   <button type="submit" name="submit" className="btn btn-dark">
                     <img src="../dist/img/icon/add.svg" />

@@ -17,7 +17,7 @@ import AdminOrderHistory from "../admin/pages/AdminOrderHistory";
 import AdminInventory from "../admin/pages/AdminInventory";
 import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
-import UpdateStaff from "../admin/pages/AdminStaff/UpdateStaff";
+import EditStaff from "../admin/pages/AdminStaff/EditStaff";
 import AdminTable from "../admin/pages/AdminTable";
 import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
 
@@ -42,7 +42,7 @@ function AdminRoutes() {
       <Route path="/manage-menu" element={<AdminManageMenu />} />
       <Route path="/inventory" element={<AdminInventory />} />
       <Route path="/staff" element={<AdminStaff />} />
-      <Route path="/staff/update" element={<UpdateStaff />} />
+      <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />
       <Route path="/change-manager-password" element={<ChangeManagerPassword />} />
     </Routes>

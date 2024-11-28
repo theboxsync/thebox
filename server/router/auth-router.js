@@ -46,6 +46,8 @@ router.route("/updateinventory/:id").put(authMiddleware, authController.updateIn
 router.route("/staffdata").get(authMiddleware, authController.getStaffData);
 router.route("/staffdata/:id").get(authMiddleware, authController.getStaffDataById);
 router.route("/addstaff").post(authMiddleware, authController.addStaff);
+router.route("/updatestaff/:id").put(authMiddleware, authController.updateStaff);
+router.route("/deletestaff/:id").delete(authMiddleware, authController.deleteStaff);
 
 router.route("/addtable").post(authMiddleware, authController.addTable);
 router.route("/gettabledata").get(authMiddleware, authController.getTableData);

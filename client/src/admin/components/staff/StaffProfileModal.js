@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Modal, Button, Table } from "react-bootstrap";
 
-function StaffProfileModal({ show, handleClose, data }) {
+function StaffProfileModal({ show, handleClose, data, deletestaff }) {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -83,12 +83,17 @@ function StaffProfileModal({ show, handleClose, data }) {
         <Button variant="dark" onClick={handleClose}>
           <img src="../dist/img/icon/cancel.svg" alt="Cancel" /> Cancel
         </Button>
-        <Link to="/staff/update">
+        <Link to={`/staff/update/${data._id}`}>
           <Button variant="dark">
             <img src="../dist/img/icon/edit.svg" alt="Edit" /> Edit
           </Button>
         </Link>
-        <Button variant="dark">
+        <Button
+          variant="dark"
+          onClick={() => {
+            deletestaff();
+          }}
+        >
           <img src="../dist/img/icon/delete.svg" alt="Delete" /> Delete
         </Button>
       </Modal.Footer>

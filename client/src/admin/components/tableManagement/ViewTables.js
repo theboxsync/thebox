@@ -37,7 +37,7 @@ function ViewTables({ setSection }) {
 
   return (
     <>
-      <section className="content">
+      <section className="content m-3">
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12">

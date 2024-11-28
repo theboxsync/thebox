@@ -3,7 +3,6 @@ import "../../../style.css";
 
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
-import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
 import ViewStaff from "../../components/staff/ViewStaff";
@@ -32,8 +31,6 @@ export default function AdminStaff() {
             <div className="row mb-2"></div>
           </div>
         </div>
-        
-        <Header />
         
         {displaySection()}
 

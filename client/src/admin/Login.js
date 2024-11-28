@@ -104,7 +104,7 @@ export default function Login(props) {
                     <i className="fas fa-unlock mr-2"></i> Login
                   </button>
                 </div>
-                <div className="alert alert-danger">{wrongMsg}</div>
+                <div className="text-danger font-weight-bold">{wrongMsg}</div>
               </form>
 
               <div className="mb-1 text-right">
