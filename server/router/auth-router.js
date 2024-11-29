@@ -42,6 +42,8 @@ router.route("/getinventorydata/:id").get(authMiddleware, authController.getInve
 router.route("/addinventory").post(authMiddleware, authController.addInvetory);
 router.route("/deleteinventory/:id").delete(authMiddleware, authController.deleteInventory);
 router.route("/updateinventory/:id").put(authMiddleware, authController.updateInventory);
+router.route("/completeinventoryrequest").post(authMiddleware, authController.completeInventoryRequest);
+router.route("/rejectinventoryrequest/:id").post(authMiddleware, authController.rejectInventoryRequest);
 
 router.route("/staffdata").get(authMiddleware, authController.getStaffData);
 router.route("/staffdata/:id").get(authMiddleware, authController.getStaffDataById);

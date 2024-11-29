@@ -62,7 +62,7 @@ function AddInventory({ setSection }) {
                     id="viewBtn"
                     onClick={() => setSection("ViewInventory")}
                   >
-                    <img src="../../dist/img/view.svg" /> View Inventory
+                    <img src="../../dist/img/view.svg" /> View Requests
                   </button>
                 </div>
               </div>

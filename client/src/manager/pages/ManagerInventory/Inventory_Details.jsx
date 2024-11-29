@@ -112,24 +112,6 @@ export default function InventoryDetails() {
                         </tbody>
                       </table>
 
-                      <div className="col-md-12">
-                        {inventoryItem.bill_image && (
-                          <>
-                            <img
-                              src={inventoryItem.bill_image}
-                              style={{ width: "156px", height: "156px" }}
-                              alt="Bill"
-                            />
-                            <a
-                              href={inventoryItem.bill_image}
-                              download="bill_image.jpg"
-                            >
-                              <button>Download Image</button>
-                            </a>
-                          </>
-                        )}
-                      </div>
-
                       <button
                         className="btn btn-dark float-right"
                         type="button"

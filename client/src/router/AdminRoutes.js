@@ -15,6 +15,10 @@ import AdminProfile from "../admin/pages/AdminProfile";
 import AdminDashboard from "../admin/pages/AdminDashboard/AdminDashboard";
 import AdminOrderHistory from "../admin/pages/AdminOrderHistory";
 import AdminInventory from "../admin/pages/AdminInventory";
+import CompleteInventory from "../admin/pages/AdminInventory/CompleteInventory";
+import InventoryDetails from "../admin/pages/AdminInventory/Inventory_Details";
+import InventoryFullDetails from "../admin/pages/AdminInventory/InventoryFullDetails";
+import UpdateInventory from "../admin/pages/AdminInventory/UpdateInventory";
 import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
@@ -41,6 +45,10 @@ function AdminRoutes() {
       <Route path="/table-management" element={<AdminTable />} />
       <Route path="/manage-menu" element={<AdminManageMenu />} />
       <Route path="/inventory" element={<AdminInventory />} />
+      <Route path="/inventory/complete" element={<CompleteInventory />} />
+      <Route path="/inventory/details/:id" element={<InventoryDetails />} />
+      <Route path="/inventory/complete-details/:id" element={<InventoryFullDetails />} />
+      <Route path="/inventory/update/:id" element={<UpdateInventory />} />
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />

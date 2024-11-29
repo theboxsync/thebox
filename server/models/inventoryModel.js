@@ -17,8 +17,9 @@ const addinventory = new Schema({
   category: {
     type: String,
   },
-  bill_image:{
-    type: String,
+  bill_files: {
+    type: [String],
+    default: [],
   },
   total_amount: {
     type: Number,
@@ -42,6 +43,7 @@ const addinventory = new Schema({
       },
       item_price: {
         type: Number,
+        default: null
       },
     }
   ],

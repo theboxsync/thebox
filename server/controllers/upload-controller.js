@@ -1,6 +1,38 @@
 const WebPMux = require("node-webpmux");
+const multer = require("multer");
 const fs = require("fs");
 const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(__dirname, "../uploads/inventory/bills");
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "application/pdf",
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only images and PDFs are allowed."));
+    }
+  },
+});
 
 const uploadLogo = (req, res) => {
   try {
@@ -29,8 +61,25 @@ const uploadStaff = (req, res) => {
   }
 };
 
+const uploadBillFiles = (req, res) => {
+  upload.array("bill_files", 10)(req, res, (err) => {
+    if (err) {
+      return res
+        .status(500)
+        .json({ message: "File upload failed", error: err });
+    }
+    const fileNames = req.files.map(
+      (file) => `${file.filename}`
+    );
+    res.status(200).json({
+      message: "Files uploaded successfully",
+      fileNames,
+    });
+  });
+};
 
 module.exports = {
   uploadLogo,
   uploadStaff,
+  uploadBillFiles,
 };

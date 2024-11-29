@@ -1,27 +1,45 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-
-import "../../style.css";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../../components/NavBar";
-
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
 export default function InventoryDetails() {
+  const { id } = useParams();
   const navigate = useNavigate();
+  const [inventoryItem, setInventoryItem] = useState(null);
+
+  // Fetch inventory details based on the ID from the URL
+  useEffect(() => {
+    const fetchInventoryItem = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/getinventorydata/${id}`,
+          { withCredentials: true }
+        );
+        setInventoryItem(response.data);
+      } catch (error) {
+        console.error("Error fetching inventory item details:", error);
+      }
+    };
+
+    fetchInventoryItem();
+  }, [id]);
+
   const editDetails = () => {
-    navigate("/inventory/update");
+    navigate(`/inventory/update/${id}`);
   };
+
+  if (!inventoryItem) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="wrapper">
       <Navbar />
       <MenuBar />
       <div className="content-wrapper">
-        <div className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2"></div>
-          </div>
-        </div>
 
         <section className="content">
           <div className="container-fluid">
@@ -29,19 +47,7 @@ export default function InventoryDetails() {
               <div className="col-12">
                 <div className="card">
                   <div className="card-header">
-                    <h3 className="card-title">Manage Inventory</h3>
-                    <div className="card-tools">
-                      <a href="add_inventory.php">
-                        <button
-                          type="button"
-                          className="btn btn-block btn-dark"
-                          data-toggle="modal"
-                          data-target="#exampleModal"
-                        >
-                          <img src="../../dist/img/add.svg" /> Add Inventory
-                        </button>
-                      </a>
-                    </div>
+                    <h3 className="card-title">Inventory Details</h3>
                   </div>
                 </div>
 
@@ -49,67 +55,69 @@ export default function InventoryDetails() {
                   <div className="row">
                     <div className="col-12">
                       <h4>
-                        <small className="float-right">Date: 15/03/2024</small>
+                        <small className="float-right">
+                          Date:{" "}
+                          {new Date(
+                            inventoryItem.request_date
+                          ).toLocaleDateString("en-IN")}
+                        </small>
                       </h4>
                     </div>
                   </div>
-                  <div className="row invoice-info col-md-6">
-                    <div className="col-md-4 invoice-col">
-                      Name :Dmart
-                      <br />
-                      Vendor :Dmart
-                      <br />
-                      Category :Grocery
-                      <br />
-                      Total Amount :5000
-                      <br />
-                      Paid Amount :5000
-                      <br />
-                      Unpaid Amount :0
-                      <br />
+                  <div className="row">
+                    <div className="col-12">
+                      <h4>
+                        <small className="float-right">
+                          Time:{" "}
+                          {new Date(
+                            inventoryItem.request_date
+                          ).toLocaleTimeString("en-IN")}
+                        </small>
+                      </h4>
                     </div>
                   </div>
+                  <div className="row">
+                    <div className="col-12 m-3">
+                      <h4>
+                        <small>
+                          <strong>Status :  </strong>{inventoryItem.status}
+                        </small>
+                      </h4>
+                    </div>
+                  </div>
+
                   <div className="row" style={{ marginTop: "20px" }}>
                     <div className="col-12 table-responsive">
                       <table className="table">
                         <thead>
                           <tr align="center">
-                            <th colspan="3" style={{ fontSize: "18px" }}>
-                              Inventory Details
+                            <th colSpan="3" style={{ fontSize: "18px" }}>
+                              Inventory Items
                             </th>
                           </tr>
                           <tr>
                             <th>Product</th>
-                            <th>Price</th>
                             <th>Quantity</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <th>Rice</th>
-                            <th>130</th>
-                            <th>10Kg</th>
-                          </tr>
+                          {inventoryItem.items.map((item) => (
+                            <tr key={item._id}>
+                              <td>{item.item_name}</td>
+                              <td>
+                                {item.item_quantity} {item.unit}
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
-                      <div className="col-md-12">
-                        <img
-                          src="../../Logo/GJ0001.webp"
-                          style={{ width: "156px", height: "156px" }}
-                          alt="Bill Image"
-                        />
-                        <a href="Logo/GJ0001.webp" download="bill_image.jpg">
-                          <button>Download Image</button>
-                        </a>
-                      </div>
 
                       <button
                         className="btn btn-dark float-right"
-                        type="submit"
-                        name="submit_bill_id"
+                        type="button"
                         onClick={editDetails}
                       >
-                        <img src="../../dist/img/edit.svg" />
+                        <img src="../../dist/img/edit.svg" alt="Edit" />
                         Edit
                       </button>
                     </div>
@@ -119,6 +127,7 @@ export default function InventoryDetails() {
             </div>
           </div>
         </section>
+
         <Footer />
       </div>
     </div>

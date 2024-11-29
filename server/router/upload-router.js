@@ -2,7 +2,11 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const { uploadLogo, uploadStaff } = require("../controllers/upload-controller");
+const {
+  uploadLogo,
+  uploadStaff,
+  uploadBillFiles,
+} = require("../controllers/upload-controller");
 
 const router = express.Router();
 
@@ -42,5 +46,7 @@ router.post(
   ]),
   uploadStaff
 );
+
+router.post("/uploadbillfiles", uploadBillFiles);
 
 module.exports = router;

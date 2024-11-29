@@ -112,6 +112,33 @@ const addInventory = Yup.object({
     .matches(/[0-9]$/, "Price must be number"),
 });
 
+const completeInventory = Yup.object().shape({
+  bill_date: Yup.date().required("Bill date is required"),
+  bill_number: Yup.string().required("Bill number is required"),
+  vendor_name: Yup.string().required("Vendor name is required"),
+  category: Yup.string().required("Category is required"),
+  bill_image: Yup.string().required("Bill image is required"),
+  total_amount: Yup.number()
+    .required("Total amount is required")
+    .positive("Total amount must be positive"),
+  paid_amount: Yup.number()
+    .required("Paid amount is required")
+    .positive("Paid amount must be positive"),
+  items: Yup.array()
+    .of(
+      Yup.object().shape({
+        item_name: Yup.string().required("Item name is required"),
+        item_quantity: Yup.number()
+          .required("Quantity is required")
+          .positive("Quantity must be positive"),
+        unit: Yup.string().required("Unit is required"),
+        item_price: Yup.number()
+          .required("Price is required")
+          .positive("Price must be positive"),
+      })
+    )
+});
+
 const addManager = Yup.object({
   username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
@@ -306,6 +333,7 @@ export {
   addMenu,
   requestInventory,
   addInventory,
+  completeInventory,
   editDish,
   addManager,
   editManager,

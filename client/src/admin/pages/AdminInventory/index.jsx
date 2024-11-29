@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "../../../style.css";
-import Navbar from "../../components/NavBar";
 
+import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
 import ViewInventory from "../../components/inventory/ViewInventory";
 import AddInventory from "../../components/inventory/AddInventory";
+import InventoryHistory from "../../components/inventory/InventoryHistory";
 
 export default function AdminInventory() {
   const [section, setSection] = useState("ViewInventory");
@@ -17,6 +18,8 @@ export default function AdminInventory() {
       return <ViewInventory setSection={setSection} />;
     } else if (section === "AddInventory") {
       return <AddInventory setSection={setSection} />;
+    } else if (section === "InventoryHistory") {
+      return <InventoryHistory setSection={setSection} />;
     }
   };
   return (

@@ -573,6 +573,41 @@ const deleteInventory = (req, res) => {
   }
 };
 
+const completeInventoryRequest = async (req, res) => {
+  const { _id, bill_images, ...updateData } = req.body;
+
+  try {
+    const inventory = await Inventory.findByIdAndUpdate(
+      _id,
+      { ...updateData, bill_images, status: "Completed" },
+      { new: true }
+    );
+    if (!inventory) {
+      return res.status(404).json({ message: "Inventory not found" });
+    }
+    res.status(200).json({ message: "Inventory updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating inventory", error });
+  }
+};
+
+const rejectInventoryRequest = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const inventory = await Inventory.findByIdAndUpdate(
+      id,
+      { status: "Rejected" },
+      { new: true }
+    );
+    if (!inventory) {
+      return res.status(404).json({ message: "Inventory not found" });
+    }
+    res.status(200).json({ message: "Inventory updated successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating inventory", error });
+  }
+};
+
 const getStaffData = (req, res) => {
   try {
     Staff.find({ hotel_id: req.user })
@@ -1025,6 +1060,8 @@ module.exports = {
   addInvetory,
   deleteInventory,
   updateInventory,
+  completeInventoryRequest,
+  rejectInventoryRequest,
   getStaffData,
   addStaff,
   updateStaff,
