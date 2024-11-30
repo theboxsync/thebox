@@ -105,13 +105,9 @@ export default function AdminDashboard() {
                   <div className="card-header">
                     <h3 className="card-title">Special Dishes</h3>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
           <div className="row container-fluid" id="menuData">
             {specialDishes.map((dish) => (
-              <div key={dish._id} className="col-md-4 mb-5">
+              <div key={dish._id} className="col-md-4">
                 <div className="card m-2">
                   <div className="card-body">
                     <div className="row">
@@ -134,6 +130,10 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
         <Footer />

@@ -58,42 +58,60 @@ export default function InventoryDetails() {
                 <div className="card">
                   <div className="card-header">
                     <h3 className="card-title">Inventory Details</h3>
+                    <div className="card-tools">
+                      <button
+                        type="button"
+                        className="btn btn-block btn-dark"
+                        id="viewBtn"
+                        onClick={() => navigate("/inventory/")}
+                      >
+                        <img src="../../dist/img/view.svg" alt="view" /> View
+                        Inventory
+                      </button>
+                    </div>
                   </div>
                 </div>
                 <div className="invoice p-3 mb-3">
                   {/* Inventory Header */}
+                  {inventoryItem.request_date !== null ? (
+                    <>
+                      <div className="row">
+                        <div className="col-12">
+                          <h4>
+                            <small>
+                              <strong>Requested Date:</strong>{" "}
+                              {new Date(
+                                inventoryItem.request_date
+                              ).toLocaleDateString("en-IN")}
+                            </small>
+                          </h4>
+                        </div>
+                      </div>
+                      <div className="row">
+                        <div className="col-12">
+                          <h4>
+                            <small>
+                              <strong>Requested Time:</strong>{" "}
+                              {new Date(
+                                inventoryItem.request_date
+                              ).toLocaleTimeString("en-IN")}
+                            </small>
+                          </h4>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    ""
+                  )}
+
                   <div className="row">
                     <div className="col-12">
                       <h4>
                         <small>
-                          <strong>Requested Date:</strong>{" "}
-                          {new Date(
-                            inventoryItem.request_date
-                          ).toLocaleDateString("en-IN")}
-                        </small>
-                      </h4>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12">
-                      <h4>
-                        <small>
-                        <strong>Requested Time:</strong>{" "}
-                          {new Date(
-                            inventoryItem.request_date
-                          ).toLocaleTimeString("en-IN")}
-                        </small>
-                      </h4>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12">
-                      <h4>
-                        <small>
-                        <strong>Bill Date:</strong>{" "}
-                          {new Date(
-                            inventoryItem.bill_date
-                          ).toLocaleDateString("en-IN")}
+                          <strong>Bill Date:</strong>{" "}
+                          {new Date(inventoryItem.bill_date).toLocaleDateString(
+                            "en-IN"
+                          )}
                         </small>
                       </h4>
                     </div>
@@ -128,15 +146,14 @@ export default function InventoryDetails() {
                           </tr>
                         </thead>
                         <tbody>
-                          
-                            <tr key={inventoryItem._id}>
-                              <td>{inventoryItem.bill_number}</td>
-                              <td>{inventoryItem.category}</td>
-                              <td>{inventoryItem.vendor_name}</td>
-                              <td>{inventoryItem.paid_amount}</td>
-                              <td>{inventoryItem.total_amount}</td>
-                              <td>{inventoryItem.unpaid_amount}</td>
-                            </tr>
+                          <tr key={inventoryItem._id}>
+                            <td>{inventoryItem.bill_number}</td>
+                            <td>{inventoryItem.category}</td>
+                            <td>{inventoryItem.vendor_name}</td>
+                            <td>{inventoryItem.paid_amount}</td>
+                            <td>{inventoryItem.total_amount}</td>
+                            <td>{inventoryItem.unpaid_amount}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </div>
@@ -176,7 +193,8 @@ export default function InventoryDetails() {
                   {/* Attached Files */}
                   <div className="row" style={{ marginTop: "20px" }}>
                     <div className="col-md-12">
-                      {inventoryItem.bill_files && inventoryItem.bill_files.length > 0 ? (
+                      {inventoryItem.bill_files &&
+                      inventoryItem.bill_files.length > 0 ? (
                         <>
                           <h5>Attached Files:</h5>
                           <div className="d-flex flex-wrap">
@@ -192,7 +210,11 @@ export default function InventoryDetails() {
                               >
                                 {file.endsWith(".pdf") ? (
                                   <iframe
-                                    src={process.env.REACT_APP_ADMIN_API + "/uploads/inventory/bills/" + file}
+                                    src={
+                                      process.env.REACT_APP_ADMIN_API +
+                                      "/uploads/inventory/bills/" +
+                                      file
+                                    }
                                     title={`PDF File ${index + 1}`}
                                     style={{
                                       width: "150px",
@@ -202,7 +224,11 @@ export default function InventoryDetails() {
                                   />
                                 ) : (
                                   <img
-                                  src={process.env.REACT_APP_ADMIN_API + "/uploads/inventory/bills/" + file}
+                                    src={
+                                      process.env.REACT_APP_ADMIN_API +
+                                      "/uploads/inventory/bills/" +
+                                      file
+                                    }
                                     alt={`Bill ${index + 1}`}
                                     style={{
                                       width: "150px",
@@ -212,7 +238,18 @@ export default function InventoryDetails() {
                                     }}
                                   />
                                 )}
-                                <a href={process.env.REACT_APP_ADMIN_API + "/uploads/inventory/bills/" + file} download={process.env.REACT_APP_ADMIN_API + "/uploads/inventory/bills/" + file}>
+                                <a
+                                  href={
+                                    process.env.REACT_APP_ADMIN_API +
+                                    "/uploads/inventory/bills/" +
+                                    file
+                                  }
+                                  download={
+                                    process.env.REACT_APP_ADMIN_API +
+                                    "/uploads/inventory/bills/" +
+                                    file
+                                  }
+                                >
                                   <button className="btn btn-primary btn-sm mt-2">
                                     View
                                   </button>

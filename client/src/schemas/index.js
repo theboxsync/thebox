@@ -94,22 +94,30 @@ const requestInventory = Yup.object({
   status: Yup.string().required("Status is required"),
 });
 
-const addInventory = Yup.object({
-  bill_date: Yup.string().required("Bill Date is required"),
-  bill_number: Yup.string().required("Bill Number is required"),
-  vendor_name: Yup.string().required("Vendor Name is required"),
+const addInventory = Yup.object().shape({
+  bill_date: Yup.date().required("Bill date is required"),
+  bill_number: Yup.string().required("Bill number is required"),
+  vendor_name: Yup.string().required("Vendor name is required"),
   category: Yup.string().required("Category is required"),
-  bill_image: Yup.string().required("Bill Image is required"),
-  total_amount: Yup.string().required("Total Amount is required"),
-  paid_amount: Yup.string().required("Paid Amount is required"),
-  item_name: Yup.string().required("Item Name is required"),
-  unit: Yup.string().required("Unit is required"),
-  item_quantity: Yup.string()
-    .required("Item Quantity is required")
-    .matches(/^\d*\.?\d*$/, "Quantity must be number or decimal"),
-  item_price: Yup.string()
-    .required("Item Price is required")
-    .matches(/[0-9]$/, "Price must be number"),
+  bill_files: Yup.string().required("Bill files is required"),
+  total_amount: Yup.number()
+    .required("Total amount is required")
+    .positive("Total amount must be positive"),
+  paid_amount: Yup.number()
+    .required("Paid amount is required")
+    .positive("Paid amount must be positive"),
+  items: Yup.array().of(
+    Yup.object().shape({
+      item_name: Yup.string().required("Item name is required"),
+      item_quantity: Yup.number()
+        .required("Quantity is required")
+        .positive("Quantity must be positive"),
+      unit: Yup.string().required("Unit is required"),
+      item_price: Yup.number()
+        .required("Price is required")
+        .positive("Price must be positive"),
+    })
+  ),
 });
 
 const completeInventory = Yup.object().shape({
@@ -117,26 +125,25 @@ const completeInventory = Yup.object().shape({
   bill_number: Yup.string().required("Bill number is required"),
   vendor_name: Yup.string().required("Vendor name is required"),
   category: Yup.string().required("Category is required"),
-  bill_image: Yup.string().required("Bill image is required"),
+  bill_files: Yup.string().required("Bill files is required"),
   total_amount: Yup.number()
     .required("Total amount is required")
     .positive("Total amount must be positive"),
   paid_amount: Yup.number()
     .required("Paid amount is required")
     .positive("Paid amount must be positive"),
-  items: Yup.array()
-    .of(
-      Yup.object().shape({
-        item_name: Yup.string().required("Item name is required"),
-        item_quantity: Yup.number()
-          .required("Quantity is required")
-          .positive("Quantity must be positive"),
-        unit: Yup.string().required("Unit is required"),
-        item_price: Yup.number()
-          .required("Price is required")
-          .positive("Price must be positive"),
-      })
-    )
+  items: Yup.array().of(
+    Yup.object().shape({
+      item_name: Yup.string().required("Item name is required"),
+      item_quantity: Yup.number()
+        .required("Quantity is required")
+        .positive("Quantity must be positive"),
+      unit: Yup.string().required("Unit is required"),
+      item_price: Yup.number()
+        .required("Price is required")
+        .positive("Price must be positive"),
+    })
+  ),
 });
 
 const addManager = Yup.object({

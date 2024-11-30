@@ -394,10 +394,6 @@ function CompleteInventory() {
                                 </div>
                               )}
                           </div>
-                          <p>
-                            <strong>Quantity:</strong> {item.item_quantity}{" "}
-                            {item.unit}
-                          </p>
                           <div className="form-group row">
                             <div className="col-md-6">
                               <label>Quantity</label>
