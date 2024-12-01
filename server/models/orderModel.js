@@ -32,7 +32,7 @@ const orderSchema = new Schema({
     },
   ],
   order_status: {
-    type: String, // Save, KOT, KOT and Print, Bill Print, Settle and Save and if isDelivery than KOT and Bill Print
+    type: String, // Save, KOT, KOT and Print, Bill Print, Settle and Save and if is Delivery than KOT and Bill Print
   },
   customer_id: {
     type: String,

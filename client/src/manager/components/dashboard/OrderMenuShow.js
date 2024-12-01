@@ -7,6 +7,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const [mealType, setMealType] = useState(""); // Meal type filter
   const [category, setCategory] = useState(""); // Category filter
   const [categories, setCategories] = useState([]);
+  const [showSpecial, setShowSpecial] = useState(false); // Show special dishes filter
 
   const fetchMenuData = async () => {
     try {
@@ -14,9 +15,9 @@ function OrderMenuShow({ addItemToOrder }) {
         `${process.env.REACT_APP_MANAGER_API}/getmenudata`,
         {
           params: {
-            mealType, // Send selected meal type
-            category, // Send selected category
-            searchText, // Send search text
+            mealType,
+            category,
+            searchText,
           },
           withCredentials: true,
         }
@@ -49,19 +50,33 @@ function OrderMenuShow({ addItemToOrder }) {
     fetchCategories();
   }, []);
 
-  // Filter dishes based on search text, meal type, and category
+  // Filter dishes based on search text, meal type, category, and special status
   const filteredMenuData = menuData.map((data) => ({
     ...data,
     dishes: data.dishes.filter(
       (dish) =>
         dish.dish_name.toLowerCase().includes(searchText.toLowerCase()) &&
         (mealType === "" || data.meal_type === mealType) &&
-        (category === "" || data.category === category) // Category filter
+        (category === "" || data.category === category) &&
+        (!showSpecial || dish.is_special) // Filter for special dishes
     ),
   }));
 
   return (
     <div className="col-md-6 border-right h-100">
+      {/* Special Dishes Filter */}
+      <div className="form-check m-3">
+        <input
+          type="checkbox"
+          className="form-check-input"
+          id="showSpecial"
+          checked={showSpecial}
+          onChange={(e) => setShowSpecial(e.target.checked)}
+        />
+        <label htmlFor="showSpecial" className="form-check-label">
+          Special Dishes
+        </label>
+      </div>
       <div className="d-flex w-100 justify-content-around">
         {/* Search Input */}
         <input

@@ -896,21 +896,99 @@ const getOrderData = (req, res) => {
   }
 };
 
+// const orderController = async (req, res) => {
+//   try {
+//     let orderData = { ...req.body.orderInfo, restaurant_id: req.user };
+//     const tableId = req.body.table_id;
+//     const customerInfo = req.body.customerInfo;
+//     let savedOrder;
+
+//     if (customerInfo.phone !== "" || customerInfo.email !== "") {
+//       const customer = new Customer(customerInfo);
+//       const savedCustomer = await customer.save();
+
+//       orderData = { ...orderData, customer_id: savedCustomer._id };
+//     }
+
+//     if (tableId != "") {
+//       // Find the table
+//       const tableDocument = await Table.findOne({ "tables._id": tableId });
+
+//       if (!tableDocument) {
+//         return res.status(404).json({ message: "Table not found" });
+//       }
+
+//       const table = tableDocument.tables.id(tableId);
+
+//       if (!table) {
+//         return res.status(404).json({ message: "Table not found" });
+//       }
+
+//       if (table.current_status === "Empty" || table.order_id === null) {
+//         const newOrder = new Order(orderData);
+//         savedOrder = await newOrder.save();
+//         table.current_status = savedOrder.order_status;
+//         table.order_id = savedOrder._id;
+//       } else {
+//         savedOrder = await Order.findByIdAndUpdate(table.order_id, orderData, {
+//           new: true,
+//         });
+//         if (savedOrder.order_status !== "Paid") {
+//           table.current_status = savedOrder.order_status;
+//         } else {
+//           table.current_status = "Empty";
+//           table.order_id = null;
+//         }
+//       }
+
+//       // Save the updated table document
+//       await tableDocument.save();
+//       res.status(200).json({
+//         status: "success",
+//         message: "Order processed successfully",
+//         order: savedOrder,
+//         table: tableDocument,
+//       });
+//     } else {
+//       const newOrder = new Order(orderData);
+//       savedOrder = await newOrder.save();
+
+//       res.status(200).json({
+//         status: "success",
+//         message: "Order processed successfully",
+//         order: savedOrder,
+//       });
+//     }
+//   } catch (error) {
+//     console.error("Error processing order:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 const orderController = async (req, res) => {
   try {
+    console.log(req.body);
     let orderData = { ...req.body.orderInfo, restaurant_id: req.user };
-    const tableId = req.body.table_id;
-    const customerInfo = req.body.customerInfo;
+    const { table_id: tableId, customerInfo } = req.body;
+    const orderId = orderData.order_id; // Extract order_id from the request body
     let savedOrder;
 
+    // Handle customer creation if customer info is provided
     if (customerInfo.phone !== "" || customerInfo.email !== "") {
       const customer = new Customer(customerInfo);
       const savedCustomer = await customer.save();
-
       orderData = { ...orderData, customer_id: savedCustomer._id };
     }
 
-    if (tableId != "") {
+    // Process based on order type
+    if (orderData.order_type === "Dine In") {
+      // Ensure table information is present for Dine In
+      if (!tableId) {
+        return res
+          .status(400)
+          .json({ message: "Table ID is required for Dine In orders" });
+      }
+
       // Find the table
       const tableDocument = await Table.findOne({ "tables._id": tableId });
 
@@ -925,11 +1003,13 @@ const orderController = async (req, res) => {
       }
 
       if (table.current_status === "Empty" || table.order_id === null) {
+        // Create a new order and link it to the table
         const newOrder = new Order(orderData);
         savedOrder = await newOrder.save();
         table.current_status = savedOrder.order_status;
         table.order_id = savedOrder._id;
       } else {
+        // Update existing order linked to the table
         savedOrder = await Order.findByIdAndUpdate(table.order_id, orderData, {
           new: true,
         });
@@ -943,21 +1023,41 @@ const orderController = async (req, res) => {
 
       // Save the updated table document
       await tableDocument.save();
-      res.status(200).json({
+
+      return res.status(200).json({
         status: "success",
         message: "Order processed successfully",
         order: savedOrder,
         table: tableDocument,
       });
     } else {
-      const newOrder = new Order(orderData);
-      savedOrder = await newOrder.save();
+      // For Delivery or Pickup, check if an order_id is provided
+      if (orderId) {
+        // Update the existing order
+        savedOrder = await Order.findByIdAndUpdate(orderId, orderData, {
+          new: true,
+        });
 
-      res.status(200).json({
-        status: "success",
-        message: "Order processed successfully",
-        order: savedOrder,
-      });
+        if (!savedOrder) {
+          return res.status(404).json({ message: "Order not found" });
+        }
+
+        return res.status(200).json({
+          status: "success",
+          message: "Order updated successfully",
+          order: savedOrder,
+        });
+      } else {
+        // Create a new order
+        const newOrder = new Order(orderData);
+        savedOrder = await newOrder.save();
+
+        return res.status(200).json({
+          status: "success",
+          message: "Order created successfully",
+          order: savedOrder,
+        });
+      }
     }
   } catch (error) {
     console.error("Error processing order:", error);
@@ -970,13 +1070,25 @@ const showKOTs = async (req, res) => {
     const orderData = await Order.find({
       $and: [
         { restaurant_id: req.user },
-        { $or: [{ order_status: "KOT" }, { order_status: "KOT and Print" }] },
+        {
+          $or: [
+            { order_status: "KOT" },
+            { order_status: "KOT and Print" },
+            {
+              $and: [
+                { order_status: "Paid" },
+                { order_items: { $elemMatch: { status: "Prepairing" } } },
+              ],
+            },
+          ],
+        },
       ],
     });
 
     res.json(orderData);
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching KOTs:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

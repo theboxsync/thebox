@@ -113,6 +113,7 @@ function OrderSection({
                   increaseQuantity={increaseQuantity}
                   decreaseQuantity={decreaseQuantity}
                   tableId={tableId}
+                  orderId={orderId}
                   setOrderId={setOrderId}
                   setTableId={setTableId}
                   setMainSection={setMainSection}

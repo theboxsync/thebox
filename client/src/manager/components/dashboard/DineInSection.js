@@ -40,11 +40,18 @@ function DineInSection({
           />
         );
       case "TotalPersonOnTable":
-        return <TotalPersonOnTable orderInfo={orderInfo} setOrderInfo={setOrderInfo} />;
+        return (
+          <TotalPersonOnTable
+            orderInfo={orderInfo}
+            setOrderInfo={setOrderInfo}
+          />
+        );
       case "AddNotes":
         return <AddNotes orderInfo={orderInfo} setOrderInfo={setOrderInfo} />;
       case "AssignWaiter":
-        return <AssignWaiter orderInfo={orderInfo} setOrderInfo={setOrderInfo} />;
+        return (
+          <AssignWaiter orderInfo={orderInfo} setOrderInfo={setOrderInfo} />
+        );
       case "":
         return null;
       default:
@@ -53,6 +60,10 @@ function DineInSection({
   };
   return (
     <div>
+      <h4 className="text-center mt-2" style={{ fontWeight: "bold" }}>
+        Dine In
+      </h4>
+      <hr />
       <div
         className="d-flex justify-content-between align-items-center mr-2"
         style={{ border: "2px solid lightgrey" }}

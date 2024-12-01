@@ -10,6 +10,9 @@ const customerSchema = new Schema({
     phone: {
         type: String,
     },
+    address: {
+        type: String,
+    },
     date_of_birth: {
         type: Date,
     },

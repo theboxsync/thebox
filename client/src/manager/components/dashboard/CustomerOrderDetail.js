@@ -11,6 +11,7 @@ function CustomerOrderDetail({
   decreaseQuantity,
   tableId,
   setTableId,
+  orderId,
   setOrderId,
   setMainSection,
   orderType,
@@ -39,6 +40,7 @@ function CustomerOrderDetail({
     name: "",
     email: "",
     phone: "",
+    address: "",
     date_of_birth: "",
     anniversary: "",
     tag: [],
@@ -120,34 +122,59 @@ function CustomerOrderDetail({
         />
       );
     } else if (orderType === "Delivery") {
-      return <DeliverySection />;
+      return (
+        <DeliverySection
+          orderInfo={orderInfo}
+          setOrderInfo={setOrderInfo}
+          customerInfo={customerInfo}
+          setCustomerInfo={setCustomerInfo}
+        />
+      );
     } else if (orderType === "Pickup") {
-      return <PickupSection />;
+      return (
+        <PickupSection
+          orderInfo={orderInfo}
+          setOrderInfo={setOrderInfo}
+          customerInfo={customerInfo}
+          setCustomerInfo={setCustomerInfo}
+        />
+      );
     }
   };
 
   const orderController = async (orderStatus) => {
-    const table_id = tableId;
-
-    const updatedOrderInfo = { ...orderInfo, order_status: orderStatus };
-
+    const updatedOrderInfo = {
+      ...orderInfo,
+      order_status: orderStatus,
+      order_id: orderId,
+      customer_name: customerInfo.name,
+    };
+    console.log(updatedOrderInfo);
     setOrderInfo(updatedOrderInfo);
 
+    const payload = {
+      orderInfo: updatedOrderInfo,
+      customerInfo,
+    };
+
+    if (tableId) {
+      payload.table_id = tableId;
+    }
+
     try {
-      await axios
-        .post(
-          `${process.env.REACT_APP_MANAGER_API}/ordercontroller`,
-          { table_id, orderInfo: updatedOrderInfo, customerInfo },
-          { withCredentials: true }
-        )
-        .then((response) => {
-          console.log("Order status updated successfully:", response.data);
-          if (response.data.status === "success") {
-            setTableId("");
-            setOrderId("");
-            setMainSection("DashboardSection");
-          }
-        });
+      const response = await axios.post(
+        `${process.env.REACT_APP_MANAGER_API}/ordercontroller`,
+        payload,
+        { withCredentials: true }
+      );
+
+      console.log("Order status updated successfully:", response.data);
+
+      if (response.data.status === "success") {
+        setTableId("");
+        setOrderId("");
+        setMainSection("DashboardSection");
+      }
     } catch (error) {
       console.log("Error saving order:", error);
     }
@@ -205,9 +232,7 @@ function CustomerOrderDetail({
                     </small>
                   </td>
                   <td className="text-center">
-                    <label className="my-0">
-                      {item.status}
-                    </label>
+                    <label className="my-0">{item.status}</label>
                   </td>
                 </tr>
               ))}

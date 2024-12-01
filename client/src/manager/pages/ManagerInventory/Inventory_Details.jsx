@@ -111,8 +111,8 @@ export default function InventoryDetails() {
                           ))}
                         </tbody>
                       </table>
-
-                      <button
+                      {inventoryItem.status === "Requested" ? (
+                        <button
                         className="btn btn-dark float-right"
                         type="button"
                         onClick={editDetails}
@@ -120,6 +120,9 @@ export default function InventoryDetails() {
                         <img src="../../dist/img/edit.svg" alt="Edit" />
                         Edit
                       </button>
+                      ):""}
+
+                      
                     </div>
                   </div>
                 </div>

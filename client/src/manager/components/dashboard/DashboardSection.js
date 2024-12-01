@@ -13,6 +13,7 @@ function DashboardSection({
   const [tableData, setTableData] = useState([]);
   const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [specialDishes, setSpecialDishes] = useState([]);
+  const [activeDeliveries, setActiveDeliveries] = useState([]);
 
   const fetchTableData = async () => {
     try {
@@ -25,6 +26,27 @@ function DashboardSection({
       setTableData(response.data);
     } catch (error) {
       console.log("Error fetching table data:", error);
+    }
+  };
+
+  const fetchActiveDeliveries = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getorderhistory`,
+        { withCredentials: true }
+      );
+
+      // Filter orders based on the condition
+      const deliveries = response.data.filter(
+        (order) =>
+          (order.order_type === "Delivery" || order.order_type === "Pickup") &&
+          (order.order_status !== "Paid" ||
+            order.order_items.some((item) => item.status === "Prepairing"))
+      );
+
+      setActiveDeliveries(deliveries);
+    } catch (error) {
+      console.log("Error fetching active deliveries:", error);
     }
   };
 
@@ -50,6 +72,7 @@ function DashboardSection({
 
   useEffect(() => {
     fetchTableData();
+    fetchActiveDeliveries();
     fetchSpecialDishes();
   }, []);
 
@@ -112,42 +135,98 @@ function DashboardSection({
                   </button>
                 </div>
               </div>
-              <div className="row w-100 px-2"></div>
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="card-title">Table List</h3>
-                </div>
-                {tableData.map((table) => (
-                  <div className="card-body p-0 m-2" key={table._id}>
-                    <div className="m-3" style={{ fontWeight: "bold" }}>
-                      {table.area}
+              <div className="row w-100">
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <h3 className="card-title">Table List</h3>
                     </div>
-                    <ul className="row" style={{ listStyle: "none" }}>
-                      {table.tables.map((table) => (
-                        <li key={table._id}>
-                          <div className="container">
-                            <div
-                              className={`dashboard-table d-flex justify-content-center align-items-center ${
-                                table.current_status === "Save"
-                                  ? "table-save"
-                                  : table.current_status === "KOT" ||
-                                    table.current_status === "KOT and Print" ||
-                                    table.current_status === "Order Delevered"
-                                  ? "table-kot"
-                                  : ""
-                              }`}
-                              onClick={() => onClickTable(table._id)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              <div align="center">{table.table_no}</div>
+                    {tableData.map((table) => (
+                      <div className="card-body p-0 m-2" key={table._id}>
+                        <div className="m-3" style={{ fontWeight: "bold" }}>
+                          {table.area}
+                        </div>
+                        <ul className="row" style={{ listStyle: "none" }}>
+                          {table.tables.map((table) => (
+                            <li key={table._id}>
+                              <div className="container">
+                                <div
+                                  className={`dashboard-table d-flex justify-content-center align-items-center ${
+                                    table.current_status === "Save"
+                                      ? "table-save"
+                                      : table.current_status === "KOT" ||
+                                        table.current_status ===
+                                          "KOT and Print" ||
+                                        table.current_status ===
+                                          "Order Delevered"
+                                      ? "table-kot"
+                                      : ""
+                                  }`}
+                                  onClick={() => onClickTable(table._id)}
+                                  style={{ cursor: "pointer" }}
+                                >
+                                  <div align="center">{table.table_no}</div>
+                                </div>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                        <hr />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="card">
+                    <div className="card-header">
+                      <h3 className="card-title">Active Delivery & Pickup</h3>
+                    </div>
+                    <div className="card-body">
+                      {activeDeliveries.length > 0 ? (
+                        activeDeliveries.map((order) => (
+                          <div key={order._id} className="card m-2">
+                            <div className="card-body">
+                              <div className="row">
+                              <div className="col-md-2">
+                                  <span>
+                                    <strong>{order.order_type}</strong>{" "}
+                                  </span>
+                                </div>
+                                <div className="col-md-4">
+                                  <span>
+                                    <strong>Customer: </strong>{" "}
+                                    {order.customer_name}
+                                  </span>
+                                </div>
+                                <div className="col-md-4">
+                                  <span>
+                                    <strong>Status: </strong>{" "}
+                                    {order.order_status}
+                                  </span>
+                                </div>
+                                <div className="col-md-2">
+                                  <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => {
+                                      setOrderId(order._id);
+                                      setOrderType(order.order_type);
+                                      setMainSection("OrderSection"); // Navigate to OrderDetails
+                                    }}
+                                  >
+                                    View Details
+                                  </button>
+                                </div>
+                              </div>
+                              <div className="row mt-2"></div>
                             </div>
                           </div>
-                        </li>
-                      ))}
-                    </ul>
-                    <hr />
+                        ))
+                      ) : (
+                        <div>No active deliveries found.</div>
+                      )}
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
           </div>
@@ -161,35 +240,38 @@ function DashboardSection({
                 <div className="card-header">
                   <h3 className="card-title">Special Dishes</h3>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row container-fluid" id="menuData">
-          {specialDishes.map((dish) => (
-            <div key={dish._id} className="col-md-4 mb-5">
-              <div className="card m-2">
-                <div className="card-body">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <b>{dish.dish_name}</b>
-                    </div>
-                    <div className="col-md-2">{dish.dish_price}</div>
-                    <div className="col-md-4">
-                      <div
-                        className="bg-transparent m-1"
-                        title="Remove Special Dish"
-                        style={{ cursor: "pointer", width: "32px" }}
-                        onClick={() => removeSpecialModal(dish._id)}
-                      >
-                        <img src={utensilsslash} alt="Remove Special Dish" />
+                <div className="card-body row container-fluid" id="menuData">
+                  {specialDishes.map((dish) => (
+                    <div key={dish._id} className="col-md-4">
+                      <div className="card m-2">
+                        <div className="card-body">
+                          <div className="row">
+                            <div className="col-md-6">
+                              <b>{dish.dish_name}</b>
+                            </div>
+                            <div className="col-md-2">{dish.dish_price}</div>
+                            <div className="col-md-4">
+                              <div
+                                className="bg-transparent m-1"
+                                title="Remove Special Dish"
+                                style={{ cursor: "pointer", width: "32px" }}
+                                onClick={() => removeSpecialModal(dish._id)}
+                              >
+                                <img
+                                  src={utensilsslash}
+                                  alt="Remove Special Dish"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
