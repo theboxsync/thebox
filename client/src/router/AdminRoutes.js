@@ -14,6 +14,7 @@ import RegistrationComplete from "../RegistrationComplete";
 import AdminProfile from "../admin/pages/AdminProfile";
 import AdminDashboard from "../admin/pages/AdminDashboard/AdminDashboard";
 import AdminOrderHistory from "../admin/pages/AdminOrderHistory";
+import OrderDetails from "../admin/components/orderHistory/OrderDetails";
 import AdminInventory from "../admin/pages/AdminInventory";
 import CompleteInventory from "../admin/pages/AdminInventory/CompleteInventory";
 import InventoryDetails from "../admin/pages/AdminInventory/Inventory_Details";
@@ -24,6 +25,8 @@ import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
 import AdminTable from "../admin/pages/AdminTable";
 import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
+
+import PageNotFound from '../admin/PageNotFound'
 
 function AdminRoutes() {
   return (
@@ -42,17 +45,26 @@ function AdminRoutes() {
       <Route path="/profile" element={<AdminProfile />} />
       <Route path="/dashboard" element={<AdminDashboard />} />
       <Route path="/order-history" element={<AdminOrderHistory />} />
+      <Route path="/order-details/:id" element={<OrderDetails />} />
       <Route path="/table-management" element={<AdminTable />} />
       <Route path="/manage-menu" element={<AdminManageMenu />} />
       <Route path="/inventory" element={<AdminInventory />} />
       <Route path="/inventory/complete" element={<CompleteInventory />} />
       <Route path="/inventory/details/:id" element={<InventoryDetails />} />
-      <Route path="/inventory/complete-details/:id" element={<InventoryFullDetails />} />
+      <Route
+        path="/inventory/complete-details/:id"
+        element={<InventoryFullDetails />}
+      />
       <Route path="/inventory/update/:id" element={<UpdateInventory />} />
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />
-      <Route path="/change-manager-password" element={<ChangeManagerPassword />} />
+      <Route
+        path="/change-manager-password"
+        element={<ChangeManagerPassword />}
+      />
+
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 }

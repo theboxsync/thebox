@@ -89,7 +89,7 @@ function ViewOrderHistory() {
   ];
 
   const handleRowClick = (row) => {
-    navigate(`/manager/order-details/${row._id}`);
+    navigate(`/order-details/${row._id}`);
   };
 
   const tableStyle = {

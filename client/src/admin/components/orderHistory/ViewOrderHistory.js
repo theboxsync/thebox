@@ -89,7 +89,7 @@ function ViewOrderHistory() {
   ];
 
   const handleRowClick = (row) => {
-    navigate(`/manager/order-details/${row._id}`);
+    navigate(`/order-details/${row._id}`);
   };
 
   const tableStyle = {
@@ -122,7 +122,7 @@ function ViewOrderHistory() {
             onChange={(e) => setSearchText(e.target.value)}
             className="form-control w-25 mx-3"
           />
-          <div className="d-flex align-items-center w-25 mx-3">
+          <div className="d-flex align-items-center w-25">
             <DatePicker
               selected={startDate}
               onChange={(date) => setStartDate(date)}

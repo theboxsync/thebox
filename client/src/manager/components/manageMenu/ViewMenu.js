@@ -18,6 +18,7 @@ function ViewMenu({ setSection }) {
         }
       );
       setMenuData(response.data);
+      console.log("Dishes" + response.data.dishes);
     } catch (error) {
       console.log("Error fetching menu data:", error);
     }

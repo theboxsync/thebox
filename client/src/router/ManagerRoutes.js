@@ -7,6 +7,7 @@ import Logout from "../manager/components/Logout";
 
 import ManagerDashboard from '../manager/pages/ManagerDashboard'
 import ManagerOrderHistory from '../manager/pages/ManagerOrderHistory'
+import OrderDetails from '../manager/components/orderHistory/OrderDetails'
 import ManagerInventory from '../manager/pages/ManagerInventory'
 import Inventory_Details from '../manager/pages/ManagerInventory/Inventory_Details'
 import UpdateInventory from '../manager/pages/ManagerInventory/UpdateInventory';
@@ -15,6 +16,8 @@ import ManagerManageMenu from '../manager/pages/ManagerManageMenu'
 import ManagerStaff from '../manager/pages/ManagerStaff'
 import ManagerTableBooking from '../manager/pages/ManagerTableBooking'
 import ManagerProfile from '../manager/pages/ManagerProfile'
+
+import PageNotFound from '../manager/PageNotFound'
 
 function ManagerRoutes() {
   return (
@@ -26,6 +29,7 @@ function ManagerRoutes() {
       <Route path="/" element={<ManagerDashboard />} />
       <Route path="/dashboard" element={<ManagerDashboard />} />
       <Route path="/order-history" element={<ManagerOrderHistory />} />
+      <Route path="/order-details/:id" element={<OrderDetails />} />
       <Route path="/manage-menu" element={<ManagerManageMenu />} />
       <Route path="/inventory" element={<ManagerInventory />} />
       <Route path="/inventory/details/:id" element={<Inventory_Details />} />
@@ -37,6 +41,7 @@ function ManagerRoutes() {
         element={<ManagerKOTManagement />}
       />
       <Route path='/profile' element={<ManagerProfile />} />
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   )
 }
