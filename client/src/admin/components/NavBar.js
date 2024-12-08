@@ -45,7 +45,7 @@ export default function Navbar() {
               </Link>
             </li>
             <li className="nav-item dropdown">
-              <Link to={"/admin/profile"} className="nav-link">
+              <Link to={"/profile"} className="nav-link">
                 <i className="fas fa-user"></i>
               </Link>
               

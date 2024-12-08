@@ -139,7 +139,11 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                   </div>
                 </div>
                 <hr />
-
+              </div>
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title">Tables</h3>
+                </div>
                 {tableData.map((table) => (
                   <div className="card-body p-0 m-2" key={table._id}>
                     <div className="m-3" style={{ fontWeight: "bold" }}>

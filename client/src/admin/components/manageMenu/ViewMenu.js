@@ -103,6 +103,8 @@ function ViewMenu({ setSection }) {
             </div>
           </div>
         </div>
+        <img src="../../dist/img/egg.svg" alt="Add" />
+        
         <div className="row container-fluid">
           {menuData.map((data) => (
             <div key={data._id} className="col-md-4">
@@ -110,7 +112,8 @@ function ViewMenu({ setSection }) {
                 <h4 className="card-header"> {data.category} </h4>
                 <div className="card-body">
                   <div className="row">
-                    <div className="col-md-6">
+                    <div className="col-md-1"></div>
+                    <div className="col-md-5">
                       <b> Dish Name </b>
                     </div>
                     <div className="col-md-2">
@@ -123,7 +126,11 @@ function ViewMenu({ setSection }) {
 
                   {data.dishes.map((dish) => (
                     <div key={dish._id} className="row">
-                      <div className="col-md-6">{dish.dish_name}</div>
+                      <div className="col-md-1">
+                        <img src="../../dist/img/veg.jpg" alt="veg"/>
+                      </div>
+
+                      <div className="col-md-5">{dish.dish_name}</div>
                       <div className="col-md-2">{dish.dish_price}</div>
                       <div className="col-md-4 d-flex">
                         <button

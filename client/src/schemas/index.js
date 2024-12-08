@@ -182,8 +182,7 @@ const addStaff = Yup.object({
     .required("Salary is required")
     .positive("Salary must be a positive number"),
   position: Yup.string()
-    .required("Position is required")
-    .oneOf(["Owner", "Manager"], "Position must be Owner or Manager"),
+    .required("Position is required"),
   photo: Yup.mixed()
     .required("Photo is required")
     .test(
@@ -271,8 +270,7 @@ const editStaff = Yup.object({
     .required("Salary is required")
     .positive("Salary must be a positive number"),
   position: Yup.string()
-    .required("Position is required")
-    .oneOf(["Owner", "Manager"], "Position must be Owner or Manager"),
+    .required("Position is required"),
 
   photo: Yup.mixed()
     .notRequired()
