@@ -71,7 +71,30 @@ function ViewMenu({ setSection }) {
           {menuData.map((data) => (
             <div key={data._id} className="col-md-4">
               <div className="card m-2">
-                <h4 className="card-header"> {data.category} </h4>
+                <h4 className="card-header">
+                  {data.meal_type === "veg" ? (
+                    <img
+                      src="../../dist/img/veg-symbol.jpg"
+                      alt="Veg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : data.meal_type === "non-veg" ? (
+                    <img
+                      src="../../dist/img/non-veg-symbol.jpg"
+                      alt="Non Veg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : data.meal_type === "egg" ? (
+                    <img
+                      src="../../dist/img/egg-symbol.jpg"
+                      alt="Egg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  <strong>{data.category}</strong>
+                </h4>
                 <div className="card-body">
                   <div className="row">
                     <div className="col-md-6">

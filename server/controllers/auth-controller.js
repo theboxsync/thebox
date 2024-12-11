@@ -331,12 +331,17 @@ const addMenu = (req, res) => {
     console.log(req.body);
     const menuData = { ...req.body, hotel_id: req.user };
     const category = req.body.category;
+    const mealType = req.body.meal_type;
 
-    Menu.findOne({ category: category, hotel_id: req.user })
+    Menu.findOne({
+      category: category,
+      meal_type: mealType,
+      hotel_id: req.user,
+    })
       .then((data) => {
         if (data) {
           Menu.findOneAndUpdate(
-            { category: category, hotel_id: req.user },
+            { category: category, meal_type: mealType, hotel_id: req.user },
             {
               $push: { dishes: req.body.dishes },
             }

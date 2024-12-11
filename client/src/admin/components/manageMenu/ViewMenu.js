@@ -12,6 +12,13 @@ function ViewMenu({ setSection }) {
   const [showSpecialModal, setShowSpecialModal] = useState(false);
   const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [menuData, setMenuData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Filter states
+  const [showSpecialOnly, setShowSpecialOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mealTypeFilter, setMealTypeFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const fetchMenuData = async () => {
     try {
@@ -29,6 +36,52 @@ function ViewMenu({ setSection }) {
   useEffect(() => {
     fetchMenuData();
   }, []);
+
+  // Apply filters whenever filters change
+  useEffect(() => {
+    let filtered = [...menuData];
+
+    // Filter for special dishes
+    if (showSpecialOnly) {
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter((dish) => dish.is_special),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0); // Remove empty categories
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter((dish) =>
+          dish.dish_name.toLowerCase().includes(searchLower)
+        ),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0);
+    }
+
+    // Filter by meal type
+    if (mealTypeFilter) {
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter(
+          (dish) => dish.meal_type === mealTypeFilter
+        ),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0);
+    }
+
+    // Filter by category
+    if (categoryFilter) {
+      filtered = filtered.filter(
+        (category) => category.category === categoryFilter
+      );
+    }
+
+    setFilteredData(filtered);
+  }, [menuData, showSpecialOnly, searchTerm, mealTypeFilter, categoryFilter]);
 
   const [deleteModalData, setDeleteModalData] = useState({
     id: "",
@@ -103,17 +156,83 @@ function ViewMenu({ setSection }) {
             </div>
           </div>
         </div>
-        <img src="../../dist/img/egg.svg" alt="Add" />
-        
+        <div>
+          {/* Filters */}
+          <div className="form-check m-3">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="showSpecial"
+              checked={showSpecialOnly}
+              onChange={(e) => setShowSpecialOnly(e.target.checked)}
+            />
+            <label htmlFor="showSpecial" className="form-check-label">
+              Special Dishes
+            </label>
+          </div>
+          <div className="d-flex w-100 justify-content-around">
+            <input
+              type="text"
+              className="form-control m-3"
+              placeholder="Search Item"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <select
+              className="form-control m-3"
+              value={mealTypeFilter}
+              onChange={(e) => setMealTypeFilter(e.target.value)}
+            >
+              <option value="">All Meal Types</option>
+              <option value="veg">Veg</option>
+              <option value="egg">Egg</option>
+              <option value="non-veg">Non-Veg</option>
+            </select>
+            <select
+              className="form-control m-3"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {menuData.map((category) => (
+                <option key={category._id} value={category.category}>
+                  {category.category}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <div className="row container-fluid">
-          {menuData.map((data) => (
+          {filteredData.map((data) => (
             <div key={data._id} className="col-md-4">
               <div className="card m-2">
-                <h4 className="card-header"> {data.category} </h4>
+                <h4 className="card-header">
+                  {data.meal_type === "veg" ? (
+                    <img
+                      src="../../dist/img/veg-symbol.jpg"
+                      alt="Veg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : data.meal_type === "non-veg" ? (
+                    <img
+                      src="../../dist/img/non-veg-symbol.jpg"
+                      alt="Non Veg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : data.meal_type === "egg" ? (
+                    <img
+                      src="../../dist/img/egg-symbol.jpg"
+                      alt="Egg"
+                      style={{ width: "30px", marginRight: "10px" }}
+                    />
+                  ) : (
+                    ""
+                  )}
+                  <strong>{data.category}</strong>
+                </h4>
                 <div className="card-body">
                   <div className="row">
-                    <div className="col-md-1"></div>
-                    <div className="col-md-5">
+                    <div className="col-md-6">
                       <b> Dish Name </b>
                     </div>
                     <div className="col-md-2">
@@ -126,11 +245,7 @@ function ViewMenu({ setSection }) {
 
                   {data.dishes.map((dish) => (
                     <div key={dish._id} className="row">
-                      <div className="col-md-1">
-                        <img src="../../dist/img/veg.jpg" alt="veg"/>
-                      </div>
-
-                      <div className="col-md-5">{dish.dish_name}</div>
+                      <div className="col-md-6">{dish.dish_name}</div>
                       <div className="col-md-2">{dish.dish_price}</div>
                       <div className="col-md-4 d-flex">
                         <button
