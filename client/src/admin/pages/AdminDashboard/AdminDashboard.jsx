@@ -6,10 +6,6 @@ import axios from "axios";
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
-
-import RemoveSpecialModal from "../../components/dashboard/RemoveSpecialModal";
-import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
-
 import DashboardSection from "../../components/dashboard/DashboardSection";
 import AddManager from "../../components/dashboard/AddManager";
 
@@ -17,7 +13,6 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
 
   const [userData, setUserData] = useState("");
-  const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [specialDishes, setSpecialDishes] = useState([]);
 
   const fetchUserData = async () => {
@@ -63,19 +58,6 @@ export default function AdminDashboard() {
     fetchSpecialDishes();
   }, []);
 
-  const [removeSpecialModalData, setRemoveSpecialModalData] = useState({});
-  const removeSpecialModal = (id) => {
-    console.log(id);
-    axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
-      .then((res) => {
-        setRemoveSpecialModalData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err));
-    setShowRemoveSpecialModal(true);
-  };
-
   const [mainSection, setMainSection] = useState("DashboardSection");
 
   const displayMainSection = () => {
@@ -105,32 +87,22 @@ export default function AdminDashboard() {
                   <div className="card-header">
                     <h3 className="card-title">Special Dishes</h3>
                   </div>
-          <div className="row container-fluid" id="menuData">
-            {specialDishes.map((dish) => (
-              <div key={dish._id} className="col-md-4">
-                <div className="card m-2">
-                  <div className="card-body">
-                    <div className="row">
-                      <div className="col-md-6">
-                        <b>{dish.dish_name}</b>
-                      </div>
-                      <div className="col-md-2">{dish.dish_price}</div>
-                      <div className="col-md-4">
-                        <div
-                          className="bg-transparent m-1"
-                          title="Remove Special Dish"
-                          style={{ cursor: "pointer", width: "32px" }}
-                          onClick={() => removeSpecialModal(dish._id)}
-                        >
-                          <img src={utensilsslash} alt="Remove Special Dish" />
+                  <div className="row container-fluid" id="menuData">
+                    {specialDishes.map((dish) => (
+                      <div key={dish._id} className="col-md-4">
+                        <div className="card m-2">
+                          <div className="card-body">
+                            <div className="row">
+                              <div className="col-md-9">
+                                <b>{dish.dish_name}</b>
+                              </div>
+                              <div className="col-md-3">{dish.dish_price}</div>
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
                 </div>
               </div>
             </div>
@@ -138,13 +110,6 @@ export default function AdminDashboard() {
         </section>
         <Footer />
       </div>
-
-      <RemoveSpecialModal
-        show={showRemoveSpecialModal}
-        handleClose={() => setShowRemoveSpecialModal(false)}
-        data={removeSpecialModalData}
-        fetchMenuData={fetchSpecialDishes}
-      />
     </div>
   );
 }

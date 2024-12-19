@@ -64,13 +64,9 @@ function ViewMenu({ setSection }) {
 
     // Filter by meal type
     if (mealTypeFilter) {
-      filtered = filtered.map((category) => ({
-        ...category,
-        dishes: category.dishes.filter(
-          (dish) => dish.meal_type === mealTypeFilter
-        ),
-      }));
-      filtered = filtered.filter((category) => category.dishes.length > 0);
+      filtered = filtered.filter(
+        (meal_type) => meal_type.meal_type === mealTypeFilter
+      );
     }
 
     // Filter by category
@@ -194,11 +190,13 @@ function ViewMenu({ setSection }) {
               onChange={(e) => setCategoryFilter(e.target.value)}
             >
               <option value="">All Categories</option>
-              {menuData.map((category) => (
-                <option key={category._id} value={category.category}>
-                  {category.category}
-                </option>
-              ))}
+              {[...new Set(menuData.map((category) => category.category))].map(
+                (uniqueCategory) => (
+                  <option key={uniqueCategory} value={uniqueCategory}>
+                    {uniqueCategory}
+                  </option>
+                )
+              )}
             </select>
           </div>
         </div>

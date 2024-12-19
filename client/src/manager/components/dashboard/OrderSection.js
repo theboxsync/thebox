@@ -53,17 +53,25 @@ function OrderSection({
 
   const addItemToOrder = (item) => {
     setOrderItems((prevOrderItems) => {
-      const itemIndex = prevOrderItems.findIndex(
-        (orderItem) => orderItem.dish_name === item.dish_name
+      const existingItemIndex = prevOrderItems.findIndex(
+        (orderItem) =>
+          orderItem.dish_name === item.dish_name &&
+          orderItem.status !== "Completed"
       );
-      if (itemIndex > -1) {
+
+      if (existingItemIndex > -1) {
+        // If the dish is already in the order and not "Completed", increase its quantity
         return prevOrderItems.map((orderItem, index) =>
-          index === itemIndex
+          index === existingItemIndex
             ? { ...orderItem, quantity: orderItem.quantity + 1 }
             : orderItem
         );
       } else {
-        return [...prevOrderItems, { ...item, quantity: 1 }];
+        // Add the dish as a new entry
+        return [
+          ...prevOrderItems,
+          { ...item, quantity: 1, status: "Prepairing" },
+        ];
       }
     });
   };
@@ -88,6 +96,12 @@ function OrderSection({
     );
   };
 
+  const removeItem = (itemId) => {
+    setOrderItems((prevOrderItems) =>
+      prevOrderItems.filter((item) => item._id !== itemId)
+    );
+  };
+
   return (
     <section className="content">
       <div className="container-fluid">
@@ -100,7 +114,11 @@ function OrderSection({
                   <button
                     type="button"
                     className="btn btn-block btn-dark"
-                    onClick={() => setMainSection("DashboardSection")}
+                    onClick={() => {
+                      setMainSection("DashboardSection");
+                      setOrderId("");
+                      setTableId("");
+                    }}
                   >
                     Go To Dashboard
                   </button>
@@ -112,6 +130,7 @@ function OrderSection({
                   order={{ ...order, order_items: orderItems }} // Pass combined order object
                   increaseQuantity={increaseQuantity}
                   decreaseQuantity={decreaseQuantity}
+                  removeItem={removeItem}
                   tableId={tableId}
                   orderId={orderId}
                   setOrderId={setOrderId}

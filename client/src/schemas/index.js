@@ -132,18 +132,33 @@ const completeInventory = Yup.object().shape({
   paid_amount: Yup.number()
     .required("Paid amount is required")
     .positive("Paid amount must be positive"),
-  items: Yup.array().of(
-    Yup.object().shape({
-      item_name: Yup.string().required("Item name is required"),
-      item_quantity: Yup.number()
-        .required("Quantity is required")
-        .positive("Quantity must be positive"),
-      unit: Yup.string().required("Unit is required"),
-      item_price: Yup.number()
-        .required("Price is required")
-        .positive("Price must be positive"),
-    })
-  ),
+  items: Yup.array()
+    .of(
+      Yup.object().shape({
+        item_name: Yup.string().required("Item name is required"),
+        item_quantity: Yup.number()
+          .required("Quantity is required")
+          .positive("Quantity must be positive"),
+        unit: Yup.string().required("Unit is required"),
+        completed: Yup.boolean(),
+        item_price: Yup.number()
+          .nullable()
+          .transform((value, originalValue) =>
+            String(originalValue).trim() === "" ? 0 : value
+          )
+          .when("completed", {
+            is: true,
+            then: (schema) => schema.required("Price is required"),
+            otherwise: (schema) => schema.notRequired(),  
+          }),
+      })
+    )
+    .min(1, "At least one item must be included")
+    .test(
+      "at-least-one-completed",
+      "At least one item must be marked as completed",
+      (items) => items && items.some((item) => item.completed)
+    ),
 });
 
 const addManager = Yup.object({
@@ -172,6 +187,9 @@ const addStaff = Yup.object({
     .required("Joining date is required")
     .min(Yup.ref("birth_date"), "Joining date must be after birth date"),
   address: Yup.string().required("Address is required"),
+  country: Yup.string().required("Country is required"),
+  state: Yup.string().required("State is required"),
+  city: Yup.string().required("City is required"),
   phone_no: Yup.string()
     .required("Phone number is required")
     .matches(/^[0-9]{10}$/, "Phone number must be 10 digits"),
@@ -181,8 +199,7 @@ const addStaff = Yup.object({
   salary: Yup.number()
     .required("Salary is required")
     .positive("Salary must be a positive number"),
-  position: Yup.string()
-    .required("Position is required"),
+  position: Yup.string().required("Position is required"),
   photo: Yup.mixed()
     .required("Photo is required")
     .test(
@@ -269,8 +286,7 @@ const editStaff = Yup.object({
   salary: Yup.number()
     .required("Salary is required")
     .positive("Salary must be a positive number"),
-  position: Yup.string()
-    .required("Position is required"),
+  position: Yup.string().required("Position is required"),
 
   photo: Yup.mixed()
     .notRequired()

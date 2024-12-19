@@ -10,7 +10,9 @@ const orderSchema = new Schema({
   order_type: {
     type: String, // Take Away, Delivery
   },
-
+  token: {
+    type: Number, // Sequential token for Takeaway orders
+  },
   order_items: [
     {
       dish_name: {

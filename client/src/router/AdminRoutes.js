@@ -19,7 +19,8 @@ import AdminInventory from "../admin/pages/AdminInventory";
 import CompleteInventory from "../admin/pages/AdminInventory/CompleteInventory";
 import InventoryDetails from "../admin/pages/AdminInventory/Inventory_Details";
 import InventoryFullDetails from "../admin/pages/AdminInventory/InventoryFullDetails";
-import UpdateInventory from "../admin/pages/AdminInventory/UpdateInventory";
+import UpdateRequestedInventory from "../admin/pages/AdminInventory/UpdateRequestedInventory";
+import UpdateCompletedInventory from "../admin/pages/AdminInventory/UpdateCompletedInventory";
 import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
@@ -48,6 +49,7 @@ function AdminRoutes() {
       <Route path="/order-details/:id" element={<OrderDetails />} />
       <Route path="/table-management" element={<AdminTable />} />
       <Route path="/manage-menu" element={<AdminManageMenu />} />
+      
       <Route path="/inventory" element={<AdminInventory />} />
       <Route path="/inventory/complete" element={<CompleteInventory />} />
       <Route path="/inventory/details/:id" element={<InventoryDetails />} />
@@ -55,7 +57,8 @@ function AdminRoutes() {
         path="/inventory/complete-details/:id"
         element={<InventoryFullDetails />}
       />
-      <Route path="/inventory/update/:id" element={<UpdateInventory />} />
+      <Route path="/inventory/update/:id" element={<UpdateRequestedInventory />} />
+      <Route path="/inventory/completed-update/:id" element={<UpdateCompletedInventory />} />
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />

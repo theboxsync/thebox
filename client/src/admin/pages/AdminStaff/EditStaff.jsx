@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { Country, State, City } from "country-state-city";
 
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
@@ -17,6 +18,11 @@ function EditStaff() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [frontImagePreview, setFrontImagePreview] = useState(null);
   const [backImagePreview, setBackImagePreview] = useState(null);
+
+  const [countries, setCountries] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [positions, setPositions] = useState([]);
 
   const navigate = useNavigate();
 
@@ -48,8 +54,22 @@ function EditStaff() {
         data.photo = null;
         data.front_image = null;
         data.back_image = null;
+
         setStaffData(data);
-        console.log("Staff Data : ", staffData);
+
+        // Populate states and cities based on existing data
+        if (data.country) {
+          const availableStates = State.getStatesOfCountry(data.country);
+          setStates(availableStates);
+
+          if (data.state) {
+            const availableCities = City.getCitiesOfState(
+              data.country,
+              data.state
+            );
+            setCities(availableCities);
+          }
+        }
       } catch (err) {
         console.error("Error fetching staff data:", err);
       }
@@ -57,6 +77,39 @@ function EditStaff() {
 
     fetchStaffData();
   }, [id]);
+
+  useEffect(() => {
+    setCountries(Country.getAllCountries());
+    const fetchPositions = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/getstaffpositions`,
+          { withCredentials: true }
+        );
+        setPositions(response.data); // Update positions state
+      } catch (error) {
+        console.error("Error fetching positions:", error);
+      }
+    };
+
+    fetchPositions();
+  }, []);
+
+  const handleCountryChange = (event) => {
+    const countryIsoCode = event.target.value;
+    formik.setFieldValue("country", countryIsoCode);
+    setStates(State.getStatesOfCountry(countryIsoCode));
+    setCities([]);
+    formik.setFieldValue("state", "");
+    formik.setFieldValue("city", "");
+  };
+
+  const handleStateChange = (event) => {
+    const stateIsoCode = event.target.value;
+    formik.setFieldValue("state", stateIsoCode);
+    setCities(City.getCitiesOfState(formik.values.country, stateIsoCode));
+    formik.setFieldValue("city", "");
+  };
 
   const formik = useFormik({
     enableReinitialize: true,
@@ -67,6 +120,9 @@ function EditStaff() {
       birth_date: "",
       joining_date: "",
       address: "",
+      country: "",
+      state: "",
+      city: "",
       phone_no: "",
       email: "",
       salary: "",
@@ -266,6 +322,94 @@ function EditStaff() {
                             </label>
                           ) : null}
                         </div>
+                        <div className="form-group row">
+                          <div className="col-md-4">
+                            <label htmlFor="country">Country</label>
+                            <select
+                              className="form-select custom-select"
+                              id="country"
+                              name="country"
+                              value={formik.values.country}
+                              onChange={handleCountryChange}
+                              onBlur={formik.handleBlur}
+                              required
+                            >
+                              <option defaultValue disabled value="">
+                                Select one
+                              </option>
+                              {countries.map((country) => (
+                                <option
+                                  key={country.isoCode}
+                                  value={country.isoCode}
+                                >
+                                  {country.name}
+                                </option>
+                              ))}
+                            </select>
+                            <label className="text-danger">
+                              {formik.errors.country && formik.touched.country
+                                ? formik.errors.country
+                                : null}
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <label htmlFor="state">State</label>
+                            <select
+                              className="form-select custom-select"
+                              id="state"
+                              name="state"
+                              value={formik.values.state}
+                              onChange={handleStateChange}
+                              onBlur={formik.handleBlur}
+                              required
+                              disabled={!formik.values.country}
+                            >
+                              <option defaultValue disabled value="">
+                                Select one
+                              </option>
+                              {states.map((state) => (
+                                <option
+                                  key={state.isoCode}
+                                  value={state.isoCode}
+                                >
+                                  {state.name}
+                                </option>
+                              ))}
+                            </select>
+                            <label className="text-danger">
+                              {formik.errors.state && formik.touched.state
+                                ? formik.errors.state
+                                : null}
+                            </label>
+                          </div>
+                          <div className="col-md-4">
+                            <label htmlFor="city">City</label>
+                            <select
+                              id="city"
+                              name="city"
+                              className="form-select custom-select"
+                              value={formik.values.city}
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              required
+                              disabled={!formik.values.state}
+                            >
+                              <option defaultValue disabled value="">
+                                Select one
+                              </option>
+                              {cities.map((city) => (
+                                <option key={city.name} value={city.name}>
+                                  {city.name}
+                                </option>
+                              ))}
+                            </select>
+                            <label className="text-danger">
+                              {formik.errors.city && formik.touched.city
+                                ? formik.errors.city
+                                : null}
+                            </label>
+                          </div>
+                        </div>
                         <div className="form-group">
                           <label htmlFor="mobile">Contact No.</label>
                           <input
@@ -298,21 +442,20 @@ function EditStaff() {
                           ) : null}
                         </div>
                         <div className="row">
-                          <div className="form-group col-md-6">
+                          <div className="form-group col-6">
                             <label htmlFor="position">Position</label>
                             <input
-                              autoComplete="off"
-                              role="combobox"
                               list="positions"
-                              id="input"
-                              className="form-control"
+                              id="position"
                               name="position"
+                              className="form-control"
                               value={formik.values.position}
                               onChange={formik.handleChange}
                             />
-                            <datalist id="positions" role="listbox">
-                              <option value="Owner">Owner</option>
-                              <option value="Manager">Manager</option>
+                            <datalist id="positions">
+                              {positions.map((pos, index) => (
+                                <option key={index} value={pos}></option>
+                              ))}
                             </datalist>
                             {formik.touched.position &&
                             formik.errors.position ? (

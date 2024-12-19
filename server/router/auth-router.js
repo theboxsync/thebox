@@ -22,8 +22,8 @@ router.route("/getmanagerdata").get(authMiddleware, authController.getManagerDat
 router.route("/getmanagerdata/:id").get(authController.getManagerDataById);
 router.route("/updatemanager/:id").put(authMiddleware, authController.updateManager);
 router
-  .route("/deletemanager/:id")
-  .delete(authMiddleware, authController.deleteManager);
+  .route("/deletemanager")
+  .post(authMiddleware, authController.deleteManager);
 router.route("/changemanagerpassword").post(authMiddleware, authController.changeManagerPassword);
 
 router.route("/addmenu").post(authMiddleware, authController.addMenu);
@@ -36,6 +36,7 @@ router
   .delete(authMiddleware, authController.deleteMenu);
 router.route("/setspecialdish/:id").put(authMiddleware, authController.setSpecialMenu);
 router.route("/removespecialdish/:id").put(authMiddleware, authController.removeSpecialMenu);
+router.route("/updateDishAvailability/:id").put(authMiddleware, authController.updateDishAvailability);
 
 router.route("/getinventorydata").get(authMiddleware, authController.getInventoryData);
 router.route("/getinventorydata/:id").get(authMiddleware, authController.getInventoryDataById);
@@ -45,12 +46,15 @@ router.route("/updateinventory/:id").put(authMiddleware, authController.updateIn
 router.route("/completeinventoryrequest").post(authMiddleware, authController.completeInventoryRequest);
 router.route("/rejectinventoryrequest/:id").post(authMiddleware, authController.rejectInventoryRequest);
 
+router.route("/getstaffpositions").get(authMiddleware, authController.getStaffPositions);
 router.route("/staffdata").get(authMiddleware, authController.getStaffData);
 router.route("/staffdata/:id").get(authMiddleware, authController.getStaffDataById);
 router.route("/addstaff").post(authMiddleware, authController.addStaff);
 router.route("/updatestaff/:id").put(authMiddleware, authController.updateStaff);
 router.route("/deletestaff/:id").delete(authMiddleware, authController.deleteStaff);
 
+router.route("/getdiningareas").get(authMiddleware, authController.getDiningAreas);
+router.route("/checktable").get(authMiddleware, authController.checkTable);
 router.route("/addtable").post(authMiddleware, authController.addTable);
 router.route("/gettabledata").get(authMiddleware, authController.getTableData);
 router

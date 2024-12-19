@@ -6,7 +6,9 @@ const Staff = require("../models/staffModel");
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Manager = require("../models/managerModel");
+const TokenCounter = require("../models/TokenCounter");
 
+const cron = require("node-cron");
 const fs = require("fs");
 const path = require("path");
 
@@ -296,11 +298,33 @@ const updateManager = async (req, res) => {
 };
 
 const deleteManager = async (req, res) => {
-  Manager.findByIdAndDelete(req.params.id)
-    .then((data) => res.json(data))
-    .catch((err) =>
-      res.status(500).json({ message: "Error deleting manager", error: err })
-    );
+  console.log("Delete Manager : ", req.body);
+  const { managerId, adminPassword } = req.body;
+  console.log("Manager Id : ", adminPassword);
+
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
+      return res.status(401).json({ message: "Invalid admin password." });
+    }
+
+    // Delete the manager
+    await Manager.findByIdAndDelete(managerId);
+    console.log("Manager deleted successfully.");
+    res.status(200).json({ message: "Manager deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting manager:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 const changeManagerPassword = async (req, res) => {
@@ -311,7 +335,7 @@ const changeManagerPassword = async (req, res) => {
     const admin = await User.findById(req.user); // Assuming admin is logged in
     if (!admin) return res.status(404).json({ message: "Admin not found." });
 
-    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    const isMatch = bcrypt.compare(adminPassword, admin.password);
     if (!isMatch)
       return res.status(401).json({ message: "Invalid admin password." });
 
@@ -439,17 +463,41 @@ const updateMenu = (req, res) => {
   }
 };
 
-const deleteMenu = (req, res) => {
+const deleteMenu = async (req, res) => {
   try {
-    const dishId = req.params.id; // This is the dish ID you want to delete
-    Menu.updateOne(
-      { "dishes._id": dishId }, // Find the menu document containing the dish with the specified ID
-      { $pull: { dishes: { _id: dishId } } } // Pull (remove) the dish with the specified ID from the dishes array
-    )
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
+    console.log("User : " + req.user);
+    const dishId = req.params.id;
+    const dishData = await Menu.findOne({ "dishes._id": dishId });
+    if (!dishData) {
+      return res.status(404).json({ message: "Dish not found" });
+    } else {
+      const category = dishData.category;
+      const meal_type = dishData.meal_type;
+
+      const updateResult = await Menu.updateOne(
+        { "dishes._id": dishId },
+        { $pull: { dishes: { _id: dishId } } }
+      );
+
+      if (updateResult.modifiedCount === 0) {
+        return res
+          .status(404)
+          .json({ message: "Dish not found or already deleted" });
+      }
+
+      const updatedMenu = await Menu.findOne({
+        category,
+        meal_type,
+        hotel_id: req.user,
+      });
+      console.log("Updated Menu : " + updatedMenu);
+      if (updatedMenu.dishes.length === 0) {
+        await Menu.deleteOne({ category, meal_type });
+      }
+      res.json({ message: "Dish deleted successfully" });
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Error in delete Menu:", error);
     res.status(500).send("An error occurred");
   }
 };
@@ -497,6 +545,28 @@ const removeSpecialMenu = (req, res) => {
   } catch {
     console.log(error);
     res.status(500).send("An error occurred");
+  }
+};
+
+const updateDishAvailability = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_available } = req.body;
+
+    // Find the dish and update its availability
+    const updatedMenu = await Menu.updateOne(
+      { "dishes._id": id },
+      { $set: { "dishes.$.is_available": is_available } }
+    );
+
+    if (updatedMenu.modifiedCount > 0) {
+      res.status(200).json({ message: "Dish availability updated" });
+    } else {
+      res.status(404).json({ message: "Dish not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -579,17 +649,39 @@ const deleteInventory = (req, res) => {
 };
 
 const completeInventoryRequest = async (req, res) => {
-  const { _id, bill_images, ...updateData } = req.body;
+  const { _id, bill_images, items, remainingItems, ...updateData } = req.body;
 
   try {
-    const inventory = await Inventory.findByIdAndUpdate(
-      _id,
-      { ...updateData, bill_images, status: "Completed" },
-      { new: true }
-    );
+    // Find the inventory by ID
+    const inventory = await Inventory.findById(_id);
     if (!inventory) {
       return res.status(404).json({ message: "Inventory not found" });
     }
+
+    // Check if remainingItems is empty
+    if (remainingItems.length === 0) {
+      // Delete the inventory if no remaining items
+      await Inventory.findByIdAndDelete(_id);
+      return res
+        .status(200)
+        .json({ message: "Inventory deleted successfully" });
+    }
+
+    // Update inventory with remaining items
+    inventory.items = remainingItems;
+    console.log("Remaining items: " + inventory.items); // Keep remaining items as requested
+    await inventory.save();
+
+    // Add completed items with bill details
+    const completedItems = {
+      ...updateData,
+      bill_images,
+      items,
+      status: "Completed",
+    };
+
+    await Inventory.create(completedItems);
+
     res.status(200).json({ message: "Inventory updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating inventory", error });
@@ -610,6 +702,16 @@ const rejectInventoryRequest = async (req, res) => {
     res.status(200).json({ message: "Inventory updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating inventory", error });
+  }
+};
+
+const getStaffPositions = (req, res) => {
+  try {
+    Staff.distinct("position", { hotel_id: req.user }).then((data) =>
+      res.json(data)
+    );
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -796,6 +898,36 @@ const getTableDataById = (req, res) => {
     console.log(error);
   }
 };
+
+const getDiningAreas = async (req, res) => {
+  try {
+    const areas = await Table.find({}, "area"); // Fetch distinct areas
+    const uniqueAreas = [...new Set(areas.map((item) => item.area))];
+    res.json(uniqueAreas);
+  } catch (error) {
+    console.error("Error fetching dining areas:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const checkTable = (req, res) => {
+  try {
+    console.log(req.query);
+    const { area, table_no } = req.query;
+    Table.findOne({ area, "tables.table_no": table_no, hotel_id: req.user })
+      .then((data) => {
+        if (data) {
+          res.json({ exists: true });
+        } else {
+          res.json({ exists: false });
+        }
+      })
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const addTable = (req, res) => {
   try {
     console.log(req.body);
@@ -834,17 +966,30 @@ const updateTable = (req, res) => {
   }
 };
 
-const deleteTable = (req, res) => {
+const deleteTable = async (req, res) => {
   try {
     const tableId = req.params.id;
-    Table.updateOne(
-      { "tables._id": tableId },
-      { $pull: { tables: { _id: tableId } } }
-    )
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
+    const tableData = await Table.findOne({ "tables._id": tableId });
+    if (!tableData) {
+      return res.status(404).json({ message: "Table not found" });
+    } else {
+      const area = tableData.area;
+      const result = await Table.updateOne(
+        { "tables._id": tableId },
+        { $pull: { tables: { _id: tableId } } }
+      );
+      if (result.modifiedCount === 0) {
+        return res.status(404).json({ message: "Table not found" });
+      }
+      const updatedArea = await Table.findOne({ area, hotel_id: req.user });
+      if (updatedArea.tables.length === 0) {
+        await Table.deleteOne({ area });
+      }
+      res.status(200).json({ message: "Table deleted successfully" });
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting table:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -970,6 +1115,34 @@ const getOrderData = (req, res) => {
 //   }
 // };
 
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const today = new Date();
+    const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    await TokenCounter.deleteMany({ date: { $lt: dateOnly } });
+    console.log("Token counter reset successfully.");
+  } catch (error) {
+    console.error("Error resetting token counter:", error);
+  }
+});
+
+const generateToken = async () => {
+  const today = new Date();
+  const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  let tokenCounter = await TokenCounter.findOne({ date: dateOnly });
+
+  if (!tokenCounter) {
+    tokenCounter = new TokenCounter({ date: dateOnly, lastToken: 0 });
+  }
+
+  tokenCounter.lastToken += 1;
+  await tokenCounter.save();
+
+  return tokenCounter.lastToken;
+};
+
 const orderController = async (req, res) => {
   try {
     console.log(req.body);
@@ -1036,6 +1209,12 @@ const orderController = async (req, res) => {
         table: tableDocument,
       });
     } else {
+      if (orderData.order_type === "Takeaway") {
+        if (!orderId) {
+          // Generate a new token for Takeaway orders
+          orderData.token = await generateToken();
+        }
+      }
       // For Delivery or Pickup, check if an order_id is provided
       if (orderId) {
         // Update the existing order
@@ -1180,10 +1359,13 @@ module.exports = {
   completeInventoryRequest,
   rejectInventoryRequest,
   getStaffData,
+  getStaffPositions,
   addStaff,
   updateStaff,
   deleteStaff,
   getTableData,
+  getDiningAreas,
+  checkTable,
   addTable,
   updateTable,
   deleteTable,
@@ -1192,6 +1374,7 @@ module.exports = {
   deleteMenu,
   setSpecialMenu,
   removeSpecialMenu,
+  updateDishAvailability,
   getMenuDataById,
   updateMenu,
   addOrder,

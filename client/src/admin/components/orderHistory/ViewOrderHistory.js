@@ -86,11 +86,26 @@ function ViewOrderHistory() {
       selector: (row) => row.total_amount,
       sortable: true,
     },
+    {
+      name: "Action",
+      cell: (row) => (
+        <>
+          <img
+            src="../../dist/img/eye-b.svg"
+            alt="view"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate(`/order-details/${row._id}`)}
+          />
+          {/* <button
+            className="btn btn-secondary ml-2"
+            onClick={() => navigate(`/order-details/${row._id}?print=true`)}
+          >
+            Print
+          </button> */}
+        </>
+      ),
+    },
   ];
-
-  const handleRowClick = (row) => {
-    navigate(`/order-details/${row._id}`);
-  };
 
   const tableStyle = {
     head: {
@@ -151,7 +166,6 @@ function ViewOrderHistory() {
         pagination
         highlightOnHover
         customStyles={tableStyle}
-        onRowClicked={handleRowClick}
         responsive
       />
     </div>

@@ -7,7 +7,7 @@ import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
-function UpdateInventory() {
+function UpdateRequestedInventory() {
   const { id } = useParams(); // Extract the inventory ID from URL
   const navigate = useNavigate();
 
@@ -189,4 +189,4 @@ function UpdateInventory() {
   );
 }
 
-export default UpdateInventory;
+export default UpdateRequestedInventory;

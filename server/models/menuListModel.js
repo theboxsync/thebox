@@ -33,7 +33,11 @@ const addMenu = new Schema({
       is_special: {
         type: Boolean,
         default: false,
-      }
+      },
+      is_available: {
+        type: Boolean,
+        default: true,
+      },
     }
   ]
 });

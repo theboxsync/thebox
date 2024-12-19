@@ -1,31 +1,89 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { addTable } from "../../../schemas";
 
 const AddTable = ({ setSection }) => {
+  const [tableErrors, setTableErrors] = useState({});
+  const [diningAreas, setDiningAreas] = useState([]);
+
+  useEffect(() => {
+    // Fetch dining areas from the backend
+    const fetchDiningAreas = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/getdiningareas`,
+          { withCredentials: true }
+        );
+        setDiningAreas(response.data); // Update state with fetched areas
+        console.log(response.data);
+      } catch (error) {
+        console.error("Error fetching dining areas:", error);
+      }
+    };
+
+    fetchDiningAreas();
+  }, []);
+
   const formik = useFormik({
     initialValues: {
       area: "",
       tables: [{ table_no: "", max_person: "" }],
     },
     validationSchema: addTable,
-    onSubmit: (values) => {
-      console.log(values);
-      axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addtable`, values, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data);
-          setSection("ViewTables");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+    onSubmit: async (values) => {
+      try {
+        // Check if there are any unresolved table errors
+        const hasErrors = Object.keys(tableErrors).length > 0;
+
+        if (hasErrors) {
+          console.error("Fix table errors before submitting:", tableErrors);
+          return; // Prevent form submission
+        }
+
+        // Proceed with form submission if no errors
+        const response = await axios.post(
+          `${process.env.REACT_APP_ADMIN_API}/addtable`,
+          values,
+          { withCredentials: true }
+        );
+        console.log(response.data);
+        setSection("ViewTables");
+      } catch (error) {
+        console.error(error);
+      }
     },
   });
+
+  // Check if table number already exists
+  const checkTableExists = async (area, table_no, index) => {
+    if (!area || !table_no) return;
+
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/checktable`,
+        {
+          params: { area, table_no },
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.exists) {
+        setTableErrors((prev) => ({
+          ...prev,
+          [index]: "Table number already exists in this area.",
+        }));
+      } else {
+        setTableErrors((prev) => {
+          const updatedErrors = { ...prev };
+          delete updatedErrors[index];
+          return updatedErrors;
+        });
+      }
+    } catch (error) {
+      console.error("Error checking table existence:", error);
+    }
+  };
 
   // Function to add more tables
   const addMoreTable = () => {
@@ -40,31 +98,16 @@ const AddTable = ({ setSection }) => {
     const updatedTables = [...formik.values.tables];
     updatedTables.splice(index, 1); // Remove the table at the specified index
     formik.setFieldValue("tables", updatedTables);
+
+    setTableErrors((prev) => {
+      const updatedErrors = { ...prev };
+      delete updatedErrors[index];
+      return updatedErrors;
+    });
   };
 
   return (
     <section className="content m-3" id="addTable">
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Add Table</h3>
-                <div className="card-tools">
-                  <button
-                    type="button"
-                    className="btn btn-block btn-dark"
-                    id="viewBtn"
-                    onClick={() => setSection("ViewTables")}
-                  >
-                    <img src="../../dist/img/icon/view.svg" /> View Table
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <div className="container-fluid">
         <form
           autoComplete="off"
@@ -74,25 +117,39 @@ const AddTable = ({ setSection }) => {
         >
           <div className="row">
             <div className="col-md-12">
-              <div className="card card-secondary">
+              <div className="card">
+                <div className="card-header">
+                  <h3 className="card-title">Manage Table </h3>
+                  <div className="card-tools">
+                    <button
+                      type="button"
+                      className="btn btn-block btn-dark"
+                      id="addBtn"
+                      onClick={() => setSection("ViewTables")}
+                    >
+                      <img src="../../dist/img/icon/add.svg" /> View Tables
+                    </button>
+                  </div>
+                </div>
                 <div className="card-body m-3">
                   <div className="row">
                     <div className="col-md-4">
                       <div className="form-group">
                         <label htmlFor="dtype">Dining Type</label>
-                        <select
+                        <input
+                          type="text"
                           name="area"
-                          className="form-select custom-select"
+                          className="form-control"
                           value={formik.values.area}
                           onChange={formik.handleChange}
                           onBlur={formik.handleBlur}
-                        >
-                          <option disabled value={""}>
-                            Select Option
-                          </option>
-                          <option value="A.C.">A.C.</option>
-                          <option value="Non A.C.">Non A.C.</option>
-                        </select>
+                          list="diningAreaList" // Link to the datalist
+                        />
+                        <datalist id="diningAreaList">
+                          {diningAreas.map((area, index) => (
+                            <option key={index} value={area} />
+                          ))}
+                        </datalist>
                         <label className="text-danger">
                           {formik.errors.area && formik.touched.area
                             ? formik.errors.area
@@ -113,13 +170,20 @@ const AddTable = ({ setSection }) => {
                             className="form-control"
                             value={table.table_no}
                             onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
+                            onBlur={() =>
+                              checkTableExists(
+                                formik.values.area,
+                                table.table_no,
+                                index
+                              )
+                            }
                           />
                           <label className="text-danger">
-                            {formik.errors.tables?.[index]?.table_no &&
-                            formik.touched.tables?.[index]?.table_no
-                              ? formik.errors.tables[index].table_no
-                              : null}
+                            {tableErrors[index] ||
+                              (formik.errors.tables?.[index]?.table_no &&
+                              formik.touched.tables?.[index]?.table_no
+                                ? formik.errors.tables[index].table_no
+                                : null)}
                           </label>
                         </div>
                         <div className="form-group col-md-4">

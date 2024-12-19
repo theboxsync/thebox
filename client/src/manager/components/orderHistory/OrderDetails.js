@@ -28,6 +28,9 @@ function OrderDetails() {
       setLoading(false);
     }
   };
+  const handlePrint = () => {
+    window.print();
+  };
 
   useEffect(() => {
     fetchOrderDetails();
@@ -42,13 +45,20 @@ function OrderDetails() {
         <Navbar />
         <MenuBar />
         <div className="content-wrapper">
-          <div>
+          <div id="printable-invoice">
             {order.map((data) => (
               <div className="container-fluid px-5 py-3">
-                <h2 className="mb-3 text-center font-weight-bold">Order Details</h2>
+                <h2 className="mb-3 text-center font-weight-bold">
+                  Order Details
+                </h2>
                 <div className="card">
                   <div className="card-body">
-                    <h4><strong>Customer: </strong> {data.customer_name}</h4>
+                    <h4>
+                      <strong>Customer: </strong> {data.customer_name}
+                    </h4>
+                    <p>
+                      <strong>Order ID:</strong> {data._id}
+                    </p>
                     <p>
                       <strong>Order Type:</strong> {data.order_type}
                     </p>
@@ -79,8 +89,6 @@ function OrderDetails() {
                         <th>Dish Name</th>
                         <th>Quantity</th>
                         <th>Price</th>
-                        <th>Special Notes</th>
-                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -89,8 +97,6 @@ function OrderDetails() {
                           <td>{item.dish_name}</td>
                           <td>{item.quantity}</td>
                           <td>{item.dish_price}</td>
-                          <td>{item.special_notes || "-"}</td>
-                          <td>{item.status}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -115,6 +121,12 @@ function OrderDetails() {
                 </div>
               </div>
             ))}
+            {/* Print Button */}
+          <div className="text-center m-3 print-btn">
+            <button className="btn btn-dark" onClick={handlePrint}>
+              Print Invoice
+            </button>
+          </div>
           </div>
           <Footer />
         </div>

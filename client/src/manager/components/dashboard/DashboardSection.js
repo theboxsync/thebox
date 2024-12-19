@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import RemoveSpecialModal from "./RemoveSpecialModal";
-import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
-
 function DashboardSection({
   setMainSection,
   setTableId,
@@ -11,7 +8,6 @@ function DashboardSection({
   setOrderType,
 }) {
   const [tableData, setTableData] = useState([]);
-  const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [specialDishes, setSpecialDishes] = useState([]);
   const [activeDeliveries, setActiveDeliveries] = useState([]);
 
@@ -39,7 +35,8 @@ function DashboardSection({
       // Filter orders based on the condition
       const deliveries = response.data.filter(
         (order) =>
-          (order.order_type === "Delivery" || order.order_type === "Pickup") &&
+          (order.order_type === "Delivery" ||
+            order.order_type === "Takeaway") && // Past Pickup
           (order.order_status !== "Paid" ||
             order.order_items.some((item) => item.status === "Prepairing"))
       );
@@ -94,19 +91,6 @@ function DashboardSection({
     }
   };
 
-  const [removeSpecialModalData, setRemoveSpecialModalData] = useState({});
-  const removeSpecialModal = (id) => {
-    console.log(id);
-    axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/getmenudata/${id}`)
-      .then((res) => {
-        setRemoveSpecialModalData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err));
-    setShowRemoveSpecialModal(true);
-  };
-
   return (
     <>
       <section className="content">
@@ -127,11 +111,11 @@ function DashboardSection({
                   <button
                     className="btn text-center mx-3"
                     onClick={() => {
-                      setOrderType("Pickup");
+                      setOrderType("Takeaway"); // Past Pickup
                       setMainSection("OrderSection");
                     }}
                   >
-                    Pick up
+                    Takeaway
                   </button>
                 </div>
               </div>
@@ -179,7 +163,7 @@ function DashboardSection({
                 <div className="col-md-6">
                   <div className="card">
                     <div className="card-header">
-                      <h3 className="card-title">Active Delivery & Pickup</h3>
+                      <h3 className="card-title">Active Delivery & Takeaway</h3>
                     </div>
                     <div className="card-body">
                       {activeDeliveries.length > 0 ? (
@@ -187,16 +171,22 @@ function DashboardSection({
                           <div key={order._id} className="card m-2">
                             <div className="card-body">
                               <div className="row">
-                              <div className="col-md-2">
+                                <div className="col-md-2">
                                   <span>
                                     <strong>{order.order_type}</strong>{" "}
                                   </span>
                                 </div>
                                 <div className="col-md-4">
-                                  <span>
-                                    <strong>Customer: </strong>{" "}
-                                    {order.customer_name}
-                                  </span>
+                                  {order.order_type === "Takeaway" ? (
+                                    <span>
+                                      <strong>Token: </strong> {order.token}
+                                    </span>
+                                  ) : (
+                                    <span>
+                                      <strong>Customer: </strong>{" "}
+                                      {order.customer_name}
+                                    </span>
+                                  )}
                                 </div>
                                 <div className="col-md-4">
                                   <span>
@@ -246,23 +236,10 @@ function DashboardSection({
                       <div className="card m-2">
                         <div className="card-body">
                           <div className="row">
-                            <div className="col-md-6">
+                            <div className="col-md-9">
                               <b>{dish.dish_name}</b>
                             </div>
-                            <div className="col-md-2">{dish.dish_price}</div>
-                            <div className="col-md-4">
-                              <div
-                                className="bg-transparent m-1"
-                                title="Remove Special Dish"
-                                style={{ cursor: "pointer", width: "32px" }}
-                                onClick={() => removeSpecialModal(dish._id)}
-                              >
-                                <img
-                                  src={utensilsslash}
-                                  alt="Remove Special Dish"
-                                />
-                              </div>
-                            </div>
+                            <div className="col-md-3">{dish.dish_price}</div>
                           </div>
                         </div>
                       </div>
@@ -274,13 +251,6 @@ function DashboardSection({
           </div>
         </div>
       </section>
-
-      <RemoveSpecialModal
-        show={showRemoveSpecialModal}
-        handleClose={() => setShowRemoveSpecialModal(false)}
-        data={removeSpecialModalData}
-        fetchMenuData={fetchSpecialDishes}
-      />
     </>
   );
 }

@@ -1,8 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Modal, Button, Table } from "react-bootstrap";
+import { Country, State } from "country-state-city"; // Import helpers
 
 function StaffProfileModal({ show, handleClose, data, deletestaff }) {
+  // Get full country name from country code
+  const getCountryName = (countryCode) => {
+    const country = Country.getCountryByCode(countryCode);
+    return country ? country.name : countryCode; // Fallback to code if not found
+  };
+
+  // Get full state name from state code and country code
+  const getStateName = (stateCode, countryCode) => {
+    const state = State.getStateByCodeAndCountry(stateCode, countryCode);
+    return state ? state.name : stateCode; // Fallback to code if not found
+  };
+
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton>
@@ -44,6 +57,18 @@ function StaffProfileModal({ show, handleClose, data, deletestaff }) {
                 <td>{data.address}</td>
               </tr>
               <tr>
+                <td style={{ fontWeight: "bold", width: 200 }}>Country</td>
+                <td>{getCountryName(data.country)}</td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: "bold", width: 200 }}>State</td>
+                <td>{getStateName(data.state, data.country)}</td>
+              </tr>
+              <tr>
+                <td style={{ fontWeight: "bold", width: 200 }}>City</td>
+                <td>{data.city}</td>
+              </tr>
+              <tr>
                 <td style={{ fontWeight: "bold", width: 200 }}>Phone No</td>
                 <td>{data.phone_no}</td>
               </tr>
@@ -64,15 +89,11 @@ function StaffProfileModal({ show, handleClose, data, deletestaff }) {
                 <td>{data.salary}</td>
               </tr>
               <tr>
-                <td style={{ fontWeight: "bold", width: 200 }}>
-                  Document Type
-                </td>
+                <td style={{ fontWeight: "bold", width: 200 }}>Document Type</td>
                 <td>{data.document_type}</td>
               </tr>
               <tr>
-                <td style={{ fontWeight: "bold", width: 200 }}>
-                  ID Card Number
-                </td>
+                <td style={{ fontWeight: "bold", width: 200 }}>ID Card Number</td>
                 <td>{data.id_number}</td>
               </tr>
             </tbody>

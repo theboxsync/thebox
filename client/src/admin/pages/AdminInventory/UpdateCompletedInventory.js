@@ -1,53 +1,58 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
+import { addInventory } from "../../../schemas";
 
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
-import { completeInventory } from "../../../schemas";
-
-function CompleteInventory() {
-  const { state } = useLocation(); // Receives prefilled data from ViewInventory
+function UpdateCompletedInventory({ setSection }) {
   const navigate = useNavigate();
+  const { id } = useParams(); // Get inventory ID from route params
 
-  // Initial values for the form
-  const [initialValues, setInitialValues] = useState({
-    request_date: "",
-    bill_date: "",
-    bill_number: null,
-    vendor_name: "",
-    category: "",
-    bill_files: "",
-    total_amount: 0,
-    paid_amount: 0,
-    unpaid_amount: 0,
-    items: [
-      {
-        item_name: "",
-        item_quantity: 0,
-        unit: "",
-        item_price: null,
-      },
-    ],
-  });
+  // State for file previews
+  const [filePreviews, setFilePreviews] = useState([]);
 
-  const fetchInventoryData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getinventorydata/${state.id}`,
-        { withCredentials: true }
-      );
-      setInitialValues({ ...initialValues, ...response.data });
-    } catch (error) {
-      console.error("Error fetching inventory data:", error);
-      return null;
-    }
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
+  // Fetch inventory data for editing
+  useEffect(() => {
+    const fetchInventory = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/getinventorydata/${id}`,
+          { withCredentials: true }
+        );
+        const data = response.data;
+        data.bill_date = formatDate(data.bill_date);
+        // Populate form with fetched data
+        Object.keys(data).forEach((key) => setFieldValue(key, data[key]));
+        if (data.bill_files) {
+          const previews = data.bill_files.map((file) => ({
+            type: file.endsWith(".pdf") ? "pdf" : "image",
+            src: `${process.env.REACT_APP_ADMIN_API}/uploads/inventory/bills/${file}`,
+            name: file,
+          }));
+          setFilePreviews(previews);
+        }
+      } catch (error) {
+        console.error("Failed to fetch inventory:", error);
+        alert("Error fetching inventory data.");
+      }
+    };
+
+    fetchInventory();
+  }, [id]);
+
+  // File upload handler
   const uploadFiles = async (files) => {
     const formData = new FormData();
     Array.from(files).forEach((file) => {
@@ -65,7 +70,7 @@ function CompleteInventory() {
           },
         }
       );
-      return response.data.fileNames; // Return an array of file paths
+      return response.data.fileNames;
     } catch (error) {
       console.error("File upload failed:", error);
       alert("Failed to upload files. Please try again.");
@@ -73,17 +78,7 @@ function CompleteInventory() {
     }
   };
 
-  // Prefill form data if inventory data is passed
-  useEffect(() => {
-    fetchInventoryData();
-    console.log("Intial Values : ", initialValues);
-  }, [state]);
-
-  // Calculate unpaid amount dynamically
-  const calculateUnpaidAmount = (totalAmount, paidAmount) =>
-    totalAmount - paidAmount;
-
-  // Setup Formik
+  // Formik setup
   const {
     values,
     handleSubmit,
@@ -93,31 +88,45 @@ function CompleteInventory() {
     errors,
     setFieldValue,
   } = useFormik({
-    initialValues,
-    enableReinitialize: true,
-    validationSchema: completeInventory,
+    initialValues: {
+      request_date: "",
+      bill_date: "",
+      bill_number: "",
+      vendor_name: "",
+      category: "",
+      bill_files: "",
+      total_amount: 0,
+      paid_amount: 0,
+      unpaid_amount: 0,
+      items: [
+        {
+          item_name: "",
+          item_quantity: 0,
+          unit: "",
+          item_price: 0,
+        },
+      ],
+      status: "Completed",
+    },
+    // validationSchema: addInventory,
     onSubmit: async (values) => {
       try {
+        console.log("Submitting edited data", values);
         let fileNames = [];
-        if (values.bill_files) {
+        if (values.bill_files instanceof FileList) {
           fileNames = await uploadFiles(values.bill_files);
         }
 
-        const completedItems = values.items.filter((item) => item.completed);
-        const remainingItems = values.items.filter((item) => !item.completed);
-
         const requestData = {
           ...values,
-          bill_files: fileNames,
-          items: completedItems, // Only send completed items
+          bill_files: fileNames.length ? fileNames : values.bill_files,
         };
 
-        await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/completeinventoryrequest`,
-          { ...requestData, remainingItems },
+        await axios.put(
+          `${process.env.REACT_APP_ADMIN_API}/updateinventory/${id}`,
+          requestData,
           { withCredentials: true }
         );
-
         alert("Inventory updated successfully!");
         navigate("/inventory");
       } catch (error) {
@@ -127,57 +136,67 @@ function CompleteInventory() {
     },
   });
 
-  const [filePreviews, setFilePreviews] = useState([]); // Store preview data
-
+  // Handle file preview generation
   const previewFiles = (files) => {
     const previews = Array.from(files)
       .map((file) => {
         if (file.type.startsWith("image/")) {
-          // Preview for images
           return {
             type: "image",
             src: URL.createObjectURL(file),
             name: file.name,
           };
         } else if (file.type === "application/pdf") {
-          // Preview for PDFs
           return {
             type: "pdf",
             src: URL.createObjectURL(file),
             name: file.name,
           };
-        } else {
-          return null;
         }
+        return null;
       })
       .filter(Boolean);
 
-    setFilePreviews(previews); // Update previews state
+    setFilePreviews(previews);
+  };
+
+  // Calculate unpaid amount dynamically
+  const calculateUnpaidAmount = (totalAmount, paidAmount) =>
+    totalAmount - paidAmount;
+
+  // Add or remove item handlers
+  const addItem = () => {
+    const newItem = {
+      item_name: "",
+      item_quantity: 0,
+      unit: "",
+      item_price: 0,
+    };
+    setFieldValue("items", [...values.items, newItem]);
+  };
+
+  const removeItem = (index) => {
+    const updatedItems = values.items.filter((_, i) => i !== index);
+    setFieldValue("items", updatedItems);
   };
 
   return (
     <div className="wrapper">
       <Navbar />
       <MenuBar />
-      <div className="content-wrapper">
-        <div className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2"></div>
-          </div>
-        </div>
+      <div className="content-wrapper p-3">
         <section className="content">
           <div className="container-fluid">
             <div className="row">
               <div className="col-12">
                 <div className="card">
                   <div className="card-header">
-                    <h3 className="card-title">Complete Inventory Request</h3>
+                    <h3 className="card-title">Update Inventory</h3>
                     <div className="card-tools">
                       <button
                         type="button"
                         className="btn btn-block btn-dark"
-                        id="viewBtn"
-                        onClick={() => navigate("/inventory/")}
+                        onClick={() => navigate("/inventory")}
                       >
                         <img src="../../dist/img/view.svg" alt="view" /> View
                         Inventory
@@ -286,7 +305,7 @@ function CompleteInventory() {
                               {file.type === "image" ? (
                                 <img
                                   src={file.src}
-                                  alt={file.name}
+                                  alt="Preview"
                                   style={{
                                     width: "100px",
                                     height: "100px",
@@ -296,7 +315,7 @@ function CompleteInventory() {
                               ) : (
                                 <iframe
                                   src={file.src}
-                                  title={file.name}
+                                  title="Preview"
                                   style={{
                                     width: "100px",
                                     height: "100px",
@@ -380,46 +399,33 @@ function CompleteInventory() {
                     <div className="card-body">
                       {values.items.map((item, index) => (
                         <div key={index} className="mb-3">
-                          <div className="form-group">
-                            <label>
+                          <div className="form-group row">
+                            <div className="col-md-10">
+                              <label>Item Name</label>
                               <input
-                                type="checkbox"
-                                name={`items.${index}.completed`}
-                                className="mx-2"
-                                checked={item.completed}
-                                onChange={(e) => {
-                                  setFieldValue(
-                                    `items.${index}.completed`,
-                                    e.target.checked
-                                  );
-                                  if (!e.target.checked) {
-                                    setFieldValue(
-                                      `items.${index}.item_price`,
-                                      null
-                                    ); // Reset price if unchecked
-                                  }
-                                }}
+                                type="text"
+                                name={`items.${index}.item_name`}
+                                value={item.item_name}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                className="form-control"
                               />
-                              Mark as Completed
-                            </label>
-                          </div>
-                          <div className="form-group">
-                            <label>Item Name</label>
-                            <input
-                              type="text"
-                              name={`items.${index}.item_name`}
-                              value={item.item_name}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              className="form-control"
-                              readOnly
-                            />
-                            {touched.items?.[index]?.item_name &&
-                              errors.items?.[index]?.item_name && (
-                                <div className="text-danger">
-                                  {errors.items[index].item_name}
-                                </div>
-                              )}
+                              {touched.items?.[index]?.item_name &&
+                                errors.items?.[index]?.item_name && (
+                                  <div className="text-danger">
+                                    {errors.items[index].item_name}
+                                  </div>
+                                )}
+                            </div>
+                            <div className="col-md-2">
+                              <button
+                                type="button"
+                                className="btn btn-danger float-right"
+                                onClick={() => removeItem(index)}
+                              >
+                                Remove
+                              </button>
+                            </div>
                           </div>
                           <div className="form-group row">
                             <div className="col-md-6">
@@ -431,7 +437,6 @@ function CompleteInventory() {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 className="form-control"
-                                readOnly
                               />
                               {touched.items?.[index]?.item_quantity &&
                                 errors.items?.[index]?.item_quantity && (
@@ -441,16 +446,24 @@ function CompleteInventory() {
                                 )}
                             </div>
                             <div className="col-md-6">
-                              <label>Unit</label>
-                              <input
-                                type="text"
+                              <label htmlFor="unit">Weight Type</label>
+                              <select
                                 name={`items.${index}.unit`}
+                                className="form-control custom-select"
                                 value={item.unit}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
-                                className="form-control"
-                                readOnly
-                              />
+                              >
+                                <option value={""} defaultValue={""} disabled>
+                                  Select Option
+                                </option>
+                                <option value="Kilogram">Kilogram(kg)</option>
+                                <option value="Grams">Grams(g)</option>
+                                <option value="Liter">Liter(L)</option>
+                                <option value="ml">Milligram Liter</option>
+                                <option value="nos">Nos</option>
+                                <option value="Pieces">Pieces</option>
+                              </select>
                               {touched.items?.[index]?.unit &&
                                 errors.items?.[index]?.unit && (
                                   <div className="text-danger">
@@ -459,43 +472,49 @@ function CompleteInventory() {
                                 )}
                             </div>
                           </div>
-                          <p>
-                            <div className="form-group">
-                              <label>Item Price</label>
-                              <input
-                                type="number"
-                                name={`items.${index}.item_price`}
-                                value={item.item_price || ""}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                className="form-control"
-                              />
-                              {touched.items?.[index]?.item_price &&
-                                errors.items?.[index]?.item_price && (
-                                  <div className="text-danger">
-                                    {typeof errors.items[index].item_price ===
-                                    "string"
-                                      ? errors.items[index].item_price
-                                      : JSON.stringify(
-                                          errors.items[index].item_price
-                                        )}
-                                  </div>
-                                )}
-                            </div>
-                          </p>
+                          <div className="form-group">
+                            <label>Item Price</label>
+                            <input
+                              type="number"
+                              name={`items.${index}.item_price`}
+                              value={item.item_price}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              className="form-control"
+                            />
+                            {touched.items?.[index]?.item_price &&
+                              errors.items?.[index]?.item_price && (
+                                <div className="text-danger">
+                                  {errors.items[index].item_price}
+                                </div>
+                              )}
+                          </div>
                           <hr style={{ border: "1px solid #ccc" }} />
                         </div>
                       ))}
-                      {touched.items && errors.items && (
-                        <div className="text-danger">{errors.items}</div>
-                      )}
-                      <button
-                        type="submit"
-                        className="btn btn-success mt-4"
-                        onClick={handleSubmit}
-                      >
-                        Complete Request
-                      </button>
+                      <div className="form-group">
+                        <button
+                          type="button"
+                          className="btn btn-dark"
+                          onClick={addItem}
+                        >
+                          + Add More Item
+                        </button>
+                      </div>
+                      <div className="form-group">
+                        <button
+                          type="submit"
+                          name="submit"
+                          className="btn btn-dark mt-4"
+                        >
+                          <img
+                            src="../../dist/img/add.svg"
+                            alt="Add"
+                            className="mx-1"
+                          />
+                          Update
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -503,10 +522,9 @@ function CompleteInventory() {
             </form>
           </div>
         </section>
-        <Footer />
       </div>
     </div>
   );
 }
 
-export default CompleteInventory;
+export default UpdateCompletedInventory;

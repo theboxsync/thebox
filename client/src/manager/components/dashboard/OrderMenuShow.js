@@ -50,7 +50,7 @@ function OrderMenuShow({ addItemToOrder }) {
     fetchCategories();
   }, []);
 
-  // Filter dishes based on search text, meal type, category, and special status
+  // Filter dishes based on search text, meal type, category, special status, and availability
   const filteredMenuData = menuData.map((data) => ({
     ...data,
     dishes: data.dishes.filter(
@@ -58,7 +58,8 @@ function OrderMenuShow({ addItemToOrder }) {
         dish.dish_name.toLowerCase().includes(searchText.toLowerCase()) &&
         (mealType === "" || data.meal_type === mealType) &&
         (category === "" || data.category === category) &&
-        (!showSpecial || dish.is_special) // Filter for special dishes
+        (!showSpecial || dish.is_special) && // Filter for special dishes
+        dish.is_available // Filter for available dishes only
     ),
   }));
 
@@ -117,7 +118,7 @@ function OrderMenuShow({ addItemToOrder }) {
         style={{
           overflowX: "hidden",
           overflowY: "auto",
-          height: "calc(100% - 70px)",
+          height: "calc(100% - 140px)",
         }}
       >
         <div className="row">

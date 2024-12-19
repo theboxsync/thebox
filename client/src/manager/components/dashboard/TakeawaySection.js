@@ -1,6 +1,6 @@
 import React from "react";
 
-function PickupSection({
+function TakeawaySection({
   orderInfo,
   setOrderInfo,
   customerInfo,
@@ -8,7 +8,7 @@ function PickupSection({
 }) {
   return (
     <>
-      <h4 className="text-center mt-2" style={{ fontWeight:"bold" }}>Pickup</h4>
+      <h4 className="text-center mt-2" style={{ fontWeight:"bold" }}>Takeaway</h4>
       <hr />
       <div className="form-group row w-100 p-2">
         <div className="col-md-4">
@@ -65,4 +65,4 @@ function PickupSection({
   );
 }
 
-export default PickupSection;
+export default TakeawaySection;

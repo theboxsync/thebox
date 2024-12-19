@@ -1,11 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import DataTable from "react-data-table-component";
+import DeleteInventoryModal from "./DeleteInventoryModal";
 
 function InventoryHistory({ setSection }) {
   const navigate = useNavigate();
+
+  // State for completed and rejected inventory
   const [completedInventory, setCompletedInventory] = useState([]);
   const [rejectedInventory, setRejectedInventory] = useState([]);
+  const [filteredCompletedInventory, setFilteredCompletedInventory] = useState(
+    []
+  );
+  const [filteredRejectedInventory, setFilteredRejectedInventory] = useState(
+    []
+  );
+
+  // Filters for Completed
+  const [completedSearchTerm, setCompletedSearchTerm] = useState("");
+  const [completedStartDate, setCompletedStartDate] = useState("");
+  const [completedEndDate, setCompletedEndDate] = useState("");
+
+  // Filters for Rejected
+  const [rejectedSearchTerm, setRejectedSearchTerm] = useState("");
+  const [rejectedStartDate, setRejectedStartDate] = useState("");
+  const [rejectedEndDate, setRejectedEndDate] = useState("");
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
 
   const fetchInventoryData = async () => {
     try {
@@ -24,6 +47,8 @@ function InventoryHistory({ setSection }) {
 
       setCompletedInventory(completed);
       setRejectedInventory(rejected);
+      setFilteredCompletedInventory(completed);
+      setFilteredRejectedInventory(rejected);
     } catch (error) {
       console.error("Error fetching inventory history:", error);
     }
@@ -32,6 +57,82 @@ function InventoryHistory({ setSection }) {
   useEffect(() => {
     fetchInventoryData();
   }, []);
+
+  // Filtering for Completed Requests
+  useEffect(() => {
+    const filterData = (data) => {
+      return data.filter((item) => {
+        const matchesSearch =
+          completedSearchTerm === "" ||
+          Object.values(item)
+            .join(" ")
+            .toLowerCase()
+            .includes(completedSearchTerm.toLowerCase()) ||
+          item.items.some((subItem) =>
+            Object.values(subItem)
+              .join(" ")
+              .toLowerCase()
+              .includes(completedSearchTerm.toLowerCase())
+          );
+        const matchesDate =
+          (!completedStartDate ||
+            new Date(item.request_date) >= new Date(completedStartDate)) &&
+          (!completedEndDate ||
+            new Date(item.request_date) <= new Date(completedEndDate));
+        return matchesSearch && matchesDate;
+      });
+    };
+
+    setFilteredCompletedInventory(filterData(completedInventory));
+  }, [
+    completedSearchTerm,
+    completedStartDate,
+    completedEndDate,
+    completedInventory,
+  ]);
+
+  // Filtering for Rejected Requests
+  useEffect(() => {
+    const filterData = (data) => {
+      return data.filter((item) => {
+        const matchesSearch =
+          rejectedSearchTerm === "" ||
+          Object.values(item)
+            .join(" ")
+            .toLowerCase()
+            .includes(rejectedSearchTerm.toLowerCase()) ||
+          item.items.some((subItem) =>
+            Object.values(subItem)
+              .join(" ")
+              .toLowerCase()
+              .includes(rejectedSearchTerm.toLowerCase())
+          );
+        const matchesDate =
+          (!rejectedStartDate ||
+            new Date(item.request_date) >= new Date(rejectedStartDate)) &&
+          (!rejectedEndDate ||
+            new Date(item.request_date) <= new Date(rejectedEndDate));
+        return matchesSearch && matchesDate;
+      });
+    };
+
+    setFilteredRejectedInventory(filterData(rejectedInventory));
+  }, [
+    rejectedSearchTerm,
+    rejectedStartDate,
+    rejectedEndDate,
+    rejectedInventory,
+  ]);
+
+  const handleDelete = (id) => {
+    setDeleteId(id);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeleteId(null);
+  };
 
   const formatToIST = (dateString) => {
     const date = new Date(dateString);
@@ -46,169 +147,280 @@ function InventoryHistory({ setSection }) {
     });
   };
 
+  const formatToISTshort = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  // DataTable Columns for Completed Requests
+  const completedColumns = [
+    {
+      name: "Requested Date",
+      selector: (row) => formatToISTshort(row.request_date),
+      sortable: true,
+    },
+    {
+      name: "Bill Date",
+      selector: (row) => formatToISTshort(row.bill_date),
+      sortable: true,
+    },
+    { name: "Bill Number", selector: (row) => row.bill_number, sortable: true },
+    { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
+    {
+      name: "Total Amount",
+      selector: (row) => row.total_amount,
+      sortable: true,
+    },
+    {
+      name: "Unpaid Amount",
+      selector: (row) => row.unpaid_amount,
+      sortable: true,
+    },
+    {
+      name: "Items",
+      cell: (row) =>
+        row.items.map((item) => (
+          <p key={item._id}>
+            {item.item_name} - {item.item_quantity} {item.unit}
+          </p>
+        )),
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div>
+          <button
+            className="btn btn-transparent bg-transparent"
+            title="View Details"
+            onClick={() => navigate(`/inventory/complete-details/${row._id}`)}
+          >
+            <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
+          </button>
+          <button
+            className="btn btn-transparent bg-transparent"
+            title="Edit"
+            onClick={() => navigate(`/inventory/completed-update/${row._id}`)}
+          >
+            <img src="../../dist/img/edit-b.svg" alt="Edit" />
+          </button>
+          <button
+            className="btn btn-transparent bg-transparent"
+            title="Delete"
+            onClick={() => handleDelete(row._id)}
+          >
+            <img src="../../dist/img/delete-b.svg" alt="Delete" />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  // DataTable Columns for Rejected Requests
+  const rejectedColumns = [
+    {
+      name: "Requested Date",
+      selector: (row) => formatToIST(row.request_date),
+      sortable: true,
+    },
+    {
+      name: "Items",
+      cell: (row) =>
+        row.items.map((item) => (
+          <p key={item._id}>
+            {item.item_name} - {item.item_quantity} {item.unit}
+          </p>
+        )),
+    },
+    { name: "Status", selector: (row) => row.status, sortable: true },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <>
+          <button
+            className="btn btn-transparent bg-transparent"
+            title="View Details"
+            onClick={() => navigate(`/inventory/details/${row._id}`)}
+          >
+            <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
+          </button>
+          <button
+            className="btn btn-transparent bg-transparent"
+            title="Delete"
+            onClick={() => handleDelete(row._id)}
+          >
+            <img src="../../dist/img/delete-b.svg" alt="Delete" />
+          </button>
+        </>
+      ),
+    },
+  ];
+
+  const rejectResetFilters = () => {
+    setRejectedSearchTerm("");
+    setRejectedStartDate("");
+    setRejectedEndDate("");
+  };
+
+  const comfirmResetFilters = () => {
+    setCompletedSearchTerm("");
+    setCompletedStartDate("");
+    setCompletedEndDate("");
+  };
+
   return (
     <section className="content">
       <div className="container-fluid">
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Requested Inventory</h3>
-                <div className="card-tools">
-                  <button
-                    type="button"
-                    className="btn btn-dark"
-                    onClick={() => setSection("AddInventory")}
-                  >
-                    <img
-                      src="../../dist/img/add.svg"
-                      alt="Add"
-                      className="mx-1"
-                    />
-                    Add Inventory
-                  </button>
-                </div>
-                <div className="card-tools mx-2">
-                  <button
-                    type="button"
-                    className="btn btn-block btn-dark"
-                    id="viewBtn"
-                    onClick={() => setSection("ViewInventory")}
-                  >
-                    <img src="../../dist/img/view.svg" /> View Requests
-                  </button>
-                </div>
-                {/* <div className="card-tools mx-2">
-                    <button
-                      type="button"
-                      className="btn btn-dark"
-                      data-bs-toggle="modal"
-                      onClick={() => setShowFilterModal(true)}
-                    >
-                      <img src="../../dist/img/filter.svg" alt="Filter" />{" "}
-                      Filter
-                    </button>
-                  </div> */}
-              </div>
-              <div className="card-header">
-                <h3 className="card-title">Completed Requests</h3>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table className="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>Bill Date</th>
-                        <th>Bill Number</th>
-                        <th>Category</th>
-                        <th>Vendor Name</th>
-                        <th>Total Amount</th>
-                        <th>Unpaid Amount</th>
-                        <th>Items</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {completedInventory.map((data) => (
-                        <tr key={data._id}>
-                          <td>
-                            {new Date(
-                              data.bill_date
-                            ).toLocaleDateString("en-IN", {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </td>
-                          <td>{data.bill_number}</td>
-                          <td>{data.category}</td>
-                          <td>{data.vendor_name}</td>
-                          <td>{data.total_amount}</td>
-                          <td>{data.unpaid_amount}</td>
-                          <td>
-                            {data.items.map((item) => (
-                              <p key={item._id}>
-                                {item.item_name} - {item.item_quantity}{" "}
-                                {item.unit}
-                              </p>
-                            ))}
-                          </td>
-                          <td>{data.status}</td>
-                          <td>
-                            <button
-                              className="btn btn-transparent bg-transparent"
-                              title="View Details"
-                              onClick={() =>
-                                navigate(`/inventory/complete-details/${data._id}`)
-                              }
-                            >
-                              <img
-                                src="../../dist/img/icon/eye-b.svg"
-                                alt="View Details"
-                              />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Inventory History</h3>
+            <div className="card-tools">
+              <button
+                type="button"
+                className="btn btn-dark mx-2"
+                onClick={() => setSection("ViewInventory")}
+              >
+                <img
+                  src="../../dist/img/view.svg"
+                  alt="History"
+                  className="mx-1"
+                />
+                View Inventory
+              </button>
+              <button
+                type="button"
+                className="btn btn-dark"
+                onClick={() => setSection("AddInventory")}
+              >
+                <img src="../../dist/img/add.svg" alt="Add" className="mx-1" />
+                Add Inventory
+              </button>
             </div>
           </div>
         </div>
-        <div className="row">
-          <div className="col-12">
-            <div className="card">
-              <div className="card-header">
-                <h3 className="card-title">Rejected Requests</h3>
-              </div>
-              <div className="card-body">
-                <div className="table-responsive">
-                  <table className="table table-bordered table-striped">
-                    <thead>
-                      <tr>
-                        <th>Requested Date</th>
-                        <th>Items</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {rejectedInventory.map((data) => (
-                        <tr key={data._id}>
-                          <td>{formatToIST(data.request_date)}</td>
-                          <td>
-                            {data.items.map((item) => (
-                              <p key={item._id}>
-                                {item.item_name} - {item.item_quantity}{" "}
-                                {item.unit}
-                              </p>
-                            ))}
-                          </td>
-                          <td>{data.status}</td>
-                          <td>
-                            <button
-                              className="btn btn-transparent bg-transparent"
-                              title="View Details"
-                              onClick={() => navigate(`/inventory/details/${data._id}`)}
-                            >
-                              <img
-                                src="../../dist/img/icon/eye-b.svg"
-                                alt="View Details"
-                              />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+
+        {/* Filters for Completed */}
+        <div className="card mb-3">
+          <div className="card-header">
+            <h3 className="card-title">Completed Requests</h3>
+          </div>
+          <div className="card-body">
+            <div className="row mb-3">
+              <div className="col-md-4">
+                <div style={{ width: "400px" }}>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search Completed Requests"
+                    value={completedSearchTerm}
+                    onChange={(e) => setCompletedSearchTerm(e.target.value)}
+                  />
                 </div>
               </div>
+              <div className="row col-md-8 d-flex justify-content-end">
+                <div className="col-md-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Start Date"
+                    value={completedStartDate}
+                    onChange={(e) => setCompletedStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="End Date"
+                    value={completedEndDate}
+                    onChange={(e) => setCompletedEndDate(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary mx-2"
+                  onClick={comfirmResetFilters}
+                >
+                  Reset Filters
+                </button>
+              </div>
             </div>
+            <DataTable
+              columns={completedColumns}
+              data={filteredCompletedInventory}
+              pagination
+              highlightOnHover
+              responsive
+            />
           </div>
         </div>
+
+        {/* Filters for Rejected */}
+        <div className="card">
+          <div className="card-header">
+            <h3 className="card-title">Rejected Requests</h3>
+          </div>
+          <div className="card-body">
+            <div className="row mb-3">
+              <div className="col-md-4">
+                <div style={{ width: "400px" }}>
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Search Rejected Requests"
+                    value={rejectedSearchTerm}
+                    onChange={(e) => setRejectedSearchTerm(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="row col-md-8 d-flex justify-content-end">
+                <div className="col-md-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="Start Date"
+                    value={rejectedStartDate}
+                    onChange={(e) => setRejectedStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="col-md-3">
+                  <input
+                    type="date"
+                    className="form-control"
+                    placeholder="End Date"
+                    value={rejectedEndDate}
+                    onChange={(e) => setRejectedEndDate(e.target.value)}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-secondary mx-2"
+                  onClick={rejectResetFilters}
+                >
+                  Reset Filters
+                </button>
+              </div>
+            </div>
+            <DataTable
+              columns={rejectedColumns}
+              data={filteredRejectedInventory}
+              pagination
+              highlightOnHover
+              responsive
+            />
+          </div>
+        </div>
+
+        <DeleteInventoryModal
+          show={showDeleteModal}
+          handleClose={handleCloseDeleteModal}
+          id={deleteId}
+          fetchInventoryData={fetchInventoryData}
+        />
       </div>
     </section>
   );

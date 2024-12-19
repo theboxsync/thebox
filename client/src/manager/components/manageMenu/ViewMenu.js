@@ -8,6 +8,14 @@ function ViewMenu({ setSection }) {
   const [showSpecialModal, setShowSpecialModal] = useState(false);
   const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [menuData, setMenuData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+
+  // Filter states
+  const [showSpecialOnly, setShowSpecialOnly] = useState(false);
+  const [showUnavailableOnly, setShowUnavailableOnly] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [mealTypeFilter, setMealTypeFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   const fetchMenuData = async () => {
     try {
@@ -18,14 +26,72 @@ function ViewMenu({ setSection }) {
         }
       );
       setMenuData(response.data);
-      console.log("Dishes" + response.data.dishes);
     } catch (error) {
       console.log("Error fetching menu data:", error);
     }
   };
+
   useEffect(() => {
     fetchMenuData();
   }, []);
+
+  // Apply filters whenever filters change
+  useEffect(() => {
+    let filtered = [...menuData];
+
+    // Filter for special dishes
+    if (showSpecialOnly) {
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter((dish) => dish.is_special),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0); // Remove empty categories
+    }
+
+    // Filter for unavailable dishes
+    if (showUnavailableOnly) {
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter((dish) => !dish.is_available),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0);
+    }
+
+    // Filter by search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.map((category) => ({
+        ...category,
+        dishes: category.dishes.filter((dish) =>
+          dish.dish_name.toLowerCase().includes(searchLower)
+        ),
+      }));
+      filtered = filtered.filter((category) => category.dishes.length > 0);
+    }
+
+    // Filter by meal type
+    if (mealTypeFilter) {
+      filtered = filtered.filter(
+        (meal_type) => meal_type.meal_type === mealTypeFilter
+      );
+    }
+
+    // Filter by category
+    if (categoryFilter) {
+      filtered = filtered.filter(
+        (category) => category.category === categoryFilter
+      );
+    }
+
+    setFilteredData(filtered);
+  }, [
+    menuData,
+    showSpecialOnly,
+    showUnavailableOnly,
+    searchTerm,
+    mealTypeFilter,
+    categoryFilter,
+  ]);
 
   const [specialDishModalData, setSpecialDishModalData] = useState({});
   const specialDishModal = (id) => {
@@ -53,6 +119,30 @@ function ViewMenu({ setSection }) {
     setShowRemoveSpecialModal(true);
   };
 
+  const markAsUnavailable = (id) => {
+    axios
+      .put(
+        `${process.env.REACT_APP_MANAGER_API}/updateDishAvailability/${id}`,
+        { is_available: false }
+      )
+      .then((res) => {
+        fetchMenuData(); // Fetch updated menu data
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const markAsAvailable = (id) => {
+    axios
+      .put(
+        `${process.env.REACT_APP_MANAGER_API}/updateDishAvailability/${id}`,
+        { is_available: true }
+      )
+      .then((res) => {
+        fetchMenuData(); // Fetch updated menu data
+      })
+      .catch((err) => console.log(err));
+  };
+
   return (
     <>
       <section className="content" id="viewMenu">
@@ -67,8 +157,68 @@ function ViewMenu({ setSection }) {
             </div>
           </div>
         </div>
+        <div>
+          {/* Filters */}
+          <div className="form-check m-3">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="showSpecial"
+              checked={showSpecialOnly}
+              onChange={(e) => setShowSpecialOnly(e.target.checked)}
+            />
+            <label htmlFor="showSpecial" className="form-check-label">
+              Special Dishes
+            </label>
+          </div>
+          <div className="form-check m-3">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              id="showUnavailable"
+              checked={showUnavailableOnly}
+              onChange={(e) => setShowUnavailableOnly(e.target.checked)}
+            />
+            <label htmlFor="showUnavailable" className="form-check-label">
+              Unavailable Dishes
+            </label>
+          </div>
+          <div className="d-flex w-100 justify-content-around">
+            <input
+              type="text"
+              className="form-control m-3"
+              placeholder="Search Item"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <select
+              className="form-control m-3"
+              value={mealTypeFilter}
+              onChange={(e) => setMealTypeFilter(e.target.value)}
+            >
+              <option value="">All Meal Types</option>
+              <option value="veg">Veg</option>
+              <option value="egg">Egg</option>
+              <option value="non-veg">Non-Veg</option>
+            </select>
+            <select
+              className="form-control m-3"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+            >
+              <option value="">All Categories</option>
+              {[...new Set(menuData.map((category) => category.category))].map(
+                (uniqueCategory) => (
+                  <option key={uniqueCategory} value={uniqueCategory}>
+                    {uniqueCategory}
+                  </option>
+                )
+              )}
+            </select>
+          </div>
+        </div>
         <div className="row container-fluid" id="menuData">
-          {menuData.map((data) => (
+          {filteredData.map((data) => (
             <div key={data._id} className="col-md-4">
               <div className="card m-2">
                 <h4 className="card-header">
@@ -109,12 +259,19 @@ function ViewMenu({ setSection }) {
                   </div>
 
                   {data.dishes.map((dish) => (
-                    <div key={dish._id} className="row">
+                    <div
+                      key={dish._id}
+                      className="row"
+                      style={{
+                        backgroundColor: dish.is_available
+                          ? "white"
+                          : "lightgrey",
+                      }}
+                    >
                       <div className="col-md-6">{dish.dish_name}</div>
                       <div className="col-md-2">{dish.dish_price}</div>
                       <div className="col-md-4">
                         {dish.is_special ? (
-                          // If dish.is_special is true, show the "Remove Special Dish" div
                           <div
                             className="bg-transparent m-1"
                             title="Remove Special Dish"
@@ -127,7 +284,6 @@ function ViewMenu({ setSection }) {
                             />
                           </div>
                         ) : (
-                          // If dish.is_special is false, show the "Set Special Dish" button
                           <button
                             type="button"
                             className="btn bg-transparent special_Dish_btn"
@@ -137,6 +293,32 @@ function ViewMenu({ setSection }) {
                             <i
                               style={{ color: "black", fontSize: "22px" }}
                               className="fas fa-utensils"
+                            />
+                          </button>
+                        )}
+
+                        {dish.is_available ? (
+                          <button
+                            type="button"
+                            className="btn bg-transparent special_Dish_btn"
+                            title="Mark as Unavailable"
+                            onClick={() => markAsUnavailable(dish._id)}
+                          >
+                            <i
+                              style={{ color: "black", fontSize: "22px" }}
+                              className="fas fa-ban"
+                            />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn bg-transparent special_Dish_btn"
+                            title="Set as Available"
+                            onClick={() => markAsAvailable(dish._id)}
+                          >
+                            <i
+                              style={{ color: "black", fontSize: "22px" }}
+                              className="fas fa-check-circle"
                             />
                           </button>
                         )}
