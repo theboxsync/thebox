@@ -1127,14 +1127,14 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
-const generateToken = async () => {
+const generateToken = async (restaurant_id) => {
   const today = new Date();
   const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-  let tokenCounter = await TokenCounter.findOne({ date: dateOnly });
+  let tokenCounter = await TokenCounter.findOne({ date: dateOnly, restaurant_id });
 
   if (!tokenCounter) {
-    tokenCounter = new TokenCounter({ date: dateOnly, lastToken: 0 });
+    tokenCounter = new TokenCounter({ date: dateOnly, lastToken: 0, restaurant_id: restaurant_id });
   }
 
   tokenCounter.lastToken += 1;
@@ -1156,6 +1156,13 @@ const orderController = async (req, res) => {
       const customer = new Customer(customerInfo);
       const savedCustomer = await customer.save();
       orderData = { ...orderData, customer_id: savedCustomer._id };
+    }
+
+    if (orderData.order_status === "KOT") {
+      orderData.order_items = orderData.order_items.map((item) => ({
+        ...item,
+        status: item.status === "Pending" ? "Preparing" : item.status,
+      }));
     }
 
     // Process based on order type
@@ -1212,7 +1219,7 @@ const orderController = async (req, res) => {
       if (orderData.order_type === "Takeaway") {
         if (!orderId) {
           // Generate a new token for Takeaway orders
-          orderData.token = await generateToken();
+          orderData.token = await generateToken(req.user);
         }
       }
       // For Delivery or Pickup, check if an order_id is provided
@@ -1257,11 +1264,11 @@ const showKOTs = async (req, res) => {
         {
           $or: [
             { order_status: "KOT" },
-            { order_status: "KOT and Print" },
+            // { order_status: "KOT and Print" },
             {
               $and: [
                 { order_status: "Paid" },
-                { order_items: { $elemMatch: { status: "Prepairing" } } },
+                { order_items: { $elemMatch: { status: "Preparing" } } },
               ],
             },
           ],

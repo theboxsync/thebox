@@ -48,7 +48,6 @@ function ViewKOTs() {
     }
   };
 
-
   return (
     <>
       <section className="content" id="viewMenu">
@@ -73,18 +72,41 @@ function ViewKOTs() {
               <div key={data._id} className="col-md-4">
                 <div className="card m-2">
                   <h4 className="card-header" style={{ borderBottom: "none" }}>
+                    <div className="d-flex justify-content-around m-2">
+                      <h5>{data.order_type}</h5>
+                    </div>
                     {data.customer_name}
                   </h4>
                   <div className="card-body">
                     {data.order_type === "Dine In" ? (
                       <div className="d-flex justify-content-around m-2">
-                        <h5>Area: {data.table_area}</h5>
-                        <h5>Table No.: {data.table_no}</h5>
+                        <div>
+                          Area:{" "}
+                          <strong style={{ fontSize: "25px" }}>
+                            {data.table_area}
+                          </strong>
+                        </div>
+                        <div>
+                          Table No.:{" "}
+                          <strong style={{ fontSize: "25px" }}>
+                            {data.table_no}
+                          </strong>
+                        </div>
                       </div>
                     ) : (
-                      <div className="d-flex justify-content-around m-2">
-                        <h5>{data.order_type}</h5>
-                      </div>
+                      <>
+                        {data.order_type === "Takeaway" ? (
+                          <div className="text-center">
+                            Token No.:{" "}
+                            <strong style={{ fontSize: "25px" }}>
+                              {" "}
+                              {data.token}
+                            </strong>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </>
                     )}
 
                     <div className="row">
@@ -104,7 +126,7 @@ function ViewKOTs() {
                         <div className="col-md-6">{dish.dish_name}</div>
                         <div className="col-md-2">{dish.quantity}</div>
                         <div className="col-md-4 d-flex">
-                          {dish.status === "Prepairing" ? (
+                          {dish.status === "Preparing" ? (
                             <button
                               type="button"
                               className="btn"

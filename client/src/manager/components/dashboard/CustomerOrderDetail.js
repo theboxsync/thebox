@@ -4,6 +4,7 @@ import axios from "axios";
 import DineInSection from "./DineInSection";
 import DeliverySection from "./DeliverySection";
 import TakeawaySection from "./TakeawaySection";
+import PaymentModal from "./PaymentModal";
 
 function CustomerOrderDetail({
   order,
@@ -19,6 +20,12 @@ function CustomerOrderDetail({
 }) {
   const [tableInfo, setTableInfo] = useState({});
   const [paymentSection, setPaymentSection] = useState(false);
+  const [printSection, setPrintSection] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentData, setPaymentData] = useState({
+    paidAmount: "",
+    paymentType: "Cash",
+  });
 
   const fetchTableInfo = async () => {
     try {
@@ -69,15 +76,13 @@ function CustomerOrderDetail({
         total_persons: firstOrder.total_persons,
         comment: firstOrder.comment,
         waiter: firstOrder.waiter,
-        bill_amount: order.order_items.reduce(
-          (acc, item) => acc + item.dish_price * item.quantity,
-          0
-        ),
+        bill_amount: 0,
         discount_amount: firstOrder.discount_amount,
         total_amount: order.order_items.reduce(
           (acc, item) => acc + item.dish_price * item.quantity,
           0
         ),
+        payment_type: "",
       });
     }
 
@@ -103,10 +108,7 @@ function CustomerOrderDetail({
         });
     }
 
-    if (
-      orderInfo.order_status === "KOT" ||
-      orderInfo.order_status === "KOT and Print"
-    ) {
+    if (orderInfo.order_status === "KOT") {
       setPaymentSection(true);
     }
   }, [order, tableInfo, orderType]);
@@ -146,15 +148,18 @@ function CustomerOrderDetail({
   const validateDeliveryFields = () => {
     if (orderType === "Delivery") {
       if (!customerInfo.name.trim()) {
-        document.getElementById("error-message").innerHTML = "Customer name is required for delivery.";
+        document.getElementById("error-message").innerHTML =
+          "Customer name is required for delivery.";
         return false;
       }
       if (!customerInfo.phone.trim()) {
-        document.getElementById("error-message").innerHTML = "Phone number is required for delivery.";
+        document.getElementById("error-message").innerHTML =
+          "Phone number is required for delivery.";
         return false;
       }
       if (!customerInfo.address.trim()) {
-        document.getElementById("error-message").innerHTML = "Address is required for delivery.";
+        document.getElementById("error-message").innerHTML =
+          "Address is required for delivery.";
         return false;
       }
     }
@@ -173,6 +178,12 @@ function CustomerOrderDetail({
       order_id: orderId,
       customer_name: customerInfo.name,
     };
+
+    if (updatedOrderInfo.order_status === "Paid") {
+      updatedOrderInfo.bill_amount = paymentData.paidAmount;
+      updatedOrderInfo.payment_type = paymentData.paymentType;
+    }
+
     console.log(updatedOrderInfo);
     setOrderInfo(updatedOrderInfo);
 
@@ -194,10 +205,15 @@ function CustomerOrderDetail({
 
       console.log("Order status updated successfully:", response.data);
 
-      if (response.data.status === "success") {
+      if (response.data.status === "success" && orderStatus !== "Paid") {
         setTableId("");
         setOrderId("");
         setMainSection("DashboardSection");
+      }
+      if (response.data.status === "success" && orderStatus === "Paid") {
+        setShowPaymentModal(false);
+        setPaymentSection(false);
+        setPrintSection(true);
       }
     } catch (error) {
       console.log("Error saving order:", error);
@@ -305,13 +321,6 @@ function CustomerOrderDetail({
             >
               KOT
             </button>
-            <button
-              className="btn mx-2"
-              type="button"
-              onClick={() => orderController("KOT and Print")}
-            >
-              KOT and Print
-            </button>
             <button className="btn mx-2">Cancel Order</button>
           </div>
 
@@ -327,16 +336,36 @@ function CustomerOrderDetail({
             {paymentSection === true ? (
               <button
                 className="btn mx-2"
-                onClick={() => orderController("Paid")}
+                onClick={() => setShowPaymentModal(true)}
               >
                 Paid
               </button>
             ) : (
               <></>
             )}
+            {printSection === true ? (
+              <>
+                <button className="btn mx-2">Print</button>
+                <button
+                  className="btn mx-2"
+                  onClick={() => setMainSection("DashboardSection")}
+                >
+                  Go To Dashboard
+                </button>
+              </>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
+      <PaymentModal
+        show={showPaymentModal}
+        handleClose={() => setShowPaymentModal(false)}
+        paymentData={paymentData}
+        setPaymentData={setPaymentData}
+        orderController={orderController}
+      />
     </div>
   );
 }

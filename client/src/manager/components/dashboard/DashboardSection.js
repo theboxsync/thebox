@@ -38,7 +38,7 @@ function DashboardSection({
           (order.order_type === "Delivery" ||
             order.order_type === "Takeaway") && // Past Pickup
           (order.order_status !== "Paid" ||
-            order.order_items.some((item) => item.status === "Prepairing"))
+            order.order_items.some((item) => item.status === "Preparing"))
       );
 
       setActiveDeliveries(deliveries);
@@ -139,8 +139,6 @@ function DashboardSection({
                                     table.current_status === "Save"
                                       ? "table-save"
                                       : table.current_status === "KOT" ||
-                                        table.current_status ===
-                                          "KOT and Print" ||
                                         table.current_status ===
                                           "Order Delevered"
                                       ? "table-kot"

@@ -28,8 +28,8 @@ const orderSchema = new Schema({
         type: String,
       },
       status: {
-        type: String, //Prepairing, Completed
-        default: "Prepairing",
+        type: String, //Preparing, Completed
+        default: "Pending",
       },
     },
   ],
@@ -59,6 +59,9 @@ const orderSchema = new Schema({
   },
   total_amount: {
     type: Number,
+  },
+  payment_type: {
+    type: String,
   },
   order_date: {
     type: Date,

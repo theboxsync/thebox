@@ -5,11 +5,13 @@ const tokenCounterSchema = new Schema({
   date: {
     type: Date,
     required: true,
-    unique: true,
   },
   lastToken: {
     type: Number,
     default: 0,
+  },
+  restaurant_id: {
+    type: String,
   },
 });
 

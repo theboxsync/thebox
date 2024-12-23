@@ -157,8 +157,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                               className={`dashboard-table d-flex justify-content-center align-items-center ${
                                 table.current_status === "Save"
                                   ? "table-save"
-                                  : table.current_status === "KOT" ||
-                                    table.current_status === "KOT and Print"
+                                  : table.current_status === "KOT"
                                   ? "table-kot"
                                   : ""
                               }`}

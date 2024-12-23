@@ -70,7 +70,7 @@ function OrderSection({
         // Add the dish as a new entry
         return [
           ...prevOrderItems,
-          { ...item, quantity: 1, status: "Prepairing" },
+          { ...item, quantity: 1, status: "Pending" },
         ];
       }
     });
