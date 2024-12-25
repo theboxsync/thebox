@@ -11,6 +11,7 @@ function ViewOrderHistory() {
   const [searchText, setSearchText] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [currentOrderId, setCurrentOrderId] = useState(null);
   const navigate = useNavigate(); // Initialize useNavigate
 
   const fetchOrderData = async () => {
@@ -51,6 +52,131 @@ function ViewOrderHistory() {
       setFilteredData(transformedData);
     } catch (error) {
       console.log(error);
+    }
+  };
+  const handlePrint = async (orderId) => {
+    try {
+      const orderResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        { withCredentials: true }
+      );
+
+      const userResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        { withCredentials: true }
+      );
+
+      const order = orderResponse.data[0];
+      const userData = userResponse.data;
+
+      const printDiv = document.createElement("div");
+      printDiv.id = "printable-invoice";
+      printDiv.style.display = "none";
+      document.body.appendChild(printDiv);
+
+      printDiv.innerHTML = `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; border: 1px solid #ccc; padding: 10px;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin: 10px;">${userData.name}</h3>
+            <p style="margin: 0; font-size: 12px;">${userData.address}</p>
+            <p style="margin: 0; font-size: 12px;">${userData.city}, ${
+        userData.state
+      } ${userData.pincode}</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Phone: </strong> ${
+              userData.mobile
+            }</p>
+          </div>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <p><strong>Name:</strong> ${
+            order.customer_name || "(M: 1234567890)"
+          }</p>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="font-size: 12px; margin-bottom: 10px;">
+            <tr>
+            <td style="width: 50%; height: 30px;">
+              <strong>Date:</strong> ${new Date(
+                order.order_date
+              ).toLocaleString()}</td>
+                <td style="text-align: right;"><strong>${
+                  order.order_type
+                }</strong>
+                </td>
+            </tr>
+            <tr>
+            <td colspan="2"><strong>Bill No:</strong> ${order._id}</td>
+            
+            </tr>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="width: 100%; font-size: 12px; margin-bottom: 10px;">
+            <thead>
+              <tr>
+                <th style="text-align: left; border-bottom: 1px dashed #ccc">Item</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Qty</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Price</th>
+                <th style="text-align: right; border-bottom: 1px dashed #ccc">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.order_items
+                .map(
+                  (item) => `
+                  <tr>
+                    <td>${item.dish_name}</td>
+                    <td style="text-align: center;">${item.quantity}</td>
+                    <td style="text-align: center;">${item.dish_price}</td>
+                    <td style="text-align: right;">₹ ${
+                      item.dish_price * item.quantity
+                    }</td>
+                  </tr>
+                `
+                )
+                .join("")}
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>CGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>SGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
+                <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+            </tbody>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <div style="text-align: center; font-size: 12px;">
+            <p style="margin: 10px; font-size: 12px;"><strong>FSSAI Lic No:</strong> 11224333001459</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>GST No:</strong> ${
+              userData.gst_no
+            }</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Thanks, Visit Again</strong></p>
+          </div>
+        </div>
+      `;
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printDiv.innerHTML);
+      printWindow.document.close();
+      printWindow.print();
+      printWindow.close();
+
+      document.body.removeChild(printDiv);
+      setPaymentSection(false);
+    } catch (error) {
+      console.error("Error fetching order or user data:", error);
     }
   };
 
@@ -97,12 +223,12 @@ function ViewOrderHistory() {
             onClick={() => navigate(`/order-details/${row._id}`)}
           />
 
-          {/* <button
-            className="btn btn-secondary ml-2"
-            onClick={() => navigate(`/order-details/${row._id}?print=true`)}
-          >
-            Print
-          </button> */}
+          <img
+            src="../../dist/img/print.svg"
+            alt="Print"
+            style={{ cursor: "pointer", marginLeft: "10px" }}
+            onClick={() => handlePrint(row._id)}
+          />
         </>
       ),
     },
@@ -127,49 +253,52 @@ function ViewOrderHistory() {
       },
     },
   };
+
   return (
-    <div className="container-fluid">
-      <div className="card">
-        <div className="m-3 d-flex justify-content-between">
-          <input
-            type="text"
-            placeholder="Search"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-            className="form-control w-25 mx-3"
-          />
-          <div className="d-flex align-items-center w-25">
-            <DatePicker
-              selected={startDate}
-              onChange={(date) => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="Start Date"
-              className="form-control"
+    <>
+      <div className="container-fluid">
+        <div className="card">
+          <div className="m-3 d-flex justify-content-between">
+            <input
+              type="text"
+              placeholder="Search"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              className="form-control w-25 mx-3"
             />
-            <DatePicker
-              selected={endDate}
-              onChange={(date) => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              placeholderText="End Date"
-              className="form-control mx-3"
-            />
+            <div className="d-flex align-items-center w-25">
+              <DatePicker
+                selected={startDate}
+                onChange={(date) => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                placeholderText="Start Date"
+                className="form-control"
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={(date) => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                placeholderText="End Date"
+                className="form-control mx-3"
+              />
+            </div>
           </div>
         </div>
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          pagination
+          highlightOnHover
+          customStyles={tableStyle}
+          responsive
+        />
       </div>
-      <DataTable
-        columns={columns}
-        data={filteredData}
-        pagination
-        highlightOnHover
-        customStyles={tableStyle}
-        responsive
-      />
-    </div>
+    </>
   );
 }
 

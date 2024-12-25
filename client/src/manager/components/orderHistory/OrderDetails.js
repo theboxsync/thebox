@@ -28,8 +28,130 @@ function OrderDetails() {
       setLoading(false);
     }
   };
-  const handlePrint = () => {
-    window.print();
+  const handlePrint = async (orderId) => {
+    try {
+      const orderResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        { withCredentials: true }
+      );
+
+      const userResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        { withCredentials: true }
+      );
+
+      const order = orderResponse.data[0];
+      const userData = userResponse.data;
+
+      const printDiv = document.createElement("div");
+      printDiv.id = "printable-invoice";
+      printDiv.style.display = "none";
+      document.body.appendChild(printDiv);
+
+      printDiv.innerHTML = `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; border: 1px solid #ccc; padding: 10px;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin: 10px;">${userData.name}</h3>
+            <p style="margin: 0; font-size: 12px;">${userData.address}</p>
+            <p style="margin: 0; font-size: 12px;">${userData.city}, ${
+        userData.state
+      } ${userData.pincode}</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Phone: </strong> ${
+              userData.mobile
+            }</p>
+          </div>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <p><strong>Name:</strong> ${
+            order.customer_name || "(M: 1234567890)"
+          }</p>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="font-size: 12px; margin-bottom: 10px;">
+            <tr>
+            <td style="width: 50%; height: 30px;">
+              <strong>Date:</strong> ${new Date(
+                order.order_date
+              ).toLocaleString()}</td>
+                <td style="text-align: right;"><strong>${
+                  order.order_type
+                }</strong>
+                </td>
+            </tr>
+            <tr>
+            <td colspan="2"><strong>Bill No:</strong> ${order._id}</td>
+            
+            </tr>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="width: 100%; font-size: 12px; margin-bottom: 10px;">
+            <thead>
+              <tr>
+                <th style="text-align: left; border-bottom: 1px dashed #ccc">Item</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Qty</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Price</th>
+                <th style="text-align: right; border-bottom: 1px dashed #ccc">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.order_items
+                .map(
+                  (item) => `
+                  <tr>
+                    <td>${item.dish_name}</td>
+                    <td style="text-align: center;">${item.quantity}</td>
+                    <td style="text-align: center;">${item.dish_price}</td>
+                    <td style="text-align: right;">₹ ${
+                      item.dish_price * item.quantity
+                    }</td>
+                  </tr>
+                `
+                )
+                .join("")}
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>CGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>SGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
+                <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+            </tbody>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <div style="text-align: center; font-size: 12px;">
+            <p style="margin: 10px; font-size: 12px;"><strong>FSSAI Lic No:</strong> 11224333001459</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>GST No:</strong> ${
+              userData.gst_no
+            }</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Thanks, Visit Again</strong></p>
+          </div>
+        </div>
+      `;
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printDiv.innerHTML);
+      printWindow.document.close();
+      printWindow.print();
+      printWindow.close();
+
+      document.body.removeChild(printDiv);
+      setPaymentSection(false);
+    } catch (error) {
+      console.error("Error fetching order or user data:", error);
+    }
   };
 
   useEffect(() => {
@@ -122,11 +244,11 @@ function OrderDetails() {
               </div>
             ))}
             {/* Print Button */}
-          <div className="text-center m-3 print-btn">
-            <button className="btn btn-dark" onClick={handlePrint}>
-              Print Invoice
-            </button>
-          </div>
+            <div className="text-center m-3 print-btn">
+              <button className="btn btn-dark" onClick={() => handlePrint(id)}>
+                Print Invoice
+              </button>
+            </div>
           </div>
           <Footer />
         </div>

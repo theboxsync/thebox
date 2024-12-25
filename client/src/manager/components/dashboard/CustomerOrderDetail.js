@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { Country, State, City } from "country-state-city";
 
 import DineInSection from "./DineInSection";
 import DeliverySection from "./DeliverySection";
@@ -43,7 +44,7 @@ function CustomerOrderDetail({
     fetchTableInfo();
   }, [tableId]);
 
-  const [orderInfo, setOrderInfo] = useState({});
+  const [orderInfo, setOrderInfo] = useState([]);
   const [customerInfo, setCustomerInfo] = useState({
     name: "",
     email: "",
@@ -167,9 +168,8 @@ function CustomerOrderDetail({
   };
 
   const orderController = async (orderStatus) => {
-    // Validate required fields for delivery
     if (!validateDeliveryFields()) {
-      return; // Stop execution if validation fails
+      return;
     }
 
     const updatedOrderInfo = {
@@ -220,153 +220,288 @@ function CustomerOrderDetail({
     }
   };
 
-  return (
-    <div className="col-md-6">
-      {displayMainSection()}
+  const handlePrint = async (orderId) => {
+    try {
+      const orderResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        { withCredentials: true }
+      );
 
-      <div
-        className="m-3"
-        style={{ height: "calc(100% - 210px)", overflow: "auto" }}
-      >
-        <table className="table">
-          <thead>
-            <tr>
-              <th scope="col">Item</th>
-              <th scope="col" className="text-center">
-                Quantity
-              </th>
-              <th scope="col" className="text-right">
-                Price
-              </th>
-              <th scope="col" className="text-center">
-                Status
-              </th>
-              <th scope="col" className="text-center">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {order.order_items &&
-              order.order_items.map((item) => (
-                <tr key={item._id}>
-                  <td>{item.dish_name}</td>
-                  <td className="text-center">
-                    {item.status === "Completed" ? (
-                      <label>{item.quantity}</label>
-                    ) : (
-                      <>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => decreaseQuantity(item._id)}
-                        >
-                          -
-                        </button>
-                        <label className="mx-2">{item.quantity}</label>
-                        <button
-                          className="btn btn-success"
-                          onClick={() => increaseQuantity(item._id)}
-                        >
-                          +
-                        </button>
-                      </>
-                    )}
-                  </td>
-                  <td className="text-right d-flex flex-column">
-                    <label className="my-0">
-                      &#8377; {item.dish_price * item.quantity}
-                    </label>
-                    <small style={{ textDecoration: "underline" }}>
-                      &#8377; {item.dish_price}
-                    </small>
-                  </td>
-                  <td className="text-center">
-                    <label className="my-0">{item.status}</label>
-                  </td>
-                  <td className="text-center">
-                    {item.status !== "Completed" && (
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => removeItem(item._id)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
-      </div>
+      const userResponse = await axios.get(
+        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        { withCredentials: true }
+      );
 
-      <div className="m-3 w-100" style={{ position: "absolute", bottom: 0 }}>
-        <div
-          className="text-danger"
-          style={{ fontWeight: "bold" }}
-          id="error-message"
-        ></div>
-        <div className="d-flex justify-content-between align-items-center p-2">
-          <div>
-            <button
-              className="btn mx-2"
-              type="button"
-              onClick={() => orderController("Save")}
-            >
-              Save
-            </button>
-            <button
-              className="btn mx-2"
-              type="button"
-              onClick={() => orderController("KOT")}
-            >
-              KOT
-            </button>
-            <button className="btn mx-2">Cancel Order</button>
+      const order = orderResponse.data[0];
+      const userData = userResponse.data;
+
+      const printDiv = document.createElement("div");
+      printDiv.id = "printable-invoice";
+      printDiv.style.display = "none";
+      document.body.appendChild(printDiv);
+
+      printDiv.innerHTML = `
+        <div style="font-family: Arial, sans-serif; max-width: 400px; margin: 0 auto; border: 1px solid #ccc; padding: 10px;">
+          <div style="text-align: center; margin-bottom: 10px;">
+            <h3 style="margin: 10px;">${userData.name}</h3>
+            <p style="margin: 0; font-size: 12px;">${userData.address}</p>
+            <p style="margin: 0; font-size: 12px;">${userData.city}, ${
+        userData.state
+      } ${userData.pincode}</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Phone: </strong> ${
+              userData.mobile
+            }</p>
           </div>
-
-          <div className="mx-5">
-            <label className="m-0">
-              Total - &#8377;{" "}
-              {order.order_items &&
-                order.order_items.reduce(
-                  (acc, item) => acc + item.dish_price * item.quantity,
-                  0
-                )}
-            </label>
-            {paymentSection === true ? (
-              <button
-                className="btn mx-2"
-                onClick={() => setShowPaymentModal(true)}
-              >
-                Paid
-              </button>
-            ) : (
-              <></>
-            )}
-            {printSection === true ? (
-              <>
-                <button className="btn mx-2">Print</button>
-                <button
-                  className="btn mx-2"
-                  onClick={() => setMainSection("DashboardSection")}
-                >
-                  Go To Dashboard
-                </button>
-              </>
-            ) : (
-              <></>
-            )}
+          <hr style="border: 0.5px dashed #ccc;" />
+          <p><strong>Name:</strong> ${
+            order.customer_name || "(M: 1234567890)"
+          }</p>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="font-size: 12px; margin-bottom: 10px;">
+            <tr>
+            <td style="width: 50%; height: 30px;">
+              <strong>Date:</strong> ${new Date(
+                order.order_date
+              ).toLocaleString()}</td>
+                <td style="text-align: right;"><strong>${
+                  order.order_type
+                }</strong>
+                </td>
+            </tr>
+            <tr>
+            <td colspan="2"><strong>Bill No:</strong> ${order._id}</td>
+            
+            </tr>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <table style="width: 100%; font-size: 12px; margin-bottom: 10px;">
+            <thead>
+              <tr>
+                <th style="text-align: left; border-bottom: 1px dashed #ccc">Item</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Qty</th>
+                <th style="text-align: center; border-bottom: 1px dashed #ccc">Price</th>
+                <th style="text-align: right; border-bottom: 1px dashed #ccc">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.order_items
+                .map(
+                  (item) => `
+                  <tr>
+                    <td>${item.dish_name}</td>
+                    <td style="text-align: center;">${item.quantity}</td>
+                    <td style="text-align: center;">${item.dish_price}</td>
+                    <td style="text-align: right;">₹ ${
+                      item.dish_price * item.quantity
+                    }</td>
+                  </tr>
+                `
+                )
+                .join("")}
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>CGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>SGST (0%):</strong></td>
+                <td style="text-align: right;">₹ ${(
+                  order.bill_amount * 0
+                ).toFixed(2)}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
+                <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+            </tbody>
+          </table>
+          <hr style="border: 0.5px dashed #ccc;" />
+          <div style="text-align: center; font-size: 12px;">
+            <p style="margin: 10px; font-size: 12px;"><strong>FSSAI Lic No:</strong> 11224333001459</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>GST No:</strong> ${
+              userData.gst_no
+            }</p>
+            <p style="margin: 10px; font-size: 12px;"><strong>Thanks, Visit Again</strong></p>
           </div>
         </div>
+      `;
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(printDiv.innerHTML);
+      printWindow.document.close();
+      printWindow.print();
+      printWindow.close();
+
+      document.body.removeChild(printDiv);
+      setPaymentSection(false);
+    } catch (error) {
+      console.error("Error fetching order or user data:", error);
+    }
+  };
+
+  return (
+    <>
+      <div className="col-md-6">
+        {displayMainSection()}
+
+        <div
+          className="m-3"
+          style={{ height: "calc(100% - 210px)", overflow: "auto" }}
+        >
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col" className="text-center">
+                  Quantity
+                </th>
+                <th scope="col" className="text-right">
+                  Price
+                </th>
+                <th scope="col" className="text-center">
+                  Status
+                </th>
+                <th scope="col" className="text-center">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {order.order_items &&
+                order.order_items.map((item) => (
+                  <tr key={item._id}>
+                    <td>{item.dish_name}</td>
+                    <td className="text-center">
+                      {item.status === "Completed" ? (
+                        <label>{item.quantity}</label>
+                      ) : (
+                        <>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => decreaseQuantity(item._id)}
+                          >
+                            -
+                          </button>
+                          <label className="mx-2">{item.quantity}</label>
+                          <button
+                            className="btn btn-success"
+                            onClick={() => increaseQuantity(item._id)}
+                          >
+                            +
+                          </button>
+                        </>
+                      )}
+                    </td>
+                    <td className="text-right d-flex flex-column">
+                      <label className="my-0">
+                        &#8377; {item.dish_price * item.quantity}
+                      </label>
+                      <small style={{ textDecoration: "underline" }}>
+                        &#8377; {item.dish_price}
+                      </small>
+                    </td>
+                    <td className="text-center">
+                      <label className="my-0">{item.status}</label>
+                    </td>
+                    <td className="text-center">
+                      {item.status !== "Completed" && (
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => removeItem(item._id)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="m-3 w-100" style={{ position: "absolute", bottom: 0 }}>
+          <div
+            className="text-danger"
+            style={{ fontWeight: "bold" }}
+            id="error-message"
+          ></div>
+          <div className="d-flex justify-content-between align-items-center p-2">
+            <div>
+              <button
+                className="btn mx-2"
+                type="button"
+                onClick={() => orderController("Save")}
+              >
+                Save
+              </button>
+              <button
+                className="btn mx-2"
+                type="button"
+                onClick={() => orderController("KOT")}
+              >
+                KOT
+              </button>
+              <button className="btn mx-2">Cancel Order</button>
+            </div>
+
+            <div className="mx-5">
+              <label className="m-0">
+                Total - &#8377;{" "}
+                {order.order_items &&
+                  order.order_items.reduce(
+                    (acc, item) => acc + item.dish_price * item.quantity,
+                    0
+                  )}
+              </label>
+              {paymentSection === true ? (
+                <button
+                  className="btn mx-2"
+                  onClick={() => setShowPaymentModal(true)}
+                >
+                  Paid
+                </button>
+              ) : (
+                <></>
+              )}
+              {printSection === true ? (
+                <>
+                  {printSection && (
+                    <button
+                      className="btn mx-2"
+                      onClick={() => handlePrint(orderId)}
+                    >
+                      Print
+                    </button>
+                  )}
+                  <button
+                    className="btn mx-2"
+                    onClick={() => setMainSection("DashboardSection")}
+                  >
+                    Go To Dashboard
+                  </button>
+                </>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+        </div>
+        <PaymentModal
+          show={showPaymentModal}
+          handleClose={() => setShowPaymentModal(false)}
+          paymentData={paymentData}
+          setPaymentData={setPaymentData}
+          orderController={orderController}
+        />
       </div>
-      <PaymentModal
-        show={showPaymentModal}
-        handleClose={() => setShowPaymentModal(false)}
-        paymentData={paymentData}
-        setPaymentData={setPaymentData}
-        orderController={orderController}
-      />
-    </div>
+    </>
   );
 }
 

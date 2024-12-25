@@ -109,7 +109,7 @@
 
   th,
   td {
-    border: 1px solid #000;
+    border: 0.5px dashed #ccc;
     padding: 8px;
     text-align: left;
   }
