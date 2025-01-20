@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Loading from "./components/Loading";
 import Navbar from "./components/NavBar";
 import MenuBar from "./components/MenuBar";
 import Footer from "./components/Footer";
 
 function ForgotAdminPassword() {
+  const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1); // Step 1: OTP, Step 2: Change Password
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -15,6 +17,7 @@ function ForgotAdminPassword() {
   const [success, setSuccess] = useState("");
 
   const handleSendOtp = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -27,10 +30,13 @@ function ForgotAdminPassword() {
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred.");
       setSuccess("");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleVerifyOtp = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
       const response = await axios.post(
@@ -43,10 +49,14 @@ function ForgotAdminPassword() {
     } catch (err) {
       setError(err.response?.data?.message || "Invalid OTP.");
       setSuccess("");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }; 
 
   const handleResetPassword = async (e) => {
+    setIsLoading(true);
+
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
@@ -66,11 +76,14 @@ function ForgotAdminPassword() {
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred.");
       setSuccess("");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <>
+      {isLoading && <Loading />}
       <div className="login-page">
         <div className="login-box">
           <div className="card card-outline card-secondary">
@@ -80,7 +93,7 @@ function ForgotAdminPassword() {
               </p>
             </div>
             <div className="card-body">
-              <p className="login-box-msg">
+              <p className="login-box-msg text-dark">
                 You forgot your password? Here you can easily retrieve a new
                 password.
               </p>

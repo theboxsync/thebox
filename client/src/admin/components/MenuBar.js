@@ -108,6 +108,18 @@ export default function MenuBar() {
                     <p style={{ fontSize: "15px" }}>Staff</p>
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <NavLink to={"/subscription"} className="nav-link">
+                    <i className="nav-icon fas fa-user-tie"></i>
+                    <p style={{ fontSize: "15px" }}>Subscription</p>
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink to={"/settings"} className="nav-link">
+                    <i className="nav-icon fas fa-user-tie"></i>
+                    <p style={{ fontSize: "15px" }}>Settings</p>
+                  </NavLink>
+                </li>
               </ul>
             </nav>
           </div>

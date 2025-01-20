@@ -26,6 +26,7 @@ function OrderSection({
     bill_amount: 0,
     discount_amount: 0,
     total_amount: 0,
+    order_source: "Manager",
   });
 
   const [orderItems, setOrderItems] = useState([]);

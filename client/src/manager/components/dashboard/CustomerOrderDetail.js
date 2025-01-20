@@ -26,7 +26,35 @@ function CustomerOrderDetail({
   const [paymentData, setPaymentData] = useState({
     paidAmount: "",
     paymentType: "Cash",
+    subTotal: "",
+    total: "",
+    discountAmount: "",
   });
+  const [taxRates, setTaxRates] = useState({});
+  const [charges, setCharges] = useState([]);
+  const [parcelCharge, setParcelCharge] = useState(0);
+
+  // Fetch Tax Info
+  useEffect(() => {
+    axios
+      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+        withCredentials: true,
+      })
+      .then((response) => {
+        setTaxRates({
+          cgst: response.data.taxInfo.cgst,
+          sgst: response.data.taxInfo.sgst,
+        });
+        const parcelChargeData = response.data.charges.find(
+          (charge) => charge.name === "Parcel Container Charge"
+        );
+        setParcelCharge(parcelChargeData ? parcelChargeData.amount : 0);
+        setCharges(response.data.charges);
+      })
+      .catch((error) => {
+        console.error("Error fetching tax rates:", error);
+      });
+  }, []);
 
   const fetchTableInfo = async () => {
     try {
@@ -78,12 +106,13 @@ function CustomerOrderDetail({
         comment: firstOrder.comment,
         waiter: firstOrder.waiter,
         bill_amount: 0,
+        sub_total: 0,
+        cgst_amount: firstOrder.cgst_amount,
+        sgst_amount: firstOrder.sgst_amount,
         discount_amount: firstOrder.discount_amount,
-        total_amount: order.order_items.reduce(
-          (acc, item) => acc + item.dish_price * item.quantity,
-          0
-        ),
+        total_amount: 0,
         payment_type: "",
+        order_source: "Manager",
       });
     }
 
@@ -113,6 +142,27 @@ function CustomerOrderDetail({
       setPaymentSection(true);
     }
   }, [order, tableInfo, orderType]);
+
+  useEffect(() => {
+    if (order.order_items) {
+      const calculatedTotal = order.order_items.reduce(
+        (acc, item) => acc + item.dish_price * item.quantity,
+        0
+      );
+
+      // Add parcel charge if orderType is "Takeaway"
+      const totalWithParcelCharge =
+        orderType === "Takeaway"
+          ? calculatedTotal + parcelCharge
+          : calculatedTotal;
+
+      // Update paymentData.subTotal
+      setPaymentData((prev) => ({
+        ...prev,
+        subTotal: totalWithParcelCharge,
+      }));
+    }
+  }, [order.order_items, orderType, parcelCharge]);
 
   const displayMainSection = () => {
     if (orderType === "Dine In") {
@@ -167,7 +217,7 @@ function CustomerOrderDetail({
     return true;
   };
 
-  const orderController = async (orderStatus) => {
+  const orderController = async (orderStatus, paymentData) => {
     if (!validateDeliveryFields()) {
       return;
     }
@@ -177,15 +227,28 @@ function CustomerOrderDetail({
       order_status: orderStatus,
       order_id: orderId,
       customer_name: customerInfo.name,
+      cgst_amount: taxRates.cgst,
+      sgst_amount: taxRates.sgst,
     };
 
+    if(orderType === "Takeaway") {
+      // Add parcel charge in orderInfo if orderType is "Takeaway"
+      updatedOrderInfo.order_items.push({
+        dish_name: "Parcel Container Charge",
+        quantity: 1,
+        dish_price: parcelCharge,
+      })
+    }
+
     if (updatedOrderInfo.order_status === "Paid") {
-      updatedOrderInfo.bill_amount = paymentData.paidAmount;
+      updatedOrderInfo.sub_total = parseFloat(paymentData.subTotal);
+      updatedOrderInfo.total_amount = parseFloat(paymentData.total);
+      updatedOrderInfo.discount_amount = parseFloat(paymentData.discountAmount);
+      updatedOrderInfo.bill_amount = parseFloat(paymentData.paidAmount);
       updatedOrderInfo.payment_type = paymentData.paymentType;
     }
 
-    console.log(updatedOrderInfo);
-    setOrderInfo(updatedOrderInfo);
+    console.log("Updated Order Info:", updatedOrderInfo); // Debugging
 
     const payload = {
       orderInfo: updatedOrderInfo,
@@ -301,24 +364,40 @@ function CustomerOrderDetail({
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
                 <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.bill_amount
+                  order.sub_total
                 }</td>
               </tr>
               <tr>
-                <td colspan="3" style="text-align: right;"><strong>CGST (0%):</strong></td>
-                <td style="text-align: right;">₹ ${(
-                  order.bill_amount * 0
-                ).toFixed(2)}</td>
+                <td colspan="3" style="text-align: right;"><strong>CGST (${
+                  order.cgst_amount
+                } %):</strong></td>
+                <td style="text-align: right;">₹ ${
+                  (order.cgst_amount * order.bill_amount) / 100
+                }</td>
               </tr>
               <tr>
-                <td colspan="3" style="text-align: right;"><strong>SGST (0%):</strong></td>
-                <td style="text-align: right;">₹ ${(
-                  order.bill_amount * 0
-                ).toFixed(2)}</td>
+                <td colspan="3" style="text-align: right;"><strong>SGST (${
+                  order.sgst_amount
+                } %):</strong></td>
+                <td style="text-align: right;">₹ ${
+                  (order.sgst_amount * order.bill_amount) / 100
+                }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
                 <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>
@@ -422,6 +501,15 @@ function CustomerOrderDetail({
                     </td>
                   </tr>
                 ))}
+              {orderType === "Takeaway" && parcelCharge > 0 && (
+                <tr>
+                  <td>Parcel Container Charge</td>
+                  <td className="text-center">1</td>
+                  <td className="text-right">&#8377; {parcelCharge}</td>
+                  <td className="text-center">-</td>
+                  <td className="text-center">-</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -453,12 +541,7 @@ function CustomerOrderDetail({
 
             <div className="mx-5">
               <label className="m-0">
-                Total - &#8377;{" "}
-                {order.order_items &&
-                  order.order_items.reduce(
-                    (acc, item) => acc + item.dish_price * item.quantity,
-                    0
-                  )}
+                Total: &#8377; {paymentData.subTotal}
               </label>
               {paymentSection === true ? (
                 <button
@@ -499,6 +582,7 @@ function CustomerOrderDetail({
           paymentData={paymentData}
           setPaymentData={setPaymentData}
           orderController={orderController}
+          taxRates={taxRates}
         />
       </div>
     </>

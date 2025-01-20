@@ -8,6 +8,7 @@ import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 import DashboardSection from "../../components/dashboard/DashboardSection";
 import AddManager from "../../components/dashboard/AddManager";
+import AddQSR from "../../components/dashboard/AddQSR";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -66,6 +67,8 @@ export default function AdminDashboard() {
         return <DashboardSection setMainSection={setMainSection} />;
       case "AddManager":
         return <AddManager setMainSection={setMainSection} />;
+      case "AddQSR":
+        return <AddQSR setMainSection={setMainSection} />;
       default:
         return null;
     }

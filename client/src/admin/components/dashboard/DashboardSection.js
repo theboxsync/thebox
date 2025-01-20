@@ -4,12 +4,19 @@ import axios from "axios";
 import EditManagerModal from "./EditManagerModal";
 import DeleteManagerModal from "./DeleteManagerModal";
 
+import EditQsrModal from "./EditQsrModal";
+import DeleteQsrModal from "./DeleteQsrModal";
+
 function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [tableData, setTableData] = useState([]);
   const [ManagerData, setManagerData] = useState([]);
+  const [QsrData, setQsrData] = useState([]);
 
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditManagerModal, setShowEditManagerModal] = useState(false);
+  const [showDeleteManagerModal, setShowDeleteManagerModal] = useState(false);
+
+  const [showEditQsrModal, setShowEditQsrModal] = useState(false);
+  const [showDeleteQsrModal, setShowDeleteQsrModal] = useState(false);
 
   const fetchManagerData = async () => {
     try {
@@ -22,6 +29,20 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       setManagerData(response.data);
     } catch (error) {
       console.log("Error fetching manager data:", error);
+    }
+  };
+
+  const fetchQsrData = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/getqsrdata`,
+        {
+          withCredentials: true,
+        }
+      );
+      setQsrData(response.data);
+    } catch (error) {
+      console.log("Error fetching qsr data:", error);
     }
   };
 
@@ -42,29 +63,53 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   useEffect(() => {
     fetchTableData();
     fetchManagerData();
+    fetchQsrData();
   }, []);
 
-  const [editModalData, setEditModalData] = useState({});
-  const editModal = (id) => {
+  const [editManagerModalData, setEditManagerModalData] = useState({});
+  const editManagerModal = (id) => {
     console.log(id);
     axios
       .get(`${process.env.REACT_APP_ADMIN_API}/getmanagerdata/${id}`)
       .then((res) => {
-        setEditModalData(res.data);
+        setEditManagerModalData(res.data);
         console.log(res.data);
       })
       .catch((err) => console.log(err));
-    setShowEditModal(true);
+    setShowEditManagerModal(true);
   };
 
-  const [deleteModalData, setDeleteModalData] = useState({
+  const [deleteManagerModalData, setDeleteManagerModalData] = useState({
     id: "",
   });
-  const deleteModal = (id) => {
+  const deleteManagerModal = (id) => {
     console.log(id);
-    setShowDeleteModal(true);
-    setDeleteModalData({ ...deleteModalData, id: id });
-    console.log(deleteModalData);
+    setShowDeleteManagerModal(true);
+    setDeleteManagerModalData({ ...deleteManagerModalData, id: id });
+    console.log(deleteManagerModalData);
+  };
+
+  const [editQsrModalData, setEditQsrModalData] = useState({});
+  const editQsrModal = (id) => {
+    console.log(id);
+    axios
+      .get(`${process.env.REACT_APP_ADMIN_API}/getqsrdata/${id}`)
+      .then((res) => {
+        setEditQsrModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowEditQsrModal(true);
+  };
+
+  const [deleteQsrModalData, setDeleteQsrModalData] = useState({
+    id: "",
+  });
+  const deleteQsrModal = (id) => {
+    console.log(id);
+    setShowDeleteQsrModal(true);
+    setDeleteQsrModalData({ ...deleteQsrModalData, id: id });
+    console.log(deleteQsrModalData);
   };
 
   return (
@@ -119,7 +164,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                               <button
                                 type="button"
                                 className="btn btn-block btn-dark"
-                                onClick={() => editModal(manager._id)}
+                                onClick={() => editManagerModal(manager._id)}
                               >
                                 Edit
                               </button>
@@ -127,7 +172,66 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                               <button
                                 type="button"
                                 className="btn btn-block btn-dark"
-                                onClick={() => deleteModal(manager._id)}
+                                onClick={() => deleteManagerModal(manager._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  <div className="card-body p-0 m-2">
+                    <div className="m-3" style={{ fontWeight: "bold" }}>
+                      QSR Management
+                    </div>
+                    {QsrData.length === 0 ? (
+                      <div className="d-flex align-items-center justify-content-center m-3">
+                        You don't have any QSRs yet.
+                        <div
+                          className="m-1"
+                          onClick={() => setMainSection("AddQSR")}
+                          style={{ color: "blue", cursor: "pointer" }}
+                        >
+                          Create QSR
+                        </div>
+                      </div>
+                    ) : (
+                      QsrData.map((qsr) => (
+                        <div
+                          className="card m-3"
+                          style={{ width: "20rem" }}
+                          key={qsr._id}
+                        >
+                          <div className="card-body">
+                            <div className="d-flex align-items-center">
+                              <div
+                                className="card-title m-3"
+                                style={{ fontWeight: "bold", fontSize: 25 }}
+                              >
+                                Username:
+                              </div>
+                              <div
+                                className="card-subtitle m-1"
+                                style={{ fontSize: 20 }}
+                              >
+                                {qsr.username}
+                              </div>
+                            </div>
+                            <div>
+                              <button
+                                type="button"
+                                className="btn btn-block btn-dark"
+                                onClick={() => editQsrModal(qsr._id)}
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                className="btn btn-block btn-dark"
+                                onClick={() => deleteQsrModal(qsr._id)}
                               >
                                 Delete
                               </button>
@@ -178,17 +282,31 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       </section>
 
       <EditManagerModal
-        show={showEditModal}
-        handleClose={() => setShowEditModal(false)}
-        data={editModalData}
+        show={showEditManagerModal}
+        handleClose={() => setShowEditManagerModal(false)}
+        data={editManagerModalData}
         fetchManagerData={fetchManagerData}
       />
 
       <DeleteManagerModal
-        show={showDeleteModal}
-        handleClose={() => setShowDeleteModal(false)}
-        data={deleteModalData}
+        show={showDeleteManagerModal}
+        handleClose={() => setShowDeleteManagerModal(false)}
+        data={deleteManagerModalData}
         fetchManagerData={fetchManagerData}
+      />
+
+      <EditQsrModal
+        show={showEditQsrModal}
+        handleClose={() => setShowEditQsrModal(false)}
+        data={editQsrModalData}
+        fetchQsrData={fetchQsrData}
+      />
+
+      <DeleteQsrModal
+        show={showDeleteQsrModal}
+        handleClose={() => setShowDeleteQsrModal(false)}
+        data={deleteQsrModalData}
+        fetchQsrData={fetchQsrData}
       />
     </>
   );

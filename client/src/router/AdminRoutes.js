@@ -26,6 +26,9 @@ import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
 import AdminTable from "../admin/pages/AdminTable";
 import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
+import ChangeQsrPassword from "../admin/pages/AdminDashboard/ChangeQsrPassword";
+import AdminSubscription from "../admin/pages/AdminSubscription";
+import AdminSettings from "../admin/pages/AdminSettings";
 
 import PageNotFound from '../admin/PageNotFound'
 
@@ -62,10 +65,15 @@ function AdminRoutes() {
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />
+
+      <Route path="/subscription" element={<AdminSubscription />} />
+      <Route path="/settings" element={<AdminSettings />} />
+
       <Route
         path="/change-manager-password"
         element={<ChangeManagerPassword />}
       />
+      <Route path="/change-qsr-password" element={<ChangeQsrPassword />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

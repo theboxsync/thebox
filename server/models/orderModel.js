@@ -54,6 +54,15 @@ const orderSchema = new Schema({
   bill_amount: {
     type: Number,
   },
+  sub_total: {
+    type: Number,
+  },
+  cgst_amount: {
+    type: Number,
+  },
+  sgst_amount: {
+    type: Number,
+  },
   discount_amount: {
     type: Number,
   },
@@ -69,6 +78,11 @@ const orderSchema = new Schema({
   },
   restaurant_id: {
     type: String,
+  },
+  order_source: {
+    type: String, // 'Manager' or 'QSR'
+    required: true,
+    enum: ["Manager", "QSR"], 
   },
 });
 

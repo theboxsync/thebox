@@ -41,9 +41,8 @@ export default function Login(props) {
               </p>
             </div>
             <div className="card-body">
-              <p className="login-box-msg">
-                You forgot your password? Here you can easily retrieve a new
-                password.
+              <p className="login-box-msg" style={{ color: "black", fontWeight: "bold" }}>
+                You forgot your password? Here you can easily retrieve a new password.
               </p>
               <form>
                 <div className="form-group mb-2">

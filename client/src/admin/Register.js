@@ -5,12 +5,15 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useFormik } from "formik";
 
+import Loading from "./components/Loading";
 import Firstform from "./components/registerPages/firstform";
 import Secondform from "./components/registerPages/secondform";
 import Passworddiv from "./components/registerPages/passworddiv";
 
 export default function Register(props) {
   const navigate = useNavigate();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const data = {
     restaurant_code: "",
@@ -55,6 +58,7 @@ export default function Register(props) {
   };
 
   const handleSubmit = () => {
+    setIsLoading(true);
     console.log(inputData);
     axios
       .post(`${process.env.REACT_APP_ADMIN_API}/register`, inputData, {
@@ -66,7 +70,8 @@ export default function Register(props) {
           navigate("/");
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
   };
 
   const pageDisplay = () => {
@@ -100,6 +105,7 @@ export default function Register(props) {
 
   return (
     <>
+      {isLoading && <Loading />}
       <div className="register-page">
         <div className="row">
           <div className="col-md-3 col-sm-12 col-12">

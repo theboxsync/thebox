@@ -135,24 +135,38 @@ function ViewOrderHistory() {
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
                 <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.bill_amount
+                  order.sub_total
                 }</td>
               </tr>
               <tr>
-                <td colspan="3" style="text-align: right;"><strong>CGST (0%):</strong></td>
-                <td style="text-align: right;">₹ ${(
-                  order.bill_amount * 0
-                ).toFixed(2)}</td>
+                <td colspan="3" style="text-align: right;"><strong>CGST (${
+                  order.cgst_amount
+                } %):</strong></td>
+                <td style="text-align: right;">₹ ${
+                  (order.cgst_amount * order.bill_amount) / 100
+                }</td>
               </tr>
               <tr>
-                <td colspan="3" style="text-align: right;"><strong>SGST (0%):</strong></td>
-                <td style="text-align: right;">₹ ${(
-                  order.bill_amount * 0
-                ).toFixed(2)}</td>
+                <td colspan="3" style="text-align: right;"><strong>SGST (${
+                  order.sgst_amount
+                } %):</strong></td>
+                <td style="text-align: right;">₹ ${
+                  (order.sgst_amount * order.bill_amount) / 100
+                }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
                 <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
+                <td style="text-align: right;">- ₹ ${order.discount_amount || 0}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>

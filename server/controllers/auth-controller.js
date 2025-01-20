@@ -7,16 +7,29 @@ const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const Manager = require("../models/managerModel");
 const TokenCounter = require("../models/TokenCounter");
+const QSR = require("../models/QSRModel");
+const Subscription = require("../models/subscriptionModel");
+const SubscriptionPlan = require("../models/subscriptionPlanModel");
 
 const cron = require("node-cron");
 const fs = require("fs");
 const path = require("path");
 
-// const { sendEmail } = require("../utils/emailService");
+const { sendEmail } = require("../utils/emailService");
 
 const bcrypt = require("bcryptjs");
 
 let token;
+
+const sendMail = async (req, res) => {
+  await sendEmail({
+    to: "thehillgaminggo@gmail.com",
+    subject: "janu naa jaa",
+    html: `<img src="https://media.giphy.com/media/3o7aCSPqXE5C6T8tBC/giphy.gif">`,
+  });
+
+  return res.json({ message: "Email sent successfully" });
+};
 
 const emailCheck = async (req, res) => {
   try {
@@ -34,17 +47,17 @@ const emailCheck = async (req, res) => {
 const register = async (req, res) => {
   console.log(req.body);
   try {
-    const { country, state } = req.body;
+    const { country, state, name, email } = req.body;
 
-    if (!country || !state) {
+    if (!country || !state || !name || !email) {
       return res
         .status(400)
-        .json({ message: "Country and state are required" });
+        .json({ message: "Country, state, name, and email are required" });
     }
 
     // Generate the prefix for the restaurant code
-    const countryPrefix = req.body.country.toUpperCase();
-    const statePrefix = req.body.state.toUpperCase();
+    const countryPrefix = country.toUpperCase();
+    const statePrefix = state.toUpperCase();
 
     // Find the highest existing code for this country and state
     const latestUser = await User.findOne({
@@ -53,6 +66,7 @@ const register = async (req, res) => {
       .limit(1)
       .sort({ createdAt: -1 })
       .exec();
+
     let sequenceNumber = 1;
 
     if (latestUser) {
@@ -83,10 +97,63 @@ const register = async (req, res) => {
       httpOnly: true,
     });
 
+    // Replace placeholders in the email template
+    const regEmail = `
+    <p>
+      Dear <strong> ${name} </strong>,
+    </p>
+
+    <p>
+      <br>We are pleased to inform you that your registration with TheBox has been successfully completed. Welcome to our community!
+    </p>
+
+    <p>
+      Here are the details of your registration:
+    </p>
+
+    <p>
+      <br><strong>Restaurant Code: </strong> ${restaurantCode}
+      <br><strong>Email Address: </strong> ${email}
+      <br><strong>Date of Registration: </strong> ${new Date().toLocaleDateString()}
+    </p>
+
+    <p>Please keep this information safe for your records.</p>
+
+    <p>If you have any questions or need assistance, feel free to reach out to our customer support team at <span style="font-weight: bold; color: blue;">support@theboxsync.com</span>.</p>
+
+    <p>Thank you for choosing TheBox. We look forward to providing you with a seamless and enjoyable experience.</p>
+
+    <p>
+      Best regards,
+      <br>TheBox,
+      <br><span style="font-weight: bold; color: blue;">support@theboxsync.com</span>
+      <br><a href="https://theboxsync.com" style="font-weight: bold; color: blue;">theboxsync.com</a>
+    </p>
+    `;
+
+    await sendEmail({
+      to: email,
+      subject: "Successful Registration Confirmation for Your TheBox Account",
+      html: regEmail,
+    });
+
     res.json({ message: "Registered", restaurant_code: restaurantCode });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const updateTax = async (req, res) => {
+  const { taxInfo } = req.body;
+  const userId = req.user; // Assuming authentication middleware sets req.user
+
+  try {
+    await User.findByIdAndUpdate(userId, { taxInfo });
+    res.status(200).send("Tax information updated successfully!");
+  } catch (error) {
+    console.error("Error updating tax info:", error);
+    res.status(500).send("Failed to update tax information.");
   }
 };
 
@@ -177,12 +244,37 @@ const sendAdminOtp = async (req, res) => {
     user.otpExpiry = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
     await user.save();
 
+    // Replace placeholders in the email template
+    const adminOtpMail = `
+    <p>
+      Dear ${user.name || "User"},
+      <br>We received a request to reset the password for your TheBox account associated with this email address: ${email}.
+    </p>
+    <p>
+      To proceed with the password reset, please use the following One Time Password (OTP):
+    </p>
+    <p><strong>OTP: ${otp}</strong></p>
+    <p>
+      Please enter this OTP on the password reset page to verify your identity and create a new password.
+      If you did not initiate this password reset request, please ignore this email. Your account security is important to us.
+    </p>
+    <p>
+      For further assistance or if you have any concerns, please contact our support team at <span style="font-weight: bold; color: blue;">support@theboxsync.com</span>.
+    </p>
+    <p>
+      Thank you for choosing TheBox.
+      <br>TheBox,
+      <br><span style="font-weight: bold; color: blue;">support@theboxsync.com</span>
+      <br><a href="https://theboxsync.com" style="font-weight: bold; color: blue;">theboxsync.com</a>
+    </p>
+    `;
+
     // Send OTP via email
-    // await sendEmail({
-    //   to: email,
-    //   subject: "Your OTP for Password Reset",
-    //   text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
-    // });
+    await sendEmail({
+      to: email,
+      subject: "OTP Verification for Password Reset from TheBox",
+      html: adminOtpMail,
+    });
 
     res.json({ message: "OTP sent to your email." });
   } catch (err) {
@@ -221,12 +313,50 @@ const resetAdminPassword = async (req, res) => {
       return res.status(404).json({ message: "Email not found." });
     }
 
+    // Update the password
     user.password = newPassword;
 
     // Clear OTP fields
     user.otp = null;
     user.otpExpiry = null;
     await user.save();
+
+    // Replace placeholders in the email template
+    const passwordResetMail = `
+    <p>
+      Dear ${user.name || "User"},
+      <br>We are writing to inform you that the password for your TheBox account has been successfully reset. Your account is now secured with the new password.
+    </p>
+    <p>
+      If you have not initiated this password reset or if you have any concerns about your account security, please contact our support team immediately at support@theboxsync.com.
+    </p>
+    <p>
+      Here are the details of your recent password reset:
+    </p>
+    <p>
+      <strong>Email Address:</strong> ${email}<br>
+      <strong>Date and Time of Password Reset:</strong> ${new Date().toLocaleString()}
+    </p>
+    <p>
+      If you encountered any issues during the password reset process or need further assistance, feel free to reach out to us.
+    </p>
+    <p>
+      Thank you for choosing TheBox. We appreciate your trust and look forward to providing you with an excellent experience.
+    </p>
+    <p>
+      Thanks and Regards,<br>
+      TheBox,<br>
+      <span style="font-weight: bold; color: blue;">support@theboxsync.com</span><br>
+      <a href="https://theboxsync.com" style="font-weight: bold; color: blue;">theboxsync.com</a>
+    </p>
+    `;
+
+    // Send confirmation email
+    await sendEmail({
+      to: email,
+      subject: "Password Reset Confirmation for Your TheBox Account",
+      html: passwordResetMail,
+    });
 
     res.json({ message: "Password reset successfully." });
   } catch (err) {
@@ -332,12 +462,18 @@ const changeManagerPassword = async (req, res) => {
 
   try {
     // Verify admin password
-    const admin = await User.findById(req.user); // Assuming admin is logged in
-    if (!admin) return res.status(404).json({ message: "Admin not found." });
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
 
-    const isMatch = bcrypt.compare(adminPassword, admin.password);
-    if (!isMatch)
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
       return res.status(401).json({ message: "Invalid admin password." });
+    }
 
     // Hash new password and update manager password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -901,7 +1037,7 @@ const getTableDataById = (req, res) => {
 
 const getDiningAreas = async (req, res) => {
   try {
-    const areas = await Table.find({}, "area"); // Fetch distinct areas
+    const areas = await Table.find({ hotel_id: req.user }, "area"); // Fetch distinct areas
     const uniqueAreas = [...new Set(areas.map((item) => item.area))];
     res.json(uniqueAreas);
   } catch (error) {
@@ -1118,7 +1254,11 @@ const getOrderData = (req, res) => {
 cron.schedule("0 0 * * *", async () => {
   try {
     const today = new Date();
-    const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
 
     await TokenCounter.deleteMany({ date: { $lt: dateOnly } });
     console.log("Token counter reset successfully.");
@@ -1129,12 +1269,23 @@ cron.schedule("0 0 * * *", async () => {
 
 const generateToken = async (restaurant_id) => {
   const today = new Date();
-  const dateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  const dateOnly = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate()
+  );
 
-  let tokenCounter = await TokenCounter.findOne({ date: dateOnly, restaurant_id });
+  let tokenCounter = await TokenCounter.findOne({
+    date: dateOnly,
+    restaurant_id,
+  });
 
   if (!tokenCounter) {
-    tokenCounter = new TokenCounter({ date: dateOnly, lastToken: 0, restaurant_id: restaurant_id });
+    tokenCounter = new TokenCounter({
+      date: dateOnly,
+      lastToken: 0,
+      restaurant_id: restaurant_id,
+    });
   }
 
   tokenCounter.lastToken += 1;
@@ -1342,8 +1493,265 @@ const addManager = (req, res) => {
   }
 };
 
+const addQSR = (req, res) => {
+  try {
+    const qsrData = { ...req.body, restaurant_id: req.user };
+    console.log(qsrData);
+    QSR.create(qsrData)
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getQSRData = (req, res) => {
+  try {
+    QSR.find({ restaurant_id: req.user })
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getQSRDataById = (req, res) => {
+  try {
+    QSR.findById(req.params.id)
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateQSR = (req, res) => {
+  try {
+    const qsrData = { ...req.body, restaurant_id: req.user };
+    console.log(qsrData);
+    QSR.findByIdAndUpdate(req.params.id, qsrData, { new: true })
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteQSR = async (req, res) => {
+  const { qsrId, adminPassword } = req.body;
+
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
+      return res.status(401).json({ message: "Invalid admin password." });
+    }
+
+    // Delete the qsr
+    await QSR.findByIdAndDelete(qsrId);
+    res.status(200).json({ message: "QSR deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting qsr:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const changeQSRPassword = async (req, res) => {
+  const { adminPassword, newPassword, qsrId } = req.body;
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
+      return res.status(401).json({ message: "Invalid admin password." });
+    }
+
+    // Hash new password and update qsr password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await QSR.findByIdAndUpdate(qsrId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Qsr password updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred." });
+  }
+};
+
+const qsrLogin = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { restaurant_code, username, password } = req.body;
+
+    const user = await User.findOne({ restaurant_code });
+
+    if (!user) {
+      console.log("User not found");
+      return res.json({ message: "Invalid restaurant code" });
+    }
+    console.log("user : " + user);
+    const qsr = await QSR.findOne({
+      username,
+      restaurant_id: user._id,
+    });
+
+    if (!qsr) {
+      return res.json({ message: "Invalid Username" });
+    }
+
+    const isMatch = await bcrypt.compare(password, qsr.password);
+
+    if (!isMatch) {
+      return res.json({ message: "Invalid Password" });
+    }
+
+    token = await user.generateAuthToken();
+    res.cookie("jwttoken", token, {
+      expires: new Date(Date.now() + 25892000000),
+      httpOnly: true,
+    });
+
+    res.status(200).json({ message: "Logged In", token });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const addSubscriptionPlan = async (req, res) => {
+  try {
+    const subscriptionplan = await SubscriptionPlan.create(req.body);
+    res.status(200).json(subscriptionplan);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getSubscriptionPlans = async (req, res) => {
+  try {
+    const subscriptionplans = await SubscriptionPlan.find();
+    res.status(200).json(subscriptionplans);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getUserSubscriptionInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const subscription = await Subscription.find({ user_id: user._id });
+    if (!subscription) {
+      return res.status(200).json({ message: "Subscription not found" });
+    }
+    res.status(200).json(subscription);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const buySubscriptionPlan = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { planId } = req.body;
+    const userId = req.user;
+
+    if (!userId) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch plan details
+    const planDetails = await SubscriptionPlan.findById(planId);
+    if (!planDetails) {
+      return res.status(404).json({ message: "Plan not found" });
+    }
+
+    // Calculate start and end dates
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(startDate.getMonth() + planDetails.plan_duration);
+
+    // Create a new subscription
+    const newSubscription = new Subscription({
+      user_id: userId,
+      plan_id: planId,
+      start_date: startDate,
+      end_date: endDate,
+      status: "active", // Set the initial status to "active"
+    });
+
+    // Save the subscription to the database
+    const savedSubscription = await newSubscription.save();
+
+    res.status(200).json({
+      message: "Subscription purchased successfully",
+      subscription: savedSubscription,
+    });
+  } catch (error) {
+    console.error("Error buying subscription:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const updateUser = async (req, res) => {
+  const userId = req.user;
+  const { ...updates } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ error: "User ID is required." });
+  }
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    // Update only the fields provided in the request
+    Object.keys(updates).forEach((key) => {
+      if (user[key] !== undefined) {
+        user[key] = updates[key];
+      }
+    });
+
+    await user.save();
+    res.status(200).json({ message: "User information updated successfully." });
+  } catch (error) {
+    console.error("Error updating user information:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+const updateCharges = async (req, res) => {
+  const { userId, charges } = req.body;
+  try {
+    await User.findByIdAndUpdate(userId, { charges }, { new: true });
+    res.status(200).send("User charges updated successfully!");
+  } catch (error) {
+    console.error("Error updating user charges:", error);
+    res.status(500).send("Failed to update charges.");
+  }
+};
+
 module.exports = {
+  sendMail,
   register,
+  updateTax,
   login,
   managerLogin,
   logout,
@@ -1397,4 +1805,17 @@ module.exports = {
   orderHistory,
   addManager,
   getStaffDataById,
+  addQSR,
+  getQSRData,
+  getQSRDataById,
+  updateQSR,
+  deleteQSR,
+  changeQSRPassword,
+  qsrLogin,
+  addSubscriptionPlan,
+  getSubscriptionPlans,
+  getUserSubscriptionInfo,
+  buySubscriptionPlan,
+  updateUser,
+  updateCharges,
 };

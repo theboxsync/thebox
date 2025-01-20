@@ -32,6 +32,7 @@ app.use("/api", authRouter);
 app.use("/api", uploadRouter);
 app.use(subdomain("admin", adminRouter));
 app.use(subdomain("manager", managerRouter));
+app.use(subdomain("qsr", authRouter));
 
 connectDB().then(() => {
   app.listen(PORT, () => {

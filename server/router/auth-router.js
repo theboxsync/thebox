@@ -4,9 +4,12 @@ const router = express.Router();
 const authController = require("../controllers/auth-controller");
 const authMiddleware = require("../middlewares/auth-middlewares");
 
+router.route("/sendmail").post(authController.sendMail);
+
 router.route("/emailcheck").post(authController.emailCheck);
 
 router.route("/register").post(authController.register);
+router.route("/update-tax").put(authMiddleware, authController.updateTax);
 
 router.route("/login").post(authController.login);
 router.route("/manager-login").post(authController.managerLogin);
@@ -89,5 +92,27 @@ router
   .get(authMiddleware, authController.orderHistory);
 
 router.route("/addmanager").post(authMiddleware, authController.addManager);
+
+router.route("/addqsr").post(authMiddleware, authController.addQSR);
+
+router.route("/getqsrdata").get(authMiddleware, authController.getQSRData);
+router.route("/getqsrdata/:id").get(authController.getQSRDataById);
+
+router.route("/updateqsr/:id").put(authMiddleware, authController.updateQSR);
+router.route("/deleteqsr").post(authMiddleware, authController.deleteQSR);
+router.route("/changeqsrpassword").post(authMiddleware, authController.changeQSRPassword);
+
+router.route("/qsr-login").post(authController.qsrLogin);
+
+router.route("/addsubscriptionplan").post(authMiddleware, authController.addSubscriptionPlan);
+router.route("/getsubscriptionplans").get(authMiddleware, authController.getSubscriptionPlans);
+
+router.route("/getusersubscriptioninfo").get(authMiddleware, authController.getUserSubscriptionInfo);
+
+router.route("/buysubscriptionplan").post(authMiddleware, authController.buySubscriptionPlan);
+
+router.route("/updateuser").put(authMiddleware, authController.updateUser);
+
+router.route("/updatecharges").put(authMiddleware, authController.updateCharges);
 
 module.exports = router;

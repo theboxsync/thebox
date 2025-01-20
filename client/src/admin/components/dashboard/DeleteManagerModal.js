@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
@@ -101,6 +101,7 @@ function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
                 onChange={(e) => setAdminPassword(e.target.value)}
                 required
               />
+              <Link to="/forgot-password"> Forgot Admin Password? </Link>
             </Form.Group>
             {error && <div className="alert alert-danger mt-2">{error}</div>}
             {success && (

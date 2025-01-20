@@ -346,6 +346,15 @@ const editStaff = Yup.object({
     ),
 });
 
+const addQSR = Yup.object().shape({
+  username: Yup.string().required("QSR Name is required"),
+  password: Yup.string().required("Password is required"),
+});
+
+const editQsr = Yup.object().shape({
+  username: Yup.string().required("QSR Name is required"),
+});
+
 export {
   signupSchema1,
   signupSchema2,
@@ -360,4 +369,6 @@ export {
   editManager,
   addStaff,
   editStaff,
+  addQSR,
+  editQsr,
 };

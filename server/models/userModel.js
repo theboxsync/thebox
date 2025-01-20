@@ -51,6 +51,38 @@ const userSchema = new Schema({
   otpExpiry: {
     type: Date,
   },
+  taxInfo: {
+    cgst: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    sgst: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+  },
+  charges: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      amount: {
+        type: Number,
+        required: true,
+        default: 0,
+      },
+    },
+  ],
+
+  // username: {
+  //   type: String,
+  // },
+  // password: {
+  //   type: String,
+  // },
   // start_date: {
   //   type: Date,
   // },
