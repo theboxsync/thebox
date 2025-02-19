@@ -12,7 +12,10 @@ function ViewKOTs() {
           withCredentials: true,
         }
       );
-      setKotData(response.data);
+      const qsrKots = response.data.filter(
+        (order) => order.order_source === "QSR"
+      )
+      setKotData(qsrKots);
     } catch (error) {
       console.log("Error fetching order data:", error);
     }
@@ -95,7 +98,7 @@ function ViewKOTs() {
                       </div>
                     ) : (
                       <>
-                        {data.order_type === "Takeaway" ? (
+                        {data.order_type === "QSR Dine In" ? (
                           <div className="text-center">
                             Token No.:{" "}
                             <strong style={{ fontSize: "25px" }}>
@@ -150,7 +153,7 @@ function ViewKOTs() {
                     ))}
 
                     <div className="m-2">
-                      <span className="font-weight-bold">Comment: </span>
+                      <span className="font-weight-bold">Notes: </span>
                       <span>{data.comment}</span>
                     </div>
 

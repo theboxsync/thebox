@@ -150,7 +150,7 @@ function ViewKOTs() {
                     ))}
 
                     <div className="m-2">
-                      <span className="font-weight-bold">Comment: </span>
+                      <span className="font-weight-bold">Notes: </span>
                       <span>{data.comment}</span>
                     </div>
 

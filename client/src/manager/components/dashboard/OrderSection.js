@@ -86,6 +86,7 @@ function OrderSection({
   };
 
   const decreaseQuantity = (itemId) => {
+    console.log("Decreasing quantity for item ID:", itemId);
     setOrderItems((prevOrderItems) =>
       prevOrderItems
         .map((item) =>

@@ -13,6 +13,9 @@ const tokenCounterSchema = new Schema({
   restaurant_id: {
     type: String,
   },
+  source: {
+    type: String,
+  },
 });
 
 const TokenCounter = mongoose.model("TokenCounter", tokenCounterSchema);

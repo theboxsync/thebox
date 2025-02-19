@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Country, State, City } from "country-state-city";
 
 import DineInSection from "./DineInSection";
 import DeliverySection from "./DeliverySection";
-import TakeawaySection from "./TakeawaySection";
 import PaymentModal from "./PaymentModal";
 
 function CustomerOrderDetail({
   order,
+  orderReset,
   increaseQuantity,
   decreaseQuantity,
   removeItem,
@@ -28,6 +27,7 @@ function CustomerOrderDetail({
     paymentType: "Cash",
     subTotal: "",
     total: "",
+    discountAmount: "",
   });
   const [taxRates, setTaxRates] = useState({});
 
@@ -135,6 +135,21 @@ function CustomerOrderDetail({
     }
   }, [order, tableInfo, orderType]);
 
+  useEffect(() => {
+    if (order.order_items) {
+      const calculatedTotal = order.order_items.reduce(
+        (acc, item) => acc + item.dish_price * item.quantity,
+        0
+      );
+
+      // Update paymentData.subTotal
+      setPaymentData((prev) => ({
+        ...prev,
+        subTotal: calculatedTotal.toFixed(2),
+      }));
+    }
+  }, [order.order_items, orderType]);
+
   const displayMainSection = () => {
     if (orderType === "Dine In") {
       return (
@@ -155,9 +170,9 @@ function CustomerOrderDetail({
           setCustomerInfo={setCustomerInfo}
         />
       );
-    } else if (orderType === "Takeaway") {
+    } else if (orderType === "QSR Dine In") {
       return (
-        <TakeawaySection
+        <DineInSection
           orderInfo={orderInfo}
           setOrderInfo={setOrderInfo}
           customerInfo={customerInfo}
@@ -203,11 +218,11 @@ function CustomerOrderDetail({
     };
 
     if (updatedOrderInfo.order_status === "Paid") {
-      updatedOrderInfo.bill_amount = parseFloat(paymentData.paidAmount);
-      updatedOrderInfo.payment_type = paymentData.paymentType;
-
       updatedOrderInfo.sub_total = parseFloat(paymentData.subTotal);
       updatedOrderInfo.total_amount = parseFloat(paymentData.total);
+      updatedOrderInfo.discount_amount = parseFloat(paymentData.discountAmount);
+      updatedOrderInfo.bill_amount = parseFloat(paymentData.paidAmount);
+      updatedOrderInfo.payment_type = paymentData.paymentType;
     }
 
     console.log("Updated Order Info:", updatedOrderInfo); // Debugging
@@ -236,6 +251,7 @@ function CustomerOrderDetail({
         setMainSection("DashboardSection");
       }
       if (response.data.status === "success" && orderStatus === "Paid") {
+        setOrderId(response.data.orderId);
         setShowPaymentModal(false);
         setPaymentSection(false);
         setPrintSection(true);
@@ -326,7 +342,7 @@ function CustomerOrderDetail({
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
                 <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.bill_amount
+                  order.sub_total
                 }</td>
               </tr>
               <tr>
@@ -348,6 +364,18 @@ function CustomerOrderDetail({
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
                 <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>
@@ -473,21 +501,16 @@ function CustomerOrderDetail({
               <button
                 className="btn mx-2"
                 type="button"
-                onClick={() => orderController("KOT")}
+                onClick={() => setShowPaymentModal(true)}
               >
-                KOT
+                KOT and Pay
               </button>
               <button className="btn mx-2">Cancel Order</button>
             </div>
 
             <div className="mx-5">
               <label className="m-0">
-                Total - &#8377;{" "}
-                {order.order_items &&
-                  order.order_items.reduce(
-                    (acc, item) => acc + item.dish_price * item.quantity,
-                    0
-                  )}
+                Total: &#8377; {paymentData.subTotal}
               </label>
               {paymentSection === true ? (
                 <button
@@ -511,9 +534,32 @@ function CustomerOrderDetail({
                   )}
                   <button
                     className="btn mx-2"
-                    onClick={() => setMainSection("DashboardSection")}
+                    onClick={() => {
+                      orderReset();
+                      setPrintSection(false);
+                      setPaymentSection(false);
+                      setOrderId("");
+                      setTableId(""); // Ensure table is reset
+                      setOrderInfo({ order_items: [] }); // Explicitly reset order items
+                      setCustomerInfo({
+                        name: "",
+                        email: "",
+                        phone: "",
+                        address: "",
+                        date_of_birth: "",
+                        anniversary: "",
+                        tag: [],
+                      }); // Reset customer details
+                      setPaymentData({
+                        paidAmount: "",
+                        paymentType: "Cash",
+                        subTotal: "",
+                        total: "",
+                        discountAmount: "",
+                      }); // Reset payment data
+                    }}
                   >
-                    Go To Dashboard
+                    Next
                   </button>
                 </>
               ) : (

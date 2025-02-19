@@ -63,17 +63,11 @@ const userSchema = new Schema({
       default: 0,
     },
   },
-  charges: [
+  containerCharges: [
     {
-      name: {
-        type: String,
-        required: true,
-      },
-      amount: {
-        type: Number,
-        required: true,
-        default: 0,
-      },
+      name: { type: String, required: true },
+      size: { type: String, required: true }, // e.g., "500ml", "1kg", "10 pieces"
+      price: { type: Number, required: true },
     },
   ],
 

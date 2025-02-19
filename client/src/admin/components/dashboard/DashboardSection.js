@@ -6,8 +6,14 @@ import DeleteManagerModal from "./DeleteManagerModal";
 
 import EditQsrModal from "./EditQsrModal";
 import DeleteQsrModal from "./DeleteQsrModal";
+import Loading from "../Loading";
 
 function DashboardSection({ setMainSection, setTableId, setOrderId }) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [userSubscription, setUserSubscription] = useState([]);
+
   const [tableData, setTableData] = useState([]);
   const [ManagerData, setManagerData] = useState([]);
   const [QsrData, setQsrData] = useState([]);
@@ -18,7 +24,40 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [showEditQsrModal, setShowEditQsrModal] = useState(false);
   const [showDeleteQsrModal, setShowDeleteQsrModal] = useState(false);
 
+  const fetchSubscriptionData = async () => {
+    try {
+      const [plansResponse, userSubscriptionResponse] = await Promise.all([
+        axios.get(`${process.env.REACT_APP_ADMIN_API}/getsubscriptionplans`, {
+          withCredentials: true,
+        }),
+        axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/getusersubscriptioninfo`,
+          {
+            withCredentials: true,
+          }
+        ),
+      ]);
+
+      const plans = plansResponse.data;
+      setSubscriptionPlans(plans);
+
+      const enrichedSubscriptions = userSubscriptionResponse.data.map(
+        (subscription) => {
+          const plan = plans.find((plan) => plan._id === subscription.plan_id);
+          return {
+            ...subscription,
+            plan_name: plan ? plan.plan_name : "Unknown Plan",
+          };
+        }
+      );
+
+      setUserSubscription(enrichedSubscriptions);
+    } catch (error) {
+      console.error("Error in fetching data:", error);
+    }
+  };
   const fetchManagerData = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/getmanagerdata`,
@@ -29,10 +68,13 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       setManagerData(response.data);
     } catch (error) {
       console.log("Error fetching manager data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchQsrData = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/getqsrdata`,
@@ -43,10 +85,13 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       setQsrData(response.data);
     } catch (error) {
       console.log("Error fetching qsr data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const fetchTableData = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/gettabledata`,
@@ -57,25 +102,32 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       setTableData(response.data);
     } catch (error) {
       console.log("Error fetching table data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    fetchSubscriptionData();
     fetchTableData();
     fetchManagerData();
     fetchQsrData();
   }, []);
 
+  
+
   const [editManagerModalData, setEditManagerModalData] = useState({});
   const editManagerModal = (id) => {
     console.log(id);
+    setIsLoading(true);
     axios
       .get(`${process.env.REACT_APP_ADMIN_API}/getmanagerdata/${id}`)
       .then((res) => {
         setEditManagerModalData(res.data);
         console.log(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
     setShowEditManagerModal(true);
   };
 
@@ -92,13 +144,15 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [editQsrModalData, setEditQsrModalData] = useState({});
   const editQsrModal = (id) => {
     console.log(id);
+    setIsLoading(true);
     axios
       .get(`${process.env.REACT_APP_ADMIN_API}/getqsrdata/${id}`)
       .then((res) => {
         setEditQsrModalData(res.data);
         console.log(res.data);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
     setShowEditQsrModal(true);
   };
 
@@ -112,8 +166,17 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     console.log(deleteQsrModalData);
   };
 
+  const hasValidSubscription = (plan_name) => {
+    return userSubscription.some(subscription => 
+      subscription.plan_name === plan_name 
+    );
+  };
+  
+
   return (
     <>
+      {isLoading && <Loading />}
+
       <section className="content">
         <div className="container-fluid">
           <div className="row">
@@ -132,7 +195,13 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                         You don't have any managers yet.
                         <div
                           className="m-1"
-                          onClick={() => setMainSection("AddManager")}
+                          onClick={() => {
+                            if (hasValidSubscription("Manager")) {
+                              setMainSection("AddManager");
+                            } else {
+                              window.location.href = "/subscription";
+                            }
+                          }}
                           style={{ color: "blue", cursor: "pointer" }}
                         >
                           Create manager
@@ -191,7 +260,13 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                         You don't have any QSRs yet.
                         <div
                           className="m-1"
-                          onClick={() => setMainSection("AddQSR")}
+                          onClick={() => {
+                            if (hasValidSubscription("QSR")) {
+                              setMainSection("AddQSR");
+                            } else {
+                              window.location.href = "/subscription";
+                            }
+                          }}
                           style={{ color: "blue", cursor: "pointer" }}
                         >
                           Create QSR

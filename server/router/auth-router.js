@@ -114,5 +114,7 @@ router.route("/buysubscriptionplan").post(authMiddleware, authController.buySubs
 router.route("/updateuser").put(authMiddleware, authController.updateUser);
 
 router.route("/updatecharges").put(authMiddleware, authController.updateCharges);
+router.route("/add-container-charge").post(authMiddleware, authController.addContainerCharge);
+router.route("/get-container-charges").get(authMiddleware, authController.getContainerCharges);
 
 module.exports = router;

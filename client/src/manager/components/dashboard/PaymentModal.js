@@ -64,9 +64,16 @@ function PaymentModal({
   };
 
   const handleSubmit = () => {
-    if (!paymentData.paidAmount || parseFloat(paymentData.paidAmount) <= 0) {
+    if (
+      (!paymentData.paidAmount || parseFloat(paymentData.paidAmount) <= 0) &&
+      total <= 0
+    ) {
       setErrorMessage("Paid amount is required and must be greater than 0.");
       return;
+    }
+
+    if (!paymentData.paidAmount) {
+      paymentData.paidAmount = total;
     }
 
     const updatedPaymentData = {
@@ -98,14 +105,14 @@ function PaymentModal({
             />
           </Form.Group>
           <div className="row">
-          <Form.Group className="mb-3 col-md-6">
-            <Form.Label>CGST ({taxRates.cgst}%)</Form.Label>
-            <Form.Control type="text" readOnly value={`₹ ${cgstAmount}`} />
-          </Form.Group>
-          <Form.Group className="mb-3 col-md-6">
-            <Form.Label>SGST ({taxRates.sgst}%)</Form.Label>
-            <Form.Control type="text" readOnly value={`₹ ${sgstAmount}`} />
-          </Form.Group>
+            <Form.Group className="mb-3 col-md-6">
+              <Form.Label>CGST ({taxRates.cgst}%)</Form.Label>
+              <Form.Control type="text" readOnly value={`₹ ${cgstAmount}`} />
+            </Form.Group>
+            <Form.Group className="mb-3 col-md-6">
+              <Form.Label>SGST ({taxRates.sgst}%)</Form.Label>
+              <Form.Control type="text" readOnly value={`₹ ${sgstAmount}`} />
+            </Form.Group>
           </div>
           <Form.Group className="mb-3">
             <Form.Label>Total</Form.Label>

@@ -14,16 +14,13 @@ function SettingsDashboard() {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [containerCharges, setContainerCharges] = useState([]);
-  const [newCharge, setNewCharge] = useState({
-    name: "",
-    sizeValue: "",
-    sizeUnit: "ml", // Default unit
-    price: "",
-  });
-  const [editingChargeIndex, setEditingChargeIndex] = useState(null);
-  const [editableCharge, setEditableCharge] = useState(null);
-  const sizeUnits = ["ml", "L", "g", "kg", "pieces"];
+  const [predefinedCharges, setPredefinedCharges] = useState([
+    { name: "Parcel Container Charge", amount: 0, enabled: false },
+    { name: "Service Charge", amount: 0, enabled: false },
+  ]);
+
+  const [charges, setCharges] = useState([]); // State to manage charges
+  const [newCharge, setNewCharge] = useState({ name: "", amount: 0 });
 
   const navigate = useNavigate();
 
@@ -56,6 +53,19 @@ function SettingsDashboard() {
         setCities(
           City.getCitiesOfState(response.data.country, response.data.state)
         );
+        const existingCharges = response.data.charges || [];
+        setCharges(existingCharges);
+
+        // Update predefined charges with existing amounts
+        const updatedPredefinedCharges = predefinedCharges.map((charge) => {
+          const existingCharge = existingCharges.find(
+            (c) => c.name === charge.name
+          );
+          return existingCharge
+            ? { ...charge, amount: existingCharge.amount }
+            : charge;
+        });
+        setPredefinedCharges(updatedPredefinedCharges);
       }
     } catch (error) {
       console.log("Error fetching user data:", error);
@@ -141,93 +151,113 @@ function SettingsDashboard() {
     setEditableAddress({ ...editableAddress, city: e.target.value });
   };
 
-  const fetchContainerCharges = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/get-container-charges`,
-        { withCredentials: true }
-      );
-      setContainerCharges(response.data);
-    } catch (error) {
-      console.log("Error fetching container charges:", error);
+  const togglePredefinedCharge = (name) => {
+    const updatedCharges = [...charges];
+    const chargeIndex = updatedCharges.findIndex((c) => c.name === name);
+
+    if (chargeIndex > -1) {
+      // Remove the charge if it exists
+      updatedCharges.splice(chargeIndex, 1);
+    } else {
+      // Add the charge with a default amount
+      const predefinedCharge = predefinedCharges.find((c) => c.name === name);
+      updatedCharges.push({ name, amount: predefinedCharge.amount || 0 });
     }
+
+    setCharges(updatedCharges);
   };
 
-  const addContainerCharge = async () => {
-    const formattedCharge = {
-      name: newCharge.name,
-      size: `${newCharge.sizeValue} ${newCharge.sizeUnit}`, // Example: "500 ml"
-      price: newCharge.price,
-    };
+  const handleChargeAmountChange = (name, amount) => {
+    const updatedCharges = charges.map((charge) =>
+      charge.name === name ? { ...charge, amount: parseFloat(amount) } : charge
+    );
+    setCharges(updatedCharges);
+  };
 
+  // const handlePredefinedChargeChange = (index) => {
+  //   const updatedCharges = [...predefinedCharges];
+  //   updatedCharges[index].enabled = !updatedCharges[index].enabled;
+  //   setPredefinedCharges(updatedCharges);
+  // };
+
+  // const handlePredefinedChargeAmountChange = (index, value) => {
+  //   const updatedCharges = [...predefinedCharges];
+  //   updatedCharges[index].amount = parseFloat(value) || 0;
+  //   setPredefinedCharges(updatedCharges);
+  // };
+
+  // const savePredefinedCharges = async () => {
+  //   const enabledCharges = predefinedCharges
+  //     .filter((charge) => charge.enabled)
+  //     .map(({ name, amount }) => ({ name, amount }));
+
+  //   try {
+  //     const response = await axios.put(
+  //       `${process.env.REACT_APP_ADMIN_API}/updatecharges`,
+  //       { userId: userData._id, charges: enabledCharges },
+  //       { withCredentials: true }
+  //     );
+  //     if (response.status === 200) {
+  //       alert("Charges updated successfully!");
+  //       setCharges(enabledCharges);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error updating charges:", error);
+  //     alert("Failed to update charges.");
+  //   }
+  // };
+
+  // const fetchCharges = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `${process.env.REACT_APP_ADMIN_API}/userdata`,
+  //       {
+  //         withCredentials: true,
+  //       }
+  //     );
+  //     if (response.data !== "Null") {
+  //       setCharges(response.data.charges || []);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching charges:", error);
+  //   }
+  // };
+
+  // const addCharge = () => {
+  //   if (newCharge.name && newCharge.amount > 0) {
+  //     setCharges([...charges, newCharge]);
+  //     setNewCharge({ name: "", amount: 0 });
+  //   } else {
+  //     alert("Please provide valid charge details.");
+  //   }
+  // };
+
+  // const removeCharge = (index) => {
+  //   const updatedCharges = charges.filter((_, i) => i !== index);
+  //   setCharges(updatedCharges);
+  // };
+
+  const saveCharges = async () => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/add-container-charge`,
-        formattedCharge,
+      const response = await axios.put(
+        `${process.env.REACT_APP_ADMIN_API}/updatecharges`,
+        { userId: userData._id, charges },
         { withCredentials: true }
       );
       if (response.status === 200) {
-        alert("Container charge added successfully!");
-        setContainerCharges([...containerCharges, formattedCharge]);
-        setNewCharge({ name: "", sizeValue: "", sizeUnit: "ml", price: "" });
+        alert("Charges updated successfully!");
       }
     } catch (error) {
-      console.log("Error adding container charge:", error);
-      alert("Failed to add container charge.");
+      console.error("Error updating charges:", error);
+      alert("Failed to update charges.");
     }
   };
 
   useEffect(() => {
     fetchUserData();
-    fetchContainerCharges();
     setCountries(Country.getAllCountries());
+    // fetchCharges();
   }, []);
-
-  const handleEditCharge = (index) => {
-    setEditingChargeIndex(index);
-    setEditableCharge({
-      name: containerCharges[index].name,
-      sizeValue: containerCharges[index].size.split(" ")[0],
-      sizeUnit: containerCharges[index].size.split(" ")[1],
-      price: containerCharges[index].price,
-    });
-  };
-
-  const handleSaveCharge = async () => {
-    const updatedCharge = {
-      name: editableCharge.name,
-      size: `${editableCharge.sizeValue} ${editableCharge.sizeUnit}`,
-      price: editableCharge.price,
-    };
-
-    try {
-      await axios.put(
-        `${process.env.REACT_APP_ADMIN_API}/update-container-charge`,
-        { index: editingChargeIndex, updatedCharge },
-        { withCredentials: true }
-      );
-      const updatedCharges = [...containerCharges];
-      updatedCharges[editingChargeIndex] = updatedCharge;
-      setContainerCharges(updatedCharges);
-      setEditingChargeIndex(null);
-      setEditableCharge(null);
-    } catch (error) {
-      console.log("Error updating container charge:", error);
-      alert("Failed to update container charge.");
-    }
-  };
-
-  const handleDeleteCharge = async (index) => {
-    try {
-      await axios.delete(
-        `${process.env.REACT_APP_ADMIN_API}/delete-container-charge`,
-        { data: { index }, withCredentials: true }
-      );
-      setContainerCharges(containerCharges.filter((_, i) => i !== index));
-    } catch (error) {
-      console.log("Error deleting container charge:", error);
-    }
-  };
   return (
     <>
       <section className="content" id="viewInventory">
@@ -512,196 +542,142 @@ function SettingsDashboard() {
               </form>
             </div>
           </div>
-
           <div className="card">
             <div className="card-header">
-              <h3 className="card-title">Manage Container Charges</h3>
+              <h3 className="card-title">Manage Charges</h3>
             </div>
             <div className="card-body">
-              <h5>Container Charges</h5>
-              <ul className="list-group row">
-                {containerCharges.map((charge, index) => (
-                  <li
-                    key={index}
-                    className="row list-group-item d-flex justify-content-between align-items-center"
-                  >
-                    {editingChargeIndex === index ? (
-                      <>
-                        <div className="col-md-3">
-                          <input
-                            type="text"
-                            className="form-control"
-                            value={editableCharge.name}
-                            onChange={(e) =>
-                              setEditableCharge({
-                                ...editableCharge,
-                                name: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                        <div className="row col-md-3">
-                          <div className="col-md-6">
-                            <input
-                              type="number"
-                              className="form-control"
-                              value={editableCharge.sizeValue}
-                              onChange={(e) =>
-                                setEditableCharge({
-                                  ...editableCharge,
-                                  sizeValue: e.target.value,
-                                })
-                              }
-                            />
-                          </div>
-                          <div className="col-md-6">
-                            <select
-                              value={editableCharge.sizeUnit}
-                              className="form-control"
-                              onChange={(e) =>
-                                setEditableCharge({
-                                  ...editableCharge,
-                                  sizeUnit: e.target.value,
-                                })
-                              }
-                            >
-                              {sizeUnits.map((unit) => (
-                                <option key={unit} value={unit}>
-                                  {unit}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-                        </div>
-                        <div className="col-md-3">
-                          <input
-                            type="number"
-                            className="form-control"
-                            value={editableCharge.price}
-                            onChange={(e) =>
-                              setEditableCharge({
-                                ...editableCharge,
-                                price: e.target.value,
-                              })
-                            }
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      `${charge.name} - ${charge.size} - ₹${charge.price}`
-                    )}
-                    <div>
-                      {editingChargeIndex === index ? (
-                        <>
-                          <button
-                            className="btn btn-success mx-2"
-                            onClick={handleSaveCharge}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="btn btn-secondary mx-2"
-                            onClick={() => setEditingChargeIndex(null)}
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          className="btn btn-primary mx-2"
-                          onClick={() => handleEditCharge(index)}
-                        >
-                          Edit
-                        </button>
-                      )}
-                      <button
-                        className="btn btn-danger mx-2"
-                        onClick={() => handleDeleteCharge(index)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <hr />
-              <form>
+              <h5>Predefined Charges</h5>
+              <form className="mx-3">
                 <div className="row">
-                  {/* Container Name */}
-                  <div className="form-group col-md-3">
-                    <label>Container Name</label>
+                  {predefinedCharges.map((charge) => (
+                    <div className="form-group col-md-6" key={charge.name}>
+                      <div className="form-check">
+                        <input
+                          type="checkbox"
+                          className="form-check-input"
+                          id={charge.name}
+                          checked={charges.some((c) => c.name === charge.name)}
+                          onChange={() => togglePredefinedCharge(charge.name)}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor={charge.name}
+                        >
+                          {charge.name}
+                        </label>
+                      </div>
+                      {charges.some((c) => c.name === charge.name) && (
+                        <input
+                          type="number"
+                          className="form-control mt-2"
+                          value={
+                            charges.find((c) => c.name === charge.name)
+                              ?.amount || 0
+                          }
+                          onChange={(e) =>
+                            handleChargeAmountChange(
+                              charge.name,
+                              e.target.value
+                            )
+                          }
+                          style={{ maxWidth: "200px" }}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </form>
+              <ul className="list-group">
+                {charges
+                  .filter(
+                    (charge) =>
+                      !predefinedCharges.some((c) => c.name === charge.name)
+                  )
+                  .map((charge, index) => (
+                    <li
+                      key={index}
+                      className="list-group-item d-flex justify-content-between align-items-center"
+                    >
+                      <span>
+                        {charge.name} - ₹{charge.amount.toFixed(2)}
+                      </span>
+                    </li>
+                  ))}
+              </ul>
+              <button className="btn btn-success mt-3" onClick={saveCharges}>
+                Save Charges
+              </button>
+            </div>
+          </div>
+          {/* <div className="card">
+            <div className="card-header">
+              <h3 className="card-title">Manage Charges</h3>
+            </div>
+            <div className="card-body">
+              <form className="mx-3">
+                <div className="row">
+                  <div className="form-group col-md-4">
+                    <label>Charge Name</label>
                     <input
                       type="text"
-                      className="form-control"
                       value={newCharge.name}
                       onChange={(e) =>
                         setNewCharge({ ...newCharge, name: e.target.value })
                       }
+                      className="form-control"
                     />
                   </div>
-
-                  {/* Size Input (Number) */}
-                  <div className="form-group col-md-3">
-                    <label>Size</label>
-                    <div className="d-flex">
-                      <input
-                        type="number"
-                        className="form-control"
-                        value={newCharge.sizeValue}
-                        onChange={(e) =>
-                          setNewCharge({
-                            ...newCharge,
-                            sizeValue: e.target.value,
-                          })
-                        }
-                        placeholder="Enter size"
-                      />
-                      <select
-                        className="form-control mx-2"
-                        value={newCharge.sizeUnit}
-                        onChange={(e) =>
-                          setNewCharge({
-                            ...newCharge,
-                            sizeUnit: e.target.value,
-                          })
-                        }
-                      >
-                        {sizeUnits.map((unit, index) => (
-                          <option key={index} value={unit}>
-                            {unit}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Price Input */}
-                  <div className="form-group col-md-3">
-                    <label>Price</label>
+                  <div className="form-group col-md-4">
+                    <label>Amount</label>
                     <input
                       type="number"
-                      className="form-control"
-                      value={newCharge.price}
+                      value={newCharge.amount}
                       onChange={(e) =>
-                        setNewCharge({ ...newCharge, price: e.target.value })
+                        setNewCharge({
+                          ...newCharge,
+                          amount: parseFloat(e.target.value),
+                        })
                       }
+                      className="form-control"
                     />
                   </div>
-
-                  {/* Add Button */}
-                  <div className="form-group col-md-3 d-flex align-items-end">
+                  <div className="form-group col-md-4 align-self-end">
                     <button
                       type="button"
                       className="btn btn-primary"
-                      onClick={addContainerCharge}
+                      onClick={addCharge}
                     >
                       Add Charge
                     </button>
                   </div>
                 </div>
               </form>
+              <hr />
+              <h5>Existing Charges</h5>
+              <ul className="list-group">
+                {charges.map((charge, index) => (
+                  <li
+                    key={index}
+                    className="list-group-item d-flex justify-content-between align-items-center"
+                  >
+                    <span>
+                      {charge.name} - ₹{charge.amount.toFixed(2)}
+                    </span>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeCharge(index)}
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <button className="btn btn-success mt-3" onClick={saveCharges}>
+                Save Charges
+              </button>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
     </>

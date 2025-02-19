@@ -28,14 +28,13 @@ function CustomerOrderDetail({
     paymentType: "Cash",
     subTotal: "",
     total: "",
-    discountAmount: "",
   });
   const [taxRates, setTaxRates] = useState({});
 
   // Fetch Tax Info
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+      .get(`${process.env.REACT_APP_QSR_API}/userdata`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -52,7 +51,7 @@ function CustomerOrderDetail({
   const fetchTableInfo = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/gettabledata/${tableId}`,
+        `${process.env.REACT_APP_QSR_API}/gettabledata/${tableId}`,
         { withCredentials: true }
       );
       setTableInfo(response.data);
@@ -105,14 +104,14 @@ function CustomerOrderDetail({
         discount_amount: firstOrder.discount_amount,
         total_amount: 0,
         payment_type: "",
-        order_source: "Manager",
+        order_source: "QSR",
       });
     }
 
     if (firstOrder.customer_id) {
       axios
         .get(
-          `${process.env.REACT_APP_MANAGER_API}/getcustomerdata/${firstOrder.customer_id}`,
+          `${process.env.REACT_APP_QSR_API}/getcustomerdata/${firstOrder.customer_id}`,
           { withCredentials: true }
         )
         .then((response) => {
@@ -135,21 +134,6 @@ function CustomerOrderDetail({
       setPaymentSection(true);
     }
   }, [order, tableInfo, orderType]);
-
-  useEffect(() => {
-    if (order.order_items) {
-      const calculatedTotal = order.order_items.reduce(
-        (acc, item) => acc + item.dish_price * item.quantity,
-        0
-      );
-
-      // Update paymentData.subTotal
-      setPaymentData((prev) => ({
-        ...prev,
-        subTotal: calculatedTotal.toFixed(2),
-      }));
-    }
-  }, [order.order_items, orderType]);
 
   const displayMainSection = () => {
     if (orderType === "Dine In") {
@@ -219,11 +203,11 @@ function CustomerOrderDetail({
     };
 
     if (updatedOrderInfo.order_status === "Paid") {
-      updatedOrderInfo.sub_total = parseFloat(paymentData.subTotal);
-      updatedOrderInfo.total_amount = parseFloat(paymentData.total);
-      updatedOrderInfo.discount_amount = parseFloat(paymentData.discountAmount);
       updatedOrderInfo.bill_amount = parseFloat(paymentData.paidAmount);
       updatedOrderInfo.payment_type = paymentData.paymentType;
+
+      updatedOrderInfo.sub_total = parseFloat(paymentData.subTotal);
+      updatedOrderInfo.total_amount = parseFloat(paymentData.total);
     }
 
     console.log("Updated Order Info:", updatedOrderInfo); // Debugging
@@ -239,7 +223,7 @@ function CustomerOrderDetail({
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_MANAGER_API}/ordercontroller`,
+        `${process.env.REACT_APP_QSR_API}/ordercontroller`,
         payload,
         { withCredentials: true }
       );
@@ -264,12 +248,12 @@ function CustomerOrderDetail({
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_QSR_API}/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        `${process.env.REACT_APP_QSR_API}/userdata`,
         { withCredentials: true }
       );
 
@@ -342,7 +326,7 @@ function CustomerOrderDetail({
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
                 <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.sub_total
+                  order.bill_amount
                 }</td>
               </tr>
               <tr>
@@ -364,18 +348,6 @@ function CustomerOrderDetail({
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
                 <td style="text-align: right;">₹ ${order.total_amount}</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
-                <td style="text-align: right;">- ₹ ${
-                  order.discount_amount || 0
-                }</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
-                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.bill_amount
-                }</td>
               </tr>
             </tbody>
           </table>
@@ -505,12 +477,17 @@ function CustomerOrderDetail({
               >
                 KOT
               </button>
-              {orderId && <button className="btn mx-2" type="button" onClick={() => orderController("Cancelled")}>Cancel Order</button>}
+              <button className="btn mx-2">Cancel Order</button>
             </div>
 
             <div className="mx-5">
               <label className="m-0">
-                Total: &#8377; {paymentData.subTotal}
+                Total - &#8377;{" "}
+                {order.order_items &&
+                  order.order_items.reduce(
+                    (acc, item) => acc + item.dish_price * item.quantity,
+                    0
+                  )}
               </label>
               {paymentSection === true ? (
                 <button

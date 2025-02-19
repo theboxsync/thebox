@@ -36,9 +36,10 @@ function DashboardSection({
       const deliveries = response.data.filter(
         (order) =>
           (order.order_type === "Delivery" ||
-            order.order_type === "Takeaway") && // Past Pickup
+            order.order_type === "QSR Dine In") && // Past Pickup
           (order.order_status !== "Paid" ||
-            order.order_items.some((item) => item.status === "Preparing"))
+            order.order_items.some((item) => item.status === "Preparing")) &&
+          order.order_source === "QSR"
       );
 
       setActiveDeliveries(deliveries);
@@ -111,11 +112,11 @@ function DashboardSection({
                   <button
                     className="btn text-center mx-3"
                     onClick={() => {
-                      setOrderType("Takeaway"); // Past Pickup
+                      setOrderType("QSR Dine In"); // Past Pickup
                       setMainSection("OrderSection");
                     }}
                   >
-                    Takeaway
+                    Dine In
                   </button>
                 </div>
               </div>
@@ -123,7 +124,7 @@ function DashboardSection({
                 <div className="col-md-12">
                   <div className="card">
                     <div className="card-header">
-                      <h3 className="card-title">Active Delivery & Takeaway</h3>
+                      <h3 className="card-title">Active Delivery & Dine In</h3>
                     </div>
                     <div className="card-body">
                       {activeDeliveries.length > 0 ? (
@@ -137,7 +138,7 @@ function DashboardSection({
                                   </span>
                                 </div>
                                 <div className="col-md-4">
-                                  {order.order_type === "Takeaway" ? (
+                                  {order.order_type === "QSR Dine In" ? (
                                     <span>
                                       <strong>Token: </strong> {order.token}
                                     </span>

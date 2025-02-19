@@ -1173,6 +1173,7 @@ const getCustomerData = (req, res) => {
 };
 
 const getOrderData = (req, res) => {
+  console.log(req.params.id);
   try {
     Order.find({ _id: req.params.id })
       .then((data) => res.json(data))
@@ -1267,7 +1268,7 @@ cron.schedule("0 0 * * *", async () => {
   }
 });
 
-const generateToken = async (restaurant_id) => {
+const generateToken = async (restaurant_id, source) => {
   const today = new Date();
   const dateOnly = new Date(
     today.getFullYear(),
@@ -1278,6 +1279,7 @@ const generateToken = async (restaurant_id) => {
   let tokenCounter = await TokenCounter.findOne({
     date: dateOnly,
     restaurant_id,
+    source,
   });
 
   if (!tokenCounter) {
@@ -1285,6 +1287,7 @@ const generateToken = async (restaurant_id) => {
       date: dateOnly,
       lastToken: 0,
       restaurant_id: restaurant_id,
+      source: source,
     });
   }
 
@@ -1309,11 +1312,32 @@ const orderController = async (req, res) => {
       orderData = { ...orderData, customer_id: savedCustomer._id };
     }
 
-    if (orderData.order_status === "KOT") {
+    if (orderData.order_status === "KOT" || orderData.order_source === "QSR") {
       orderData.order_items = orderData.order_items.map((item) => ({
         ...item,
         status: item.status === "Pending" ? "Preparing" : item.status,
       }));
+    }
+
+    if (orderData.order_status === "Cancelled") {
+      orderData.order_items = orderData.order_items.map((item) => ({
+        ...item,
+        status: "Cancelled",
+      }));
+      
+      savedOrder = await Order.findByIdAndUpdate(orderId, orderData, {
+        new: true,
+      });
+
+      if (!savedOrder) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        message: "Order updated successfully",
+        order: savedOrder,
+      });
     }
 
     // Process based on order type
@@ -1367,10 +1391,10 @@ const orderController = async (req, res) => {
         table: tableDocument,
       });
     } else {
-      if (orderData.order_type === "Takeaway") {
+      if (orderData.order_type === "Takeaway" || orderData.order_type === "QSR Dine In") {
         if (!orderId) {
           // Generate a new token for Takeaway orders
-          orderData.token = await generateToken(req.user);
+          orderData.token = await generateToken(req.user, orderData.order_source);
         }
       }
       // For Delivery or Pickup, check if an order_id is provided
@@ -1393,11 +1417,13 @@ const orderController = async (req, res) => {
         // Create a new order
         const newOrder = new Order(orderData);
         savedOrder = await newOrder.save();
+        const insertedOrderId = savedOrder._id;
 
         return res.status(200).json({
           status: "success",
           message: "Order created successfully",
           order: savedOrder,
+          orderId: insertedOrderId,
         });
       }
     }
@@ -1483,6 +1509,7 @@ const orderHistory = async (req, res) => {
 
 const addManager = (req, res) => {
   try {
+    console.log("Hello" + req.body);
     const managerData = { ...req.body, restaurant_id: req.user };
     console.log(managerData);
     Manager.create(managerData)
@@ -1748,6 +1775,33 @@ const updateCharges = async (req, res) => {
   }
 };
 
+const addContainerCharge = async (req, res) => {  
+  const userId = req.user;
+  const { name, size, price } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.containerCharges.push({ name, size, price });
+    await user.save();
+    res.json({ message: "Container charge added successfully!", user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const getContainerCharges = async (req, res) => {
+  try {
+    const user = await User.findById(req.user);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json(user.containerCharges);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = {
   sendMail,
   register,
@@ -1818,4 +1872,6 @@ module.exports = {
   buySubscriptionPlan,
   updateUser,
   updateCharges,
+  addContainerCharge,
+  getContainerCharges,
 };

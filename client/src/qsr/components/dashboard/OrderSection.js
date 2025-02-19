@@ -103,6 +103,27 @@ function OrderSection({
     );
   };
 
+  const orderReset = () => {
+    setOrder({
+      _id: "",
+      table_no: "",
+      table_area: "",
+      order_type: "",
+      order_items: [],
+      order_status: "",
+      customer_id: "",
+      customer_name: "",
+      total_persons: 0,
+      comment: "",
+      waiter: "",
+      bill_amount: 0,
+      discount_amount: 0,
+      total_amount: 0,
+      order_source: "QSR",
+    });
+    setOrderItems([]);
+  };
+
   return (
     <section className="content">
       <div className="container-fluid">
@@ -129,6 +150,7 @@ function OrderSection({
                 <OrderMenuShow addItemToOrder={addItemToOrder} />
                 <CustomerOrderDetail
                   order={{ ...order, order_items: orderItems }} // Pass combined order object
+                  orderReset={orderReset}
                   increaseQuantity={increaseQuantity}
                   decreaseQuantity={decreaseQuantity}
                   removeItem={removeItem}
