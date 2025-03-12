@@ -6,7 +6,7 @@ function Logout() {
   const navigate = useNavigate();
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/logout`, { withCredentials: true })
+      .get(`${process.env.REACT_APP_CAPTAIN_API}/logout`, { withCredentials: true })
       .then((res) => {
         console.log("Logged Out");
         window.location.href = `${process.env.REACT_APP_URL}`;

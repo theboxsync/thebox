@@ -11,6 +11,8 @@ const QSR = require("../models/QSRModel");
 const Subscription = require("../models/subscriptionModel");
 const SubscriptionPlan = require("../models/subscriptionPlanModel");
 
+const Captain = require("../models/captainModel");
+
 const cron = require("node-cron");
 const fs = require("fs");
 const path = require("path");
@@ -1324,7 +1326,7 @@ const orderController = async (req, res) => {
         ...item,
         status: "Cancelled",
       }));
-      
+
       savedOrder = await Order.findByIdAndUpdate(orderId, orderData, {
         new: true,
       });
@@ -1391,10 +1393,16 @@ const orderController = async (req, res) => {
         table: tableDocument,
       });
     } else {
-      if (orderData.order_type === "Takeaway" || orderData.order_type === "QSR Dine In") {
+      if (
+        orderData.order_type === "Takeaway" ||
+        orderData.order_type === "QSR Dine In"
+      ) {
         if (!orderId) {
           // Generate a new token for Takeaway orders
-          orderData.token = await generateToken(req.user, orderData.order_source);
+          orderData.token = await generateToken(
+            req.user,
+            orderData.order_source
+          );
         }
       }
       // For Delivery or Pickup, check if an order_id is provided
@@ -1775,7 +1783,7 @@ const updateCharges = async (req, res) => {
   }
 };
 
-const addContainerCharge = async (req, res) => {  
+const addContainerCharge = async (req, res) => {
   const userId = req.user;
   const { name, size, price } = req.body;
 
@@ -1799,6 +1807,292 @@ const getContainerCharges = async (req, res) => {
     res.json(user.containerCharges);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
+  }
+};
+
+const updateContainerCharge = async (req, res) => {
+  const userId = req.user;
+  const { name, size, price } = req.body.updatedCharge;
+  const chargeIndex = req.body.index;
+  console.log(chargeIndex);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.containerCharges[chargeIndex] = { name, size, price };
+    await user.save();
+    res.json({ message: "Container charge updated successfully!", user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const deleteContainerCharge = async (req, res) => {
+  const userId = req.user;
+  const chargeIndex = req.body.index;
+
+  console.log("Charge Index : ", req.body);
+
+  try {
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    user.containerCharges.splice(chargeIndex, 1);
+    await user.save();
+    res.json({ message: "Container charge deleted successfully!", user });
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+const addCaptain = (req, res) => {
+  try {
+    const captainData = { ...req.body, restaurant_id: req.user };
+    console.log(captainData);
+    Captain.create(captainData)
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getCaptainData = (req, res) => {
+  try {
+    Captain.find({ restaurant_id: req.user })
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getCaptainDataById = (req, res) => {
+  try {
+    Captain.findById(req.params.id)
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateCaptain = (req, res) => {
+  try {
+    const captainData = { ...req.body, restaurant_id: req.user };
+    console.log(captainData);
+    Captain.findByIdAndUpdate(req.params.id, captainData, { new: true })
+      .then((data) => res.json(data))
+      .catch((err) => res.json(err));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const deleteCaptain = async (req, res) => {
+  const { captainId, adminPassword } = req.body;
+
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
+      return res.status(401).json({ message: "Invalid admin password." });
+    }
+
+    // Delete the captain
+    await Captain.findByIdAndDelete(captainId);
+    res.status(200).json({ message: "Captain deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting captain:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const changeCaptainPassword = async (req, res) => {
+  const { adminPassword, newPassword, captainId } = req.body;
+  try {
+    // Verify admin password
+    const admin = await User.findById(req.user);
+    if (!admin) {
+      console.log("Admin not found");
+      return res.status(404).json({ message: "Admin not found." });
+    }
+
+    // Compare the entered password with the admin's hashed password
+    const isMatch = await bcrypt.compare(adminPassword, admin.password);
+    if (!isMatch) {
+      console.log("Invalid admin password");
+      return res.status(401).json({ message: "Invalid admin password." });
+    }
+
+    // Hash new password and update captain password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await Captain.findByIdAndUpdate(captainId, { password: hashedPassword });
+
+    res.status(200).json({ message: "Captain password updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "An error occurred." });
+  }
+};
+
+const captainLogin = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { restaurant_code, username, password } = req.body;
+
+    const user = await User.findOne({ restaurant_code });
+
+    if (!user) {
+      console.log("User not found");
+      return res.json({ message: "Invalid restaurant code" });
+    }
+    console.log("user : " + user);
+    const captain = await Captain.findOne({
+      username,
+      restaurant_id: user._id,
+    });
+
+    if (!captain) {
+      return res.json({ message: "Invalid Username" });
+    }
+
+    const isMatch = await bcrypt.compare(password, captain.password);
+
+    if (!isMatch) {
+      return res.json({ message: "Invalid Password" });
+    }
+
+    token = await user.generateAuthToken();
+    res.cookie("jwttoken", token, {
+      expires: new Date(Date.now() + 25892000000),
+      httpOnly: true,
+    });
+
+    res.status(200).json({ message: "Logged In", token });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const addFeedback = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { customer_name, customer_email, customer_phone, rating, feedback } =
+      req.body;
+    console.log("User ID:", userId);
+
+    // Validate input
+    if (!userId || !customer_name || !rating || !feedback) {
+      return res.json({ success: false, message: "Missing required fields." });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+
+    // Create feedback object
+    const newFeedback = {
+      customer_name,
+      customer_email: customer_email || "", // Optional
+      customer_phone: customer_phone || "", // Optional
+      rating,
+      feedback,
+    };
+
+    // Add feedback to user
+    user.feedbacks.push(newFeedback);
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Feedback added successfully.",
+      feedback: newFeedback,
+    });
+  } catch (error) {
+    console.error("Error adding feedback:", error);
+    res.json({ success: false, message: "Internal server error." });
+  }
+};
+
+const getFeedbacks = async (req, res) => {
+  try {
+    const userId = req.user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+    const feedbacks = user.feedbacks;
+    console.log(feedbacks);
+    res.json({ success: true, feedbacks });
+  } catch (error) {
+    console.error("Error getting feedback data:", error);
+    res.json({ success: false, message: "Internal server error." });
+  }
+};
+
+const deleteFeedback = async (req, res) => {
+  try {
+    const userId = req.user;
+    const feedbackId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+    const feedbackIndex = user.feedbacks.findIndex(
+      (feedback) => feedback._id.toString() === feedbackId
+    );
+    if (feedbackIndex === -1) {
+      return res.json({ success: false, message: "Feedback not found." });
+    }
+    user.feedbacks.splice(feedbackIndex, 1);
+    await user.save();
+    res.json({ success: true, message: "Feedback deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting feedback:", error);
+    res.json({ success: false, message: "Internal server error." });
+  }
+};
+
+const replyFeedback = async (req, res) => {
+  try {
+    const userId = req.user;
+    const feedbackId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found." });
+    }
+    const feedbackIndex = user.feedbacks.findIndex(
+      (feedback) => feedback._id.toString() === feedbackId
+    );
+    if (feedbackIndex === -1) {
+      return res.json({ success: false, message: "Feedback not found." });
+    }
+
+    const feedback = user.feedbacks[feedbackIndex];
+    const { reply  } = req.body;
+
+    await sendEmail({
+      to: feedback.customer_email,
+      subject: "Feedback Reply",
+      html: reply,
+    });
+    
+    res.json({ success: true, message: "Feedback replied successfully." });
+  } catch (error) {
+    console.error("Error replying to feedback:", error);
+    res.json({ success: false, message: "Internal server error." });
   }
 };
 
@@ -1874,4 +2168,17 @@ module.exports = {
   updateCharges,
   addContainerCharge,
   getContainerCharges,
+  updateContainerCharge,
+  deleteContainerCharge,
+  addCaptain,
+  getCaptainData,
+  getCaptainDataById,
+  updateCaptain,
+  deleteCaptain,
+  changeCaptainPassword,
+  captainLogin,
+  addFeedback,
+  getFeedbacks,
+  deleteFeedback,
+  replyFeedback,
 };

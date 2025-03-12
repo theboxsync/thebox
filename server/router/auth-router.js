@@ -116,5 +116,23 @@ router.route("/updateuser").put(authMiddleware, authController.updateUser);
 router.route("/updatecharges").put(authMiddleware, authController.updateCharges);
 router.route("/add-container-charge").post(authMiddleware, authController.addContainerCharge);
 router.route("/get-container-charges").get(authMiddleware, authController.getContainerCharges);
+router.route("/update-container-charge").put(authMiddleware, authController.updateContainerCharge);
+router.route("/delete-container-charge/").delete(authMiddleware, authController.deleteContainerCharge);
+
+router.route("/addcaptain").post(authMiddleware, authController.addCaptain);
+
+router.route("/getcaptaindata").get(authMiddleware, authController.getCaptainData);
+router.route("/getcaptaindata/:id").get(authController.getCaptainDataById);
+
+router.route("/updatecaptain/:id").put(authMiddleware, authController.updateCaptain);
+router.route("/deletecaptain").post(authMiddleware, authController.deleteCaptain);
+router.route("/changecaptainpassword").post(authMiddleware, authController.changeCaptainPassword);
+
+router.route("/captain-login").post(authController.captainLogin);
+
+router.route("/addfeedback").post(authMiddleware, authController.addFeedback);
+router.route("/getfeedbacks").get(authMiddleware, authController.getFeedbacks);
+router.route("/deletefeedback/:id").delete(authMiddleware, authController.deleteFeedback);
+router.route("/replyfeedback/:id").post(authMiddleware, authController.replyFeedback);
 
 module.exports = router;

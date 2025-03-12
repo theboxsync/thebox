@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Country, State, City } from "country-state-city";
+import DeleteContainerModal from "./DeleteContainerModal";
 
 function SettingsDashboard() {
   const [userData, setUserData] = useState("");
@@ -24,6 +25,14 @@ function SettingsDashboard() {
   const [editingChargeIndex, setEditingChargeIndex] = useState(null);
   const [editableCharge, setEditableCharge] = useState(null);
   const sizeUnits = ["ml", "L", "g", "kg", "pieces"];
+
+  const [showDeleteContainerModal, setShowDeleteContainerModal] =
+    useState(false);
+  const [containerToDelete, setContainerToDelete] = useState({
+    index: null,
+    name: "",
+    size: "",
+  });
 
   const navigate = useNavigate();
 
@@ -217,16 +226,9 @@ function SettingsDashboard() {
     }
   };
 
-  const handleDeleteCharge = async (index) => {
-    try {
-      await axios.delete(
-        `${process.env.REACT_APP_ADMIN_API}/delete-container-charge`,
-        { data: { index }, withCredentials: true }
-      );
-      setContainerCharges(containerCharges.filter((_, i) => i !== index));
-    } catch (error) {
-      console.log("Error deleting container charge:", error);
-    }
+  const handleDeleteCharge = async (index, name, size) => {
+    setContainerToDelete({ index, name, size });
+    setShowDeleteContainerModal(true);
   };
   return (
     <>
@@ -616,7 +618,9 @@ function SettingsDashboard() {
                       )}
                       <button
                         className="btn btn-danger mx-2"
-                        onClick={() => handleDeleteCharge(index)}
+                        onClick={() =>
+                          handleDeleteCharge(index, charge.name, charge.size)
+                        }
                       >
                         Delete
                       </button>
@@ -704,6 +708,18 @@ function SettingsDashboard() {
           </div>
         </div>
       </section>
+
+      <DeleteContainerModal
+        show={showDeleteContainerModal}
+        handleClose={() => setShowDeleteContainerModal(false)}
+        data={containerToDelete}
+        resetdata={() =>
+          setContainerToDelete({ index: null, name: "", size: "" })
+        }
+        fetchUserData={fetchUserData}
+        containerCharges={containerCharges}
+        setContainerCharges={setContainerCharges}
+      />
     </>
   );
 }

@@ -10,14 +10,12 @@ import ForgotPassword from "../ForgotPassword";
 import OtpVerification from "../OtpVerification";
 import ChangePassword from "../ChangePassword";
 import RegistrationComplete from "../RegistrationComplete";
-
-
+import AddFeedback from "../pages/Feedback/AddFeedback";
 
 function AllRoutes() {
   return (
     <Routes>
       <Route path="/" element={<UserHome />} />
-
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/logout" element={<Logout />} />
@@ -25,7 +23,7 @@ function AllRoutes() {
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/registration-complete" element={<RegistrationComplete />} />
-
+      <Route path="/feedback/add" element={<AddFeedback />} />
     </Routes>
   );
 }

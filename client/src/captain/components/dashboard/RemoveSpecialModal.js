@@ -4,7 +4,7 @@ import axios from "axios";
 function RemoveSpecialModal({ show, handleClose, data, fetchMenuData }) {
     const removeSpecialDish = (id) => {
         axios
-          .put(`${process.env.REACT_APP_MANAGER_API}/removespecialdish/${id}`)
+          .put(`${process.env.REACT_APP_CAPTAIN_API}/removespecialdish/${id}`)
           .then((res) => {
             console.log(res.data);
             handleClose();

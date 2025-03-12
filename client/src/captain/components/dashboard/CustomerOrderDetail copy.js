@@ -31,11 +31,13 @@ function CustomerOrderDetail({
     discountAmount: "",
   });
   const [taxRates, setTaxRates] = useState({});
+  const [charges, setCharges] = useState([]);
+  const [parcelCharge, setParcelCharge] = useState(0);
 
   // Fetch Tax Info
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+      .get(`${process.env.REACT_APP_CAPTAIN_API}/userdata`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -43,6 +45,11 @@ function CustomerOrderDetail({
           cgst: response.data.taxInfo.cgst,
           sgst: response.data.taxInfo.sgst,
         });
+        const parcelChargeData = response.data.charges.find(
+          (charge) => charge.name === "Parcel Container Charge"
+        );
+        setParcelCharge(parcelChargeData ? parcelChargeData.amount : 0);
+        setCharges(response.data.charges);
       })
       .catch((error) => {
         console.error("Error fetching tax rates:", error);
@@ -52,7 +59,7 @@ function CustomerOrderDetail({
   const fetchTableInfo = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/gettabledata/${tableId}`,
+        `${process.env.REACT_APP_CAPTAIN_API}/gettabledata/${tableId}`,
         { withCredentials: true }
       );
       setTableInfo(response.data);
@@ -112,7 +119,7 @@ function CustomerOrderDetail({
     if (firstOrder.customer_id) {
       axios
         .get(
-          `${process.env.REACT_APP_MANAGER_API}/getcustomerdata/${firstOrder.customer_id}`,
+          `${process.env.REACT_APP_CAPTAIN_API}/getcustomerdata/${firstOrder.customer_id}`,
           { withCredentials: true }
         )
         .then((response) => {
@@ -143,13 +150,19 @@ function CustomerOrderDetail({
         0
       );
 
+      // Add parcel charge if orderType is "Takeaway"
+      const totalWithParcelCharge =
+        orderType === "Takeaway"
+          ? calculatedTotal + parcelCharge
+          : calculatedTotal;
+
       // Update paymentData.subTotal
       setPaymentData((prev) => ({
         ...prev,
-        subTotal: calculatedTotal.toFixed(2),
+        subTotal: totalWithParcelCharge,
       }));
     }
-  }, [order.order_items, orderType]);
+  }, [order.order_items, orderType, parcelCharge]);
 
   const displayMainSection = () => {
     if (orderType === "Dine In") {
@@ -218,6 +231,15 @@ function CustomerOrderDetail({
       sgst_amount: taxRates.sgst,
     };
 
+    if (orderType === "Takeaway") {
+      // Add parcel charge in orderInfo if orderType is "Takeaway"
+      updatedOrderInfo.order_items.push({
+        dish_name: "Parcel Container Charge",
+        quantity: 1,
+        dish_price: parcelCharge,
+      });
+    }
+
     if (updatedOrderInfo.order_status === "Paid") {
       updatedOrderInfo.sub_total = parseFloat(paymentData.subTotal);
       updatedOrderInfo.total_amount = parseFloat(paymentData.total);
@@ -239,7 +261,7 @@ function CustomerOrderDetail({
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_MANAGER_API}/ordercontroller`,
+        `${process.env.REACT_APP_CAPTAIN_API}/ordercontroller`,
         payload,
         { withCredentials: true }
       );
@@ -264,12 +286,12 @@ function CustomerOrderDetail({
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_CAPTAIN_API}/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        `${process.env.REACT_APP_CAPTAIN_API}/userdata`,
         { withCredentials: true }
       );
 
@@ -479,6 +501,15 @@ function CustomerOrderDetail({
                     </td>
                   </tr>
                 ))}
+              {orderType === "Takeaway" && parcelCharge > 0 && (
+                <tr>
+                  <td>Parcel Container Charge</td>
+                  <td className="text-center">1</td>
+                  <td className="text-right">&#8377; {parcelCharge}</td>
+                  <td className="text-center">-</td>
+                  <td className="text-center">-</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -505,7 +536,7 @@ function CustomerOrderDetail({
               >
                 KOT
               </button>
-              {orderId && <button className="btn mx-2" type="button" onClick={() => orderController("Cancelled")}>Cancel Order</button>}
+              <button className="btn mx-2">Cancel Order</button>
             </div>
 
             <div className="mx-5">

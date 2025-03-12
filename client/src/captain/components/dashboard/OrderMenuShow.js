@@ -13,7 +13,7 @@ function OrderMenuShow({ addItemToOrder }) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+      .get(`${process.env.REACT_APP_CAPTAIN_API}/userdata`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -27,7 +27,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getmenudata`,
+        `${process.env.REACT_APP_CAPTAIN_API}/getmenudata`,
         {
           params: {
             mealType,
@@ -50,7 +50,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getmenucategories`,
+        `${process.env.REACT_APP_CAPTAIN_API}/getmenucategories`,
         {
           withCredentials: true,
         }
@@ -110,7 +110,7 @@ function OrderMenuShow({ addItemToOrder }) {
         </div>
 
         {/* Checkbox for showing parcel charges */}
-        <div className="form-check m-3">
+        {/* <div className="form-check m-3">
           <input
             type="checkbox"
             className="form-check-input"
@@ -121,7 +121,7 @@ function OrderMenuShow({ addItemToOrder }) {
           <label htmlFor="showParcelCharge" className="form-check-label">
             Parcel Charges
           </label>
-        </div>
+        </div> */}
       </div>
 
       {/* Hide filters when Parcel Charge is selected */}

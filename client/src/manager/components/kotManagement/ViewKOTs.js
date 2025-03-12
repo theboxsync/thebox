@@ -122,30 +122,34 @@ function ViewKOTs() {
                     </div>
 
                     {data.order_items.map((dish) => (
-                      <div key={dish._id} className="row">
-                        <div className="col-md-6">{dish.dish_name}</div>
-                        <div className="col-md-2">{dish.quantity}</div>
-                        <div className="col-md-4 d-flex">
-                          {dish.status === "Preparing" ? (
-                            <button
-                              type="button"
-                              className="btn"
-                              title="Completed"
-                              onClick={() =>
-                                updateDishStatus(data._id, dish._id)
-                              }
-                            >
-                              Completed
-                            </button>
-                          ) : dish.status === "Completed" ? (
-                            <img
-                              src="../dist/img/Completed-b.svg"
-                              alt="Completed"
-                            />
-                          ) : (
-                            ""
-                          )}
-                        </div>
+                      <div key={dish._id}>
+                        {dish.special_notes !== "Parcel Charge" && (
+                          <div className="row">
+                            <div className="col-md-6">{dish.dish_name}</div>
+                            <div className="col-md-2">{dish.quantity}</div>
+                            <div className="col-md-4 d-flex">
+                              {dish.status === "Preparing" ? (
+                                <button
+                                  type="button"
+                                  className="btn"
+                                  title="Completed"
+                                  onClick={() =>
+                                    updateDishStatus(data._id, dish._id)
+                                  }
+                                >
+                                  Completed
+                                </button>
+                              ) : dish.status === "Completed" ? (
+                                <img
+                                  src="../dist/img/Completed-b.svg"
+                                  alt="Completed"
+                                />
+                              ) : (
+                                ""
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
 

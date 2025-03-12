@@ -9,6 +9,7 @@ import Footer from "../../components/Footer";
 import DashboardSection from "../../components/subscription/DashboardSection";
 import AddManager from "../../components/subscription/AddManager";
 import AddQSR from "../../components/subscription/AddQSR";
+import AddCaptain from "../../components/subscription/AddCaptain";
 
 function AdminSubscription() {
   const [mainSection, setMainSection] = React.useState("DashboardSection");
@@ -20,6 +21,9 @@ function AdminSubscription() {
         return <AddManager setMainSection={setMainSection} />;
       case "AddQSR":
         return <AddQSR setMainSection={setMainSection} />;
+      case "AddCaptain":
+        return <AddCaptain  setMainSection={setMainSection} />;
+
       default:
         return null;
     }

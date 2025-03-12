@@ -18,7 +18,7 @@ export default function Login(props) {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        "http://admin.localhost:3001/api/userdata",
+        `${process.env.REACT_APP_API}/userdata`,
         {
           withCredentials: true,
         }
@@ -45,12 +45,12 @@ export default function Login(props) {
       alert("please fill all the fields");
     } else {
       axios
-        .post("http://admin.localhost:3001/api/login", inputData, {
+        .post(`${process.env.REACT_APP_API}/login`, inputData, {
           withCredentials: true,
         })
         .then((res) => {
           if (res.data.message === "Logged In") {
-            navigate("/admin");
+            navigate("http://admin.localhost:3000/");
           } else {
             setWrongMsg(res.data.message); // Print server response to console
           }

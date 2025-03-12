@@ -465,7 +465,9 @@ function CustomerOrderDetail({
                       </small>
                     </td>
                     <td className="text-center">
-                      <label className="my-0">{item.status}</label>
+                      {item.special_notes !== "Parcel Charge" && (
+                        <label className="my-0">{item.status}</label>
+                      )}
                     </td>
                     <td className="text-center">
                       {item.status !== "Completed" && (
@@ -505,7 +507,15 @@ function CustomerOrderDetail({
               >
                 KOT
               </button>
-              {orderId && <button className="btn mx-2" type="button" onClick={() => orderController("Cancelled")}>Cancel Order</button>}
+              {orderId && (
+                <button
+                  className="btn mx-2"
+                  type="button"
+                  onClick={() => orderController("Cancelled")}
+                >
+                  Cancel Order
+                </button>
+              )}
             </div>
 
             <div className="mx-5">

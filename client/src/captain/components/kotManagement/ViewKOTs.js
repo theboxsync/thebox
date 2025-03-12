@@ -7,11 +7,14 @@ function ViewKOTs() {
   const fetchOrderData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/showkots`,
+        `${process.env.REACT_APP_CAPTAIN_API}/showkots`,
         {
           withCredentials: true,
         }
       );
+      const captainKots = response.data.filter(
+        
+      )
       setKotData(response.data);
     } catch (error) {
       console.log("Error fetching order data:", error);
@@ -25,7 +28,7 @@ function ViewKOTs() {
   const updateDishStatus = async (orderId, dishId) => {
     try {
       await axios.put(
-        `${process.env.REACT_APP_MANAGER_API}/updatedishstatus`,
+        `${process.env.REACT_APP_CAPTAIN_API}/updatedishstatus`,
         { orderId, dishId, status: "Completed" },
         { withCredentials: true }
       );
@@ -38,7 +41,7 @@ function ViewKOTs() {
   const updateAllDishStatus = async (orderId) => {
     try {
       await axios.put(
-        `${process.env.REACT_APP_MANAGER_API}/updatealldishstatus`,
+        `${process.env.REACT_APP_CAPTAIN_API}/updatealldishstatus`,
         { orderId, status: "Completed" },
         { withCredentials: true }
       );

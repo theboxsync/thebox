@@ -65,9 +65,21 @@ const userSchema = new Schema({
   },
   containerCharges: [
     {
-      name: { type: String, required: true },
-      size: { type: String, required: true }, // e.g., "500ml", "1kg", "10 pieces"
-      price: { type: Number, required: true },
+      name: { type: String, default: "", required: true },
+      size: { type: String, default: "", required: true }, // e.g., "500ml", "1kg", "10 pieces"
+      price: { type: Number, default: 0, required: true },
+    },
+  ],
+  feedbackToken: {
+    type: String,
+  },
+  feedbacks: [
+    {
+      customer_name: { type: String },
+      customer_email: { type: String },
+      customer_phone: { type: String },
+      rating: { type: Number },
+      feedback: { type: String },
     },
   ],
 

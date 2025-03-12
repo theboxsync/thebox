@@ -29,8 +29,9 @@ import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPa
 import ChangeQsrPassword from "../admin/pages/AdminDashboard/ChangeQsrPassword";
 import AdminSubscription from "../admin/pages/AdminSubscription";
 import AdminSettings from "../admin/pages/AdminSettings";
+import AdminFeedback from "../admin/pages/AdminFeedback";
 
-import PageNotFound from '../admin/PageNotFound'
+import PageNotFound from "../admin/PageNotFound";
 
 function AdminRoutes() {
   return (
@@ -52,7 +53,7 @@ function AdminRoutes() {
       <Route path="/order-details/:id" element={<OrderDetails />} />
       <Route path="/table-management" element={<AdminTable />} />
       <Route path="/manage-menu" element={<AdminManageMenu />} />
-      
+
       <Route path="/inventory" element={<AdminInventory />} />
       <Route path="/inventory/complete" element={<CompleteInventory />} />
       <Route path="/inventory/details/:id" element={<InventoryDetails />} />
@@ -60,8 +61,14 @@ function AdminRoutes() {
         path="/inventory/complete-details/:id"
         element={<InventoryFullDetails />}
       />
-      <Route path="/inventory/update/:id" element={<UpdateRequestedInventory />} />
-      <Route path="/inventory/completed-update/:id" element={<UpdateCompletedInventory />} />
+      <Route
+        path="/inventory/update/:id"
+        element={<UpdateRequestedInventory />}
+      />
+      <Route
+        path="/inventory/completed-update/:id"
+        element={<UpdateCompletedInventory />}
+      />
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
       <Route path="/table-booking" element={<AdminTable />} />
@@ -74,6 +81,8 @@ function AdminRoutes() {
         element={<ChangeManagerPassword />}
       />
       <Route path="/change-qsr-password" element={<ChangeQsrPassword />} />
+
+      <Route path="/feedbacks" element={<AdminFeedback />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

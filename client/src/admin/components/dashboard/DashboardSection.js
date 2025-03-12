@@ -6,6 +6,10 @@ import DeleteManagerModal from "./DeleteManagerModal";
 
 import EditQsrModal from "./EditQsrModal";
 import DeleteQsrModal from "./DeleteQsrModal";
+
+import EditCaptainModal from "./EditCaptainModal";
+import DeleteCaptainModal from "./DeleteCaptainModal";
+
 import Loading from "../Loading";
 
 function DashboardSection({ setMainSection, setTableId, setOrderId }) {
@@ -17,12 +21,16 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [tableData, setTableData] = useState([]);
   const [ManagerData, setManagerData] = useState([]);
   const [QsrData, setQsrData] = useState([]);
+  const [CaptainData, setCaptainData] = useState([]);
 
   const [showEditManagerModal, setShowEditManagerModal] = useState(false);
   const [showDeleteManagerModal, setShowDeleteManagerModal] = useState(false);
 
   const [showEditQsrModal, setShowEditQsrModal] = useState(false);
   const [showDeleteQsrModal, setShowDeleteQsrModal] = useState(false);
+
+  const [showEditCaptainModal, setShowEditCaptainModal] = useState(false);
+  const [showDeleteCaptainModal, setShowDeleteCaptainModal] = useState(false);
 
   const fetchSubscriptionData = async () => {
     try {
@@ -90,6 +98,23 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     }
   };
 
+  const fetchCaptainData = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_ADMIN_API}/getcaptaindata`,
+        {
+          withCredentials: true,
+        }
+      );
+      setCaptainData(response.data);
+    } catch (error) {
+      console.log("Error fetching captain data:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchTableData = async () => {
     setIsLoading(true);
     try {
@@ -112,9 +137,8 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     fetchTableData();
     fetchManagerData();
     fetchQsrData();
+    fetchCaptainData();
   }, []);
-
-  
 
   const [editManagerModalData, setEditManagerModalData] = useState({});
   const editManagerModal = (id) => {
@@ -166,12 +190,36 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     console.log(deleteQsrModalData);
   };
 
+  const [editCaptainModalData, setEditCaptainModalData] = useState({});
+  const editCaptainModal = (id) => {
+    console.log(id);
+    setIsLoading(true);
+    axios
+      .get(`${process.env.REACT_APP_ADMIN_API}/getcaptaindata/${id}`)
+      .then((res) => {
+        setEditCaptainModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err))
+      .finally(() => setIsLoading(false));
+    setShowEditCaptainModal(true);
+  };
+
+  const [deleteCaptainModalData, setDeleteCaptainModalData] = useState({
+    id: "",
+  });
+  const deleteCaptainModal = (id) => {
+    console.log(id);
+    setShowDeleteCaptainModal(true);
+    setDeleteCaptainModalData({ ...deleteCAptainModalData, id: id });
+    console.log(deleteCaptainModalData);
+  };
+
   const hasValidSubscription = (plan_name) => {
-    return userSubscription.some(subscription => 
-      subscription.plan_name === plan_name 
+    return userSubscription.some(
+      (subscription) => subscription.plan_name === plan_name
     );
   };
-  
 
   return (
     <>
@@ -316,6 +364,71 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                       ))
                     )}
                   </div>
+                  <div className="card-body p-0 m-2">
+                    <div className="m-3" style={{ fontWeight: "bold" }}>
+                      Captain Management
+                    </div>
+                    {CaptainData.length === 0 ? (
+                      <div className="d-flex align-items-center justify-content-center m-3">
+                        You don't have any Captains yet.
+                        <div
+                          className="m-1"
+                          onClick={() => {
+                            if (hasValidSubscription("Captain")) {
+                              setMainSection("AddCaptain");
+                            } else {
+                              window.location.href = "/subscription";
+                            }
+                          }}
+                          style={{ color: "blue", cursor: "pointer" }}
+                        >
+                          Create Captain
+                        </div>
+                      </div>
+                    ) : (
+                      CaptainData.map((captain) => (
+                        <div
+                          className="card m-3"
+                          style={{ width: "20rem" }}
+                          key={captain._id}
+                        >
+                          <div className="card-body">
+                            <div className="d-flex align-items-center">
+                              <div
+                                className="card-title m-3"
+                                style={{ fontWeight: "bold", fontSize: 25 }}
+                              >
+                                Username:
+                              </div>
+                              <div
+                                className="card-subtitle m-1"
+                                style={{ fontSize: 20 }}
+                              >
+                                {captain.username}
+                              </div>
+                            </div>
+                            <div>
+                              <button
+                                type="button"
+                                className="btn btn-block btn-dark"
+                                onClick={() => editCaptainModal(captain._id)}
+                              >
+                                Edit
+                              </button>
+
+                              <button
+                                type="button"
+                                className="btn btn-block btn-dark"
+                                onClick={() => deleteCaptainModal(captain._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
                 </div>
                 <hr />
               </div>
@@ -382,6 +495,20 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
         handleClose={() => setShowDeleteQsrModal(false)}
         data={deleteQsrModalData}
         fetchQsrData={fetchQsrData}
+      />
+
+      <EditCaptainModal
+        show={showEditCaptainModal}
+        handleClose={() => setShowEditCaptainModal(false)}
+        data={editCaptainModalData}
+        fetchCaptainData={fetchCaptainData}
+      />
+
+      <DeleteCaptainModal
+        show={showDeleteCaptainModal}
+        handleClose={() => setShowDeleteCaptainModal(false)}
+        data={deleteCaptainModalData}
+        fetchCaptainData={fetchCaptainData}
       />
     </>
   );

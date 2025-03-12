@@ -7,7 +7,7 @@ import AllRoutes from "./router/AllRoutes";
 import AdminRoutes from "./router/AdminRoutes";
 import ManagerRoutes from "./router/ManagerRoutes";
 import QsrRoutes from "./router/QsrRoutes";
-import WaiterRoutes from "./router/WaiterRoutes";
+import CaptainRoutes from "./router/CaptainRoutes";
 
 export default function App() {
   const hostname = window.location.hostname;
@@ -19,9 +19,9 @@ export default function App() {
     routes = <ManagerRoutes />;
   } else if (hostname.startsWith("qsr")) {
     routes = <QsrRoutes />;
-  } else if (hostname.startsWith("waiter")) {
-    routes = <WaiterRoutes />;
-  } {
+  } else if (hostname.startsWith("captain")) {
+    routes = <CaptainRoutes />;
+  } else {
     routes = <AllRoutes />;
   }
 
