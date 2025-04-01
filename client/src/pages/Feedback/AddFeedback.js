@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom"; // Import useParams
 import axios from "axios";
 import ThankYouModal from "./ThankYouModal";
 
 const AddFeedback = () => {
+  const { token } = useParams(); // Extract the token from the URL
+
   const [feedbackData, setFeedbackData] = useState({
     customer_name: "",
     customer_email: "",
@@ -21,11 +24,13 @@ const AddFeedback = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API}/addfeedback`,
-        feedbackData,
+        `${process.env.REACT_APP_API}/feedback/addfeedback`,
+        { ...feedbackData, feedbackToken: token }, // Include feedbackToken
         { withCredentials: true }
       );
-      if (response.data.success === true) {
+      console.log("Feedback data:", token); 
+
+      if (response.data.success) {
         console.log("Feedback submitted successfully");
         setShowModal(true);
         setFeedbackData({

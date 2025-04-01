@@ -16,7 +16,7 @@ function OrderDetails() {
   const fetchOrderDetails = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${id}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${id}`,
         { withCredentials: true }
       );
       setOrder(response.data);
@@ -31,12 +31,12 @@ function OrderDetails() {
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
         { withCredentials: true }
       );
 

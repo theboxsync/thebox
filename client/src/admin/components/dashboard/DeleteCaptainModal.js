@@ -31,7 +31,7 @@ function DeleteCaptainModal({ show, handleClose, data, fetchCaptainData }) {
       console.log("DATA : ", data);
       await axios
         .post(
-          `${process.env.REACT_APP_ADMIN_API}/deletecaptain`,
+          `${process.env.REACT_APP_ADMIN_API}/captain/deletecaptain`,
           {
             captainId: data.id,
             adminPassword,

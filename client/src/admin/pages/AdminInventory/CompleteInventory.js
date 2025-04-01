@@ -38,7 +38,7 @@ function CompleteInventory() {
   const fetchInventoryData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getinventorydata/${state.id}`,
+        `${process.env.REACT_APP_ADMIN_API}/inventory/getinventorydata/${state.id}`,
         { withCredentials: true }
       );
       setInitialValues({ ...initialValues, ...response.data });
@@ -113,7 +113,7 @@ function CompleteInventory() {
         };
 
         await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/completeinventoryrequest`,
+          `${process.env.REACT_APP_ADMIN_API}/inventory/completeinventoryrequest`,
           { ...requestData, remainingItems },
           { withCredentials: true }
         );

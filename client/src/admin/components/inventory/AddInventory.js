@@ -84,7 +84,7 @@ function AddInventory({ setSection }) {
           bill_files: fileNames, 
         };
         await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/addinventory`,
+          `${process.env.REACT_APP_ADMIN_API}/inventory/addinventory`,
           requestData,
           { withCredentials: true }
         );

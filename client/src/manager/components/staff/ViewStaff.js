@@ -10,7 +10,7 @@ function ViewStaff({ setSection }) {
   const fetchStaff = async function () {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/staffdata`,
+        `${process.env.REACT_APP_MANAGER_API}/staff/staffdata`,
         {
           withCredentials: true,
         }
@@ -27,7 +27,7 @@ function ViewStaff({ setSection }) {
 
   const handleProfileClick = async (id) => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/staffdata/${id}`)
+      .get(`${process.env.REACT_APP_MANAGER_API}/staff/staffdata/${id}`)
       .then((res) => {
         setSelectedStaffData(res.data);
         console.log(res.data);

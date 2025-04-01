@@ -35,11 +35,11 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const fetchSubscriptionData = async () => {
     try {
       const [plansResponse, userSubscriptionResponse] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_ADMIN_API}/getsubscriptionplans`, {
+        axios.get(`${process.env.REACT_APP_ADMIN_API}/subscription/getsubscriptionplans`, {
           withCredentials: true,
         }),
         axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/getusersubscriptioninfo`,
+          `${process.env.REACT_APP_ADMIN_API}/subscription/getusersubscriptioninfo`,
           {
             withCredentials: true,
           }
@@ -68,7 +68,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getmanagerdata`,
+        `${process.env.REACT_APP_ADMIN_API}/manager/getmanagerdata`,
         {
           withCredentials: true,
         }
@@ -85,7 +85,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getqsrdata`,
+        `${process.env.REACT_APP_ADMIN_API}/qsr/getqsrdata`,
         {
           withCredentials: true,
         }
@@ -102,7 +102,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getcaptaindata`,
+        `${process.env.REACT_APP_ADMIN_API}/captain/getcaptaindata`,
         {
           withCredentials: true,
         }
@@ -119,7 +119,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/gettabledata`,
+        `${process.env.REACT_APP_ADMIN_API}/table/gettabledata`,
         {
           withCredentials: true,
         }
@@ -145,7 +145,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     console.log(id);
     setIsLoading(true);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmanagerdata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/manager/getmanagerdata/${id}`)
       .then((res) => {
         setEditManagerModalData(res.data);
         console.log(res.data);
@@ -170,7 +170,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     console.log(id);
     setIsLoading(true);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getqsrdata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/qsr/getqsrdata/${id}`)
       .then((res) => {
         setEditQsrModalData(res.data);
         console.log(res.data);
@@ -195,7 +195,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
     console.log(id);
     setIsLoading(true);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getcaptaindata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/captain/getcaptaindata/${id}`)
       .then((res) => {
         setEditCaptainModalData(res.data);
         console.log(res.data);

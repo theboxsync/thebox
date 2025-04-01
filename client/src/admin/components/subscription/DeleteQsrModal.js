@@ -28,7 +28,7 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
       console.log("DATA : ", data);
       await axios
         .post(
-          `${process.env.REACT_APP_ADMIN_API}/deleteqsr`,
+          `${process.env.REACT_APP_ADMIN_API}/qsr/deleteqsr`,
           {
             qsrId: data.id,
             adminPassword,

@@ -62,7 +62,7 @@ function AddStaff({ setSection }) {
 
         // Step 2: Submit staff data
         const addResponse = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/addstaff`,
+          `${process.env.REACT_APP_ADMIN_API}/staff/addstaff`,
           values,
           { withCredentials: true }
         );
@@ -83,7 +83,7 @@ function AddStaff({ setSection }) {
     const fetchPositions = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/getstaffpositions`,
+          `${process.env.REACT_APP_ADMIN_API}/staff/getstaffpositions`,
           { withCredentials: true }
         );
         setPositions(response.data); // Update positions state

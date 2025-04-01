@@ -40,7 +40,7 @@ function OrderSection({
   const fetchOrderDetails = async (orderId) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
         {
           withCredentials: true,
         }

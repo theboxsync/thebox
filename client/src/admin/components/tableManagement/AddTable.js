@@ -12,7 +12,7 @@ const AddTable = ({ setSection }) => {
     const fetchDiningAreas = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/getdiningareas`,
+          `${process.env.REACT_APP_ADMIN_API}/table/getdiningareas`,
           { withCredentials: true }
         );
         setDiningAreas(response.data); // Update state with fetched areas
@@ -43,7 +43,7 @@ const AddTable = ({ setSection }) => {
 
         // Proceed with form submission if no errors
         const response = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/addtable`,
+          `${process.env.REACT_APP_ADMIN_API}/table/addtable`,
           values,
           { withCredentials: true }
         );
@@ -61,7 +61,7 @@ const AddTable = ({ setSection }) => {
 
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/checktable`,
+        `${process.env.REACT_APP_ADMIN_API}/table/checktable`,
         {
           params: { area, table_no },
           withCredentials: true,

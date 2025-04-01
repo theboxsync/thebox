@@ -6,7 +6,7 @@ import axios from "axios";
 function DeleteInventoryModal({ show, handleClose, id, fetchInventoryData }) {
   const deleteInventory = (id) => {
     axios
-      .delete(`${process.env.REACT_APP_MANAGER_API}/deleteinventory/${id}`)
+      .delete(`${process.env.REACT_APP_MANAGER_API}/inventory/deleteinventory/${id}`)
       .then((res) => {
         console.log(res.data);
         handleClose();

@@ -18,7 +18,7 @@ function AddCaptain({ setMainSection }) {
       console.log("Submitted", values);
       setIsLoading(true);
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addcaptain`, values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/captain/addcaptain`, values, {
           withCredentials: true,
         })
         .then((res) => {

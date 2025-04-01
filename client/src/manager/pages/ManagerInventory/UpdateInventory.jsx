@@ -19,7 +19,7 @@ function UpdateInventory() {
     const fetchInventoryItem = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_MANAGER_API}/getinventorydata/${id}`,
+          `${process.env.REACT_APP_MANAGER_API}/inventory/getinventorydata/${id}`,
           { withCredentials: true }
         );
         setItems(response.data.items || []);
@@ -48,7 +48,7 @@ function UpdateInventory() {
     onSubmit: (values) => {
       axios
         .put(
-          `${process.env.REACT_APP_MANAGER_API}/updateinventory/${id}`,
+          `${process.env.REACT_APP_MANAGER_API}/inventory/updateinventory/${id}`,
           values,
           {
             withCredentials: true,

@@ -18,7 +18,7 @@ function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
       console.log(values);
       axios
         .put(
-          `${process.env.REACT_APP_ADMIN_API}/updateqsr/${data._id}`,
+          `${process.env.REACT_APP_ADMIN_API}/qsr/updateqsr/${data._id}`,
           values,
           {
             withCredentials: true,

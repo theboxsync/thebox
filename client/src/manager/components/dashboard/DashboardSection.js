@@ -14,7 +14,7 @@ function DashboardSection({
   const fetchTableData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/gettabledata`,
+        `${process.env.REACT_APP_MANAGER_API}/table/gettabledata`,
         {
           withCredentials: true,
         }
@@ -28,7 +28,7 @@ function DashboardSection({
   const fetchActiveDeliveries = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderhistory`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderhistory`,
         { withCredentials: true }
       );
 
@@ -50,7 +50,7 @@ function DashboardSection({
   const fetchSpecialDishes = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getmenudata`,
+        `${process.env.REACT_APP_MANAGER_API}/menu/getmenudata`,
         {
           withCredentials: true,
         }
@@ -76,7 +76,7 @@ function DashboardSection({
   const onClickTable = async (tableId) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/gettabledata/${tableId}`,
+        `${process.env.REACT_APP_MANAGER_API}/table/gettabledata/${tableId}`,
         {
           withCredentials: true,
         }

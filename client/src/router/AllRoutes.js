@@ -23,7 +23,7 @@ function AllRoutes() {
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/change-password" element={<ChangePassword />} />
       <Route path="/registration-complete" element={<RegistrationComplete />} />
-      <Route path="/feedback/add" element={<AddFeedback />} />
+      <Route path="/feedback/:token" element={<AddFeedback />} />
     </Routes>
   );
 }

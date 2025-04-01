@@ -15,7 +15,7 @@ export default function InventoryDetails() {
     const fetchInventoryItem = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_MANAGER_API}/getinventorydata/${id}`,
+          `${process.env.REACT_APP_MANAGER_API}/inventory/getinventorydata/${id}`,
           { withCredentials: true }
         );
         setInventoryItem(response.data);

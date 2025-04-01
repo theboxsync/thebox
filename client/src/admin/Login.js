@@ -24,7 +24,7 @@ export default function Login(props) {
       alert("please fill all the fields");
     } else {
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/login`, inputData, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/user/login`, inputData, {
           withCredentials: true,
         })
         .then((res) => {

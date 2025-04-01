@@ -18,7 +18,7 @@ function AddQSR({ setMainSection }) {
       console.log("Submitted", values);
       setIsLoading(true);
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addqsr`, values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/qsr/addqsr`, values, {
           withCredentials: true,
         })
         .then((res) => {

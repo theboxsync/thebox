@@ -18,7 +18,7 @@ export default function Login(props) {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API}/userdata`,
+        `${process.env.REACT_APP_API}/user/userdata`,
         {
           withCredentials: true,
         }
@@ -45,7 +45,7 @@ export default function Login(props) {
       alert("please fill all the fields");
     } else {
       axios
-        .post(`${process.env.REACT_APP_API}/login`, inputData, {
+        .post(`${process.env.REACT_APP_API}/user/login`, inputData, {
           withCredentials: true,
         })
         .then((res) => {

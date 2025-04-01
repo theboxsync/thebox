@@ -28,7 +28,7 @@ function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
       console.log("DATA : ", data);
       await axios
         .post(
-          `${process.env.REACT_APP_ADMIN_API}/deletemanager`,
+          `${process.env.REACT_APP_ADMIN_API}/manager/deletemanager`,
           {
             managerId: data.id,
             adminPassword,

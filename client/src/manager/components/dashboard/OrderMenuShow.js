@@ -13,7 +13,7 @@ function OrderMenuShow({ addItemToOrder }) {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+      .get(`${process.env.REACT_APP_MANAGER_API}/user/userdata`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -27,7 +27,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getmenudata`,
+        `${process.env.REACT_APP_MANAGER_API}/menu/getmenudata`,
         {
           params: {
             mealType,
@@ -50,7 +50,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getmenucategories`,
+        `${process.env.REACT_APP_MANAGER_API}/menu/getmenucategories`,
         {
           withCredentials: true,
         }

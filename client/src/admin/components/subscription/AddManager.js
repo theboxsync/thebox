@@ -13,7 +13,7 @@ function AddManager({ setMainSection }) {
     onSubmit: (values) => {
       console.log("Submitted", values);
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addmanager`, values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/manager/addmanager`, values, {
           withCredentials: true,
         })
         .then((res) => {

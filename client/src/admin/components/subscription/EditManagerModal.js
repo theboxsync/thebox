@@ -18,7 +18,7 @@ function EditManagerModal({ show, handleClose, data, fetchManagerData }) {
       console.log(values);
       axios
         .put(
-          `${process.env.REACT_APP_ADMIN_API}/updatemanager/${data._id}`,
+          `${process.env.REACT_APP_ADMIN_API}/manager/updatemanager/${data._id}`,
           values,
           {
             withCredentials: true,

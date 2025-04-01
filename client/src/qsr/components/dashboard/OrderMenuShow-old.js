@@ -12,7 +12,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_QSR_API}/getmenudata`,
+        `${process.env.REACT_APP_QSR_API}/menu/getmenudata`,
         {
           params: {
             mealType,
@@ -35,7 +35,7 @@ function OrderMenuShow({ addItemToOrder }) {
   const fetchCategories = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_QSR_API}/getmenucategories`,
+        `${process.env.REACT_APP_QSR_API}/menu/getmenucategories`,
         {
           withCredentials: true,
         }

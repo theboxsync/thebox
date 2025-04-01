@@ -6,7 +6,7 @@ import axios from "axios";
 function RejectRequestModal({ show, handleClose, id, fetchInventoryData }) {
   const rejectInventory = () => {
     axios
-      .post(`${process.env.REACT_APP_ADMIN_API}/rejectinventoryrequest/${id}`)
+      .post(`${process.env.REACT_APP_ADMIN_API}/inventory/rejectinventoryrequest/${id}`)
       .then((res) => {
         console.log("Inventory rejected:", res.data);
         handleClose(); // Close the modal

@@ -28,7 +28,7 @@ function UpdateCompletedInventory({ setSection }) {
     const fetchInventory = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/getinventorydata/${id}`,
+          `${process.env.REACT_APP_ADMIN_API}/inventory/getinventorydata/${id}`,
           { withCredentials: true }
         );
         const data = response.data;
@@ -123,7 +123,7 @@ function UpdateCompletedInventory({ setSection }) {
         };
 
         await axios.put(
-          `${process.env.REACT_APP_ADMIN_API}/updateinventory/${id}`,
+          `${process.env.REACT_APP_ADMIN_API}/inventory/updateinventory/${id}`,
           requestData,
           { withCredentials: true }
         );

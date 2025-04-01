@@ -23,7 +23,7 @@ function EditCaptainModal({ show, handleClose, data, fetchCaptainData }) {
       setIsLoading(true);
       axios
         .put(
-          `${process.env.REACT_APP_ADMIN_API}/updatecaptain/${data._id}`,
+          `${process.env.REACT_APP_ADMIN_API}/captain/updatecaptain/${data._id}`,
           values,
           {
             withCredentials: true,

@@ -24,7 +24,7 @@ const AdminFeedback = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getfeedbacks`,
+        `${process.env.REACT_APP_ADMIN_API}/feedback/getfeedbacks`,
         {
           withCredentials: true,
         }
@@ -46,7 +46,7 @@ const AdminFeedback = () => {
       setLoading(true);
       try {
         await axios.delete(
-          `${process.env.REACT_APP_ADMIN_API}/deletefeedback/${id}`,
+          `${process.env.REACT_APP_ADMIN_API}/feedback/deletefeedback/${id}`,
           {
             withCredentials: true,
           }
@@ -71,7 +71,7 @@ const AdminFeedback = () => {
     setLoading(true);
     try {
       await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/replyfeedback/${selectedFeedback._id}`,
+        `${process.env.REACT_APP_ADMIN_API}/feedback/replyfeedback/${selectedFeedback._id}`,
         { reply: replyMessage },
         { withCredentials: true }
       );

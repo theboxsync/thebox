@@ -16,7 +16,7 @@ function ViewOrderHistory() {
   const fetchOrderData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getorderhistory`,
+        `${process.env.REACT_APP_ADMIN_API}/order/getorderhistory`,
         {
           withCredentials: true,
         }
@@ -57,12 +57,12 @@ function ViewOrderHistory() {
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/userdata`,
+        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
         { withCredentials: true }
       );
 

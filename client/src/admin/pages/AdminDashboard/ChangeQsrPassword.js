@@ -29,7 +29,7 @@ function ChangeQsrPassword() {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/changeqsrpassword`,
+        `${process.env.REACT_APP_ADMIN_API}/qsr/changeqsrpassword`,
         {
           adminPassword,
           newPassword,

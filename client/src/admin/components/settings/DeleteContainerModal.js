@@ -15,7 +15,7 @@ function DeleteContainerModal({
     console.log("Deleting container charge with index:", index);
     try {
       await axios.delete(
-        `${process.env.REACT_APP_ADMIN_API}/delete-container-charge`,
+        `${process.env.REACT_APP_ADMIN_API}/charge/delete-container-charge`,
         { data: { index }, withCredentials: true }
       );
       setContainerCharges(containerCharges.filter((_, i) => i !== index));

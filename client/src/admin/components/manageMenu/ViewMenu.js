@@ -23,7 +23,7 @@ function ViewMenu({ setSection }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getmenudata`,
+        `${process.env.REACT_APP_ADMIN_API}/menu/getmenudata`,
         {
           withCredentials: true,
         }
@@ -93,7 +93,7 @@ function ViewMenu({ setSection }) {
   const editModal = (id) => {
     console.log(id);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/menu/getmenudata/${id}`)
       .then((res) => {
         setEditModalData(res.data);
         console.log(res.data);
@@ -106,7 +106,7 @@ function ViewMenu({ setSection }) {
   const specialDishModal = (id) => {
     console.log(id);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/menu/getmenudata/${id}`)
       .then((res) => {
         setSpecialDishModalData(res.data);
         console.log(res.data);
@@ -119,7 +119,7 @@ function ViewMenu({ setSection }) {
   const removeSpecialModal = (id) => {
     console.log(id);
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_ADMIN_API}/menu/getmenudata/${id}`)
       .then((res) => {
         setRemoveSpecialModalData(res.data);
         console.log(res.data);

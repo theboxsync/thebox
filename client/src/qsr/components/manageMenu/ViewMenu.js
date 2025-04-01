@@ -20,7 +20,7 @@ function ViewMenu({ setSection }) {
   const fetchMenuData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_QSR_API}/getmenudata`,
+        `${process.env.REACT_APP_QSR_API}/menu/getmenudata`,
         {
           withCredentials: true,
         }
@@ -97,7 +97,7 @@ function ViewMenu({ setSection }) {
   const specialDishModal = (id) => {
     console.log(id);
     axios
-      .get(`${process.env.REACT_APP_QSR_API}/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_QSR_API}/menu/getmenudata/${id}`)
       .then((res) => {
         setSpecialDishModalData(res.data);
         console.log(res.data);
@@ -110,7 +110,7 @@ function ViewMenu({ setSection }) {
   const removeSpecialModal = (id) => {
     console.log(id);
     axios
-      .get(`${process.env.REACT_APP_QSR_API}/getmenudata/${id}`)
+      .get(`${process.env.REACT_APP_QSR_API}/menu/getmenudata/${id}`)
       .then((res) => {
         setRemoveSpecialModalData(res.data);
         console.log(res.data);
@@ -122,7 +122,7 @@ function ViewMenu({ setSection }) {
   const markAsUnavailable = (id) => {
     axios
       .put(
-        `${process.env.REACT_APP_QSR_API}/updateDishAvailability/${id}`,
+        `${process.env.REACT_APP_QSR_API}/menu/updateDishAvailability/${id}`,
         { is_available: false }
       )
       .then((res) => {
@@ -134,7 +134,7 @@ function ViewMenu({ setSection }) {
   const markAsAvailable = (id) => {
     axios
       .put(
-        `${process.env.REACT_APP_QSR_API}/updateDishAvailability/${id}`,
+        `${process.env.REACT_APP_QSR_API}/menu/updateDishAvailability/${id}`,
         { is_available: true }
       )
       .then((res) => {

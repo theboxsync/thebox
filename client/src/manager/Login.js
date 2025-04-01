@@ -18,7 +18,7 @@ export default function Login(props) {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
         {
           withCredentials: true,
         }
@@ -51,7 +51,7 @@ export default function Login(props) {
     } else {
       console.log("Input data: ", inputData); // Log to check the input data
       axios
-        .post(`${process.env.REACT_APP_MANAGER_API}/manager-login`, inputData, {
+        .post(`${process.env.REACT_APP_MANAGER_API}/manager/manager-login`, inputData, {
           withCredentials: true,
         })
         .then((res) => {

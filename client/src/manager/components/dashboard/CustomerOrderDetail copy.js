@@ -37,7 +37,7 @@ function CustomerOrderDetail({
   // Fetch Tax Info
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_MANAGER_API}/userdata`, {
+      .get(`${process.env.REACT_APP_MANAGER_API}/user/userdata`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -59,7 +59,7 @@ function CustomerOrderDetail({
   const fetchTableInfo = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/gettabledata/${tableId}`,
+        `${process.env.REACT_APP_MANAGER_API}/table/gettabledata/${tableId}`,
         { withCredentials: true }
       );
       setTableInfo(response.data);
@@ -119,7 +119,7 @@ function CustomerOrderDetail({
     if (firstOrder.customer_id) {
       axios
         .get(
-          `${process.env.REACT_APP_MANAGER_API}/getcustomerdata/${firstOrder.customer_id}`,
+          `${process.env.REACT_APP_MANAGER_API}/order/getcustomerdata/${firstOrder.customer_id}`,
           { withCredentials: true }
         )
         .then((response) => {
@@ -261,7 +261,7 @@ function CustomerOrderDetail({
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_MANAGER_API}/ordercontroller`,
+        `${process.env.REACT_APP_MANAGER_API}/order/ordercontroller`,
         payload,
         { withCredentials: true }
       );
@@ -286,12 +286,12 @@ function CustomerOrderDetail({
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/userdata`,
+        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
         { withCredentials: true }
       );
 

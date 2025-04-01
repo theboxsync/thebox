@@ -9,7 +9,7 @@ function RemoveSpecialModal({ show, handleClose, data, fetchMenuData }) {
   const removeSpecialDish = (id) => {
     setIsLoading(true);
     axios
-      .put(`${process.env.REACT_APP_ADMIN_API}/removespecialdish/${id}`)
+      .put(`${process.env.REACT_APP_ADMIN_API}/menu/removespecialdish/${id}`)
       .then((res) => {
         console.log(res.data);
         handleClose();

@@ -29,7 +29,7 @@ function ChangeManagerPassword() {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/changemanagerpassword`,
+        `${process.env.REACT_APP_ADMIN_API}/manager/changemanagerpassword`,
         {
           adminPassword,
           newPassword,

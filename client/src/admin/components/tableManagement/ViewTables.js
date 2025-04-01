@@ -13,7 +13,7 @@ function ViewTables({ setSection }) {
   const fetchTableData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/gettabledata`,
+        `${process.env.REACT_APP_ADMIN_API}/table/gettabledata`,
         {
           withCredentials: true,
         }

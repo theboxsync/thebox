@@ -11,7 +11,7 @@ function AddMenu({ setSection }) {
 
   const fetchCategories = async () => {
     axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/getmenucategories`, {
+      .get(`${process.env.REACT_APP_ADMIN_API}/menu/getmenucategories`, {
         withCredentials: true,
       })
       .then((response) => {
@@ -46,7 +46,7 @@ function AddMenu({ setSection }) {
     onSubmit: (values) => {
       console.log("Submitted", values);
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addmenu`, values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/menu/addmenu`, values, {
           withCredentials: true,
         })
         .then((res) => {

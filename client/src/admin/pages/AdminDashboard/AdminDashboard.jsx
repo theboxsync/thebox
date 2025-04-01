@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/userdata`,
+        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
         {
           withCredentials: true,
         }
@@ -38,7 +38,7 @@ export default function AdminDashboard() {
   const fetchSpecialDishes = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/getmenudata`,
+        `${process.env.REACT_APP_ADMIN_API}/menu/getmenudata`,
         {
           withCredentials: true,
         }

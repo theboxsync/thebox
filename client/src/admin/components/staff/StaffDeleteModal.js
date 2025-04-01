@@ -5,7 +5,7 @@ import axios from "axios";
 function StaffDeleteModal({ show, handleClose, data, fetchStaff }) {
   const deleteStaff = (id) => {
     axios
-      .delete(`${process.env.REACT_APP_ADMIN_API}/deletestaff/${id}`)
+      .delete(`${process.env.REACT_APP_ADMIN_API}/staff/deletestaff/${id}`)
       .then((res) => {
         console.log(res.data);
         handleClose();

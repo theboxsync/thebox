@@ -20,7 +20,7 @@ export default function ManagerDashboard() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_CAPTAIN_API}/userdata`,
+        `${process.env.REACT_APP_CAPTAIN_API}/user/userdata`,
         {
           withCredentials: true,
         }

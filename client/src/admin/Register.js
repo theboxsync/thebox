@@ -61,7 +61,7 @@ export default function Register(props) {
     setIsLoading(true);
     console.log(inputData);
     axios
-      .post(`${process.env.REACT_APP_ADMIN_API}/register`, inputData, {
+      .post(`${process.env.REACT_APP_ADMIN_API}/user/register`, inputData, {
         withCredentials: true,
       })
       .then((res) => {

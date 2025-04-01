@@ -35,7 +35,7 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
         if (uploadResponse.data.message === "File uploaded successfully") {
           const logoPath = uploadResponse.data.logo;
           const response = await axios.post(
-            `${process.env.REACT_APP_ADMIN_API}/emailcheck`,
+            `${process.env.REACT_APP_ADMIN_API}/user/emailcheck`,
             { email: values.email }
           );
 

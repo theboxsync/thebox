@@ -27,7 +27,7 @@ function SettingsDashboard() {
   const fetchUserData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/userdata`,
+        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
         {
           withCredentials: true,
         }
@@ -75,7 +75,7 @@ function SettingsDashboard() {
   const updateTaxInfo = async () => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_ADMIN_API}/update-tax`,
+        `${process.env.REACT_APP_ADMIN_API}/user/update-tax`,
         { taxInfo },
         {
           withCredentials: true,
@@ -94,7 +94,7 @@ function SettingsDashboard() {
   const updateUserInfo = async (updatedFields) => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_ADMIN_API}/updateuser`,
+        `${process.env.REACT_APP_ADMIN_API}/user/updateuser`,
         { userId: userData._id, ...updatedFields },
         { withCredentials: true }
       );
@@ -193,7 +193,7 @@ function SettingsDashboard() {
 
   //   try {
   //     const response = await axios.put(
-  //       `${process.env.REACT_APP_ADMIN_API}/updatecharges`,
+  //       `${process.env.REACT_APP_ADMIN_API}/charge/updatecharges`,
   //       { userId: userData._id, charges: enabledCharges },
   //       { withCredentials: true }
   //     );
@@ -210,7 +210,7 @@ function SettingsDashboard() {
   // const fetchCharges = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `${process.env.REACT_APP_ADMIN_API}/userdata`,
+  //       `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
   //       {
   //         withCredentials: true,
   //       }
@@ -240,7 +240,7 @@ function SettingsDashboard() {
   const saveCharges = async () => {
     try {
       const response = await axios.put(
-        `${process.env.REACT_APP_ADMIN_API}/updatecharges`,
+        `${process.env.REACT_APP_ADMIN_API}/charge/updatecharges`,
         { userId: userData._id, charges },
         { withCredentials: true }
       );

@@ -30,7 +30,7 @@ function EditStaff() {
     const fetchStaffData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/staffdata/${id}`,
+          `${process.env.REACT_APP_ADMIN_API}/staff/staffdata/${id}`,
           { withCredentials: true }
         );
         const data = response.data;
@@ -83,7 +83,7 @@ function EditStaff() {
     const fetchPositions = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/getstaffpositions`,
+          `${process.env.REACT_APP_ADMIN_API}/staff/getstaffpositions`,
           { withCredentials: true }
         );
         setPositions(response.data); // Update positions state
@@ -158,7 +158,7 @@ function EditStaff() {
         values.back_image = back_image;
 
         const updateResponse = await axios.put(
-          `${process.env.REACT_APP_ADMIN_API}/updatestaff/${id}`,
+          `${process.env.REACT_APP_ADMIN_API}/staff/updatestaff/${id}`,
           values,
           { withCredentials: true }
         );

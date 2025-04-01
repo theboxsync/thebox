@@ -21,7 +21,7 @@ function ForgotAdminPassword() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/sendadminotp`,
+        `${process.env.REACT_APP_ADMIN_API}/user/sendadminotp`,
         { email }
       );
       setSuccess(response.data.message);
@@ -40,7 +40,7 @@ function ForgotAdminPassword() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/verifyadminotp`,
+        `${process.env.REACT_APP_ADMIN_API}/user/verifyadminotp`,
         { email, otp }
       );
       setSuccess(response.data.message);
@@ -65,7 +65,7 @@ function ForgotAdminPassword() {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/resetadminpassword`,
+        `${process.env.REACT_APP_ADMIN_API}/user/resetadminpassword`,
         { email, newPassword }
       );
       setSuccess(response.data.message);

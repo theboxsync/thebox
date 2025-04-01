@@ -21,7 +21,7 @@ function ViewInventory({ setSection }) {
   const fetchInventoryData = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/getinventorydata`,
+        `${process.env.REACT_APP_MANAGER_API}/inventory/getinventorydata`,
         { withCredentials: true }
       );
 

@@ -5,7 +5,7 @@ import axios from "axios";
 function SpecialDishModal({ show, handleClose, data, fetchMenuData }) {
   const setSpecialDish = (id) => {
     axios
-      .put(`${process.env.REACT_APP_MANAGER_API}/setspecialdish/${id}`)
+      .put(`${process.env.REACT_APP_MANAGER_API}/menu/setspecialdish/${id}`)
       .then((res) => {
         console.log(res.data);
         handleClose();
