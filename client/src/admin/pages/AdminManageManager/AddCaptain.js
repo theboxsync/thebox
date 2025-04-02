@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import { addQSR } from "../../../schemas"; // Validation schema for QSR form
-import Loading from "../Loading";
+import { addQSR } from "../../../schemas";
+import Loading from "../../components/Loading";
 
-
-function AddCaptain({ setMainSection }) {
+function AddCaptain({ setMainSection, fetchCaptainData }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const formik = useFormik({
@@ -13,7 +12,7 @@ function AddCaptain({ setMainSection }) {
       username: "",
       password: "",
     },
-    validationSchema: addQSR, // Define this schema in your validation file
+    validationSchema: addQSR,
     onSubmit: (values) => {
       console.log("Submitted", values);
       setIsLoading(true);
@@ -23,7 +22,8 @@ function AddCaptain({ setMainSection }) {
         })
         .then((res) => {
           console.log(res.data);
-          setMainSection("DashboardSection");
+          fetchCaptainData();
+          setMainSection("Dashboard");
         })
         .catch((err) => {
           console.log(err);
@@ -45,7 +45,7 @@ function AddCaptain({ setMainSection }) {
                   <button
                     type="button"
                     className="btn float-right"
-                    onClick={() => setMainSection("DashboardSection")}
+                    onClick={() => setMainSection("Dashboard")}
                   >
                     Close
                   </button>

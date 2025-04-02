@@ -3,18 +3,23 @@ const authMiddleware = require("../middlewares/auth-middlewares");
 const {
   addSubscriptionPlan,
   getSubscriptionPlans,
+  getAddonPlans,
   getUserSubscriptionInfo,
   buySubscriptionPlan,
+  renewSubscription,
 } = require("../controllers/subscriptionController");
+const adminAuth = require("../middlewares/adminAuth");
 
 const subscriptionRouter = express.Router();
 
 subscriptionRouter
   .route("/addsubscriptionplan")
-  .post(authMiddleware, addSubscriptionPlan);
+  .post(authMiddleware, adminAuth, addSubscriptionPlan);
 subscriptionRouter
   .route("/getsubscriptionplans")
   .get(authMiddleware, getSubscriptionPlans);
+
+subscriptionRouter.route("/getaddonplans").get(getAddonPlans);
 
 subscriptionRouter
   .route("/getusersubscriptioninfo")
@@ -23,5 +28,9 @@ subscriptionRouter
 subscriptionRouter
   .route("/buysubscriptionplan")
   .post(authMiddleware, buySubscriptionPlan);
+
+subscriptionRouter
+  .route("/renewsubscription")
+  .post(authMiddleware, renewSubscription);
 
 module.exports = subscriptionRouter;

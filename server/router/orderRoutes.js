@@ -1,8 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/auth-middlewares");
+const adminAuth = require("../middlewares/adminAuth");
 const {
-    addOrder,
-    updateOrder,
     getOrderData,
     orderController,
     addCustomer,

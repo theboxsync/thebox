@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import EditManagerModal from "./EditManagerModal";
-import DeleteManagerModal from "./DeleteManagerModal";
-
-import EditQsrModal from "./EditQsrModal";
-import DeleteQsrModal from "./DeleteQsrModal";
-
-import EditCaptainModal from "./EditCaptainModal";
-import DeleteCaptainModal from "./DeleteCaptainModal";
-
 import Loading from "../Loading";
+import PlanCard from "../ShowPlanCard";
 
 function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -19,25 +11,16 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   const [userSubscription, setUserSubscription] = useState([]);
 
   const [tableData, setTableData] = useState([]);
-  const [ManagerData, setManagerData] = useState([]);
-  const [QsrData, setQsrData] = useState([]);
-  const [CaptainData, setCaptainData] = useState([]);
 
-  const [showEditManagerModal, setShowEditManagerModal] = useState(false);
-  const [showDeleteManagerModal, setShowDeleteManagerModal] = useState(false);
-
-  const [showEditQsrModal, setShowEditQsrModal] = useState(false);
-  const [showDeleteQsrModal, setShowDeleteQsrModal] = useState(false);
-
-  const [showEditCaptainModal, setShowEditCaptainModal] = useState(false);
-  const [showDeleteCaptainModal, setShowDeleteCaptainModal] = useState(false);
-
-  const fetchSubscriptionData = async () => {
+  const fetchData = async () => {
     try {
       const [plansResponse, userSubscriptionResponse] = await Promise.all([
-        axios.get(`${process.env.REACT_APP_ADMIN_API}/subscription/getsubscriptionplans`, {
-          withCredentials: true,
-        }),
+        axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/subscription/getsubscriptionplans`,
+          {
+            withCredentials: true,
+          }
+        ),
         axios.get(
           `${process.env.REACT_APP_ADMIN_API}/subscription/getusersubscriptioninfo`,
           {
@@ -54,6 +37,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
           const plan = plans.find((plan) => plan._id === subscription.plan_id);
           return {
             ...subscription,
+            is_addon: plan.is_addon,
             plan_name: plan ? plan.plan_name : "Unknown Plan",
           };
         }
@@ -62,56 +46,6 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       setUserSubscription(enrichedSubscriptions);
     } catch (error) {
       console.error("Error in fetching data:", error);
-    }
-  };
-  const fetchManagerData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/manager/getmanagerdata`,
-        {
-          withCredentials: true,
-        }
-      );
-      setManagerData(response.data);
-    } catch (error) {
-      console.log("Error fetching manager data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchQsrData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/qsr/getqsrdata`,
-        {
-          withCredentials: true,
-        }
-      );
-      setQsrData(response.data);
-    } catch (error) {
-      console.log("Error fetching qsr data:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchCaptainData = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/captain/getcaptaindata`,
-        {
-          withCredentials: true,
-        }
-      );
-      setCaptainData(response.data);
-    } catch (error) {
-      console.log("Error fetching captain data:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -133,92 +67,58 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
   };
 
   useEffect(() => {
-    fetchSubscriptionData();
+    fetchData();
     fetchTableData();
-    fetchManagerData();
-    fetchQsrData();
-    fetchCaptainData();
   }, []);
 
-  const [editManagerModalData, setEditManagerModalData] = useState({});
-  const editManagerModal = (id) => {
-    console.log(id);
-    setIsLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/manager/getmanagerdata/${id}`)
-      .then((res) => {
-        setEditManagerModalData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-    setShowEditManagerModal(true);
+  const formateDate = (date) => {
+    const dateObj = new Date(date);
+    const dateOptions = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Asia/Kolkata",
+    };
+    const formattedDate = dateObj.toLocaleDateString("en-IN", dateOptions);
+    return formattedDate;
   };
 
-  const [deleteManagerModalData, setDeleteManagerModalData] = useState({
-    id: "",
-  });
-  const deleteManagerModal = (id) => {
-    console.log(id);
-    setShowDeleteManagerModal(true);
-    setDeleteManagerModalData({ ...deleteManagerModalData, id: id });
-    console.log(deleteManagerModalData);
+  const buyPlan = async (planId) => {
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_ADMIN_API}/subscription/buysubscriptionplan`,
+        { planId },
+        {
+          withCredentials: true,
+        }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const [editQsrModalData, setEditQsrModalData] = useState({});
-  const editQsrModal = (id) => {
-    console.log(id);
-    setIsLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/qsr/getqsrdata/${id}`)
-      .then((res) => {
-        setEditQsrModalData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-    setShowEditQsrModal(true);
+  const renewPlan = async (subscriptionId) => {
+    try {
+      await axios.post(
+        `${process.env.REACT_APP_ADMIN_API}/subscription/renewsubscription`,
+        { subscriptionId },
+        { withCredentials: true }
+      );
+
+      window.location.reload();
+    } catch (error) {
+      console.error("Error renewing subscription:", error);
+      alert("Failed to renew subscription. Please try again.");
+    }
   };
 
-  const [deleteQsrModalData, setDeleteQsrModalData] = useState({
-    id: "",
-  });
-  const deleteQsrModal = (id) => {
-    console.log(id);
-    setShowDeleteQsrModal(true);
-    setDeleteQsrModalData({ ...deleteQsrModalData, id: id });
-    console.log(deleteQsrModalData);
-  };
-
-  const [editCaptainModalData, setEditCaptainModalData] = useState({});
-  const editCaptainModal = (id) => {
-    console.log(id);
-    setIsLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_ADMIN_API}/captain/getcaptaindata/${id}`)
-      .then((res) => {
-        setEditCaptainModalData(res.data);
-        console.log(res.data);
-      })
-      .catch((err) => console.log(err))
-      .finally(() => setIsLoading(false));
-    setShowEditCaptainModal(true);
-  };
-
-  const [deleteCaptainModalData, setDeleteCaptainModalData] = useState({
-    id: "",
-  });
-  const deleteCaptainModal = (id) => {
-    console.log(id);
-    setShowDeleteCaptainModal(true);
-    setDeleteCaptainModalData({ ...deleteCAptainModalData, id: id });
-    console.log(deleteCaptainModalData);
-  };
-
-  const hasValidSubscription = (plan_name) => {
-    return userSubscription.some(
-      (subscription) => subscription.plan_name === plan_name
-    );
+  const managePlan = async (planName) => {
+    if (planName === "Manager") {
+      navigate("/manage-manager");
+    } else if (planName === "QSR") {
+      navigate("/manage-qsr");
+    }
   };
 
   return (
@@ -229,209 +129,100 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
         <div className="container-fluid">
           <div className="row">
             <div className="col-md-12">
-              <div className="card">
-                <div className="card-header">
-                  <h3 className="card-title">Manage Manager</h3>
-                </div>
-                <div>
-                  <div className="card-body p-0 m-2">
-                    <div className="m-3" style={{ fontWeight: "bold" }}>
-                      Manager
-                    </div>
-                    {ManagerData.length === 0 ? (
-                      <div className="d-flex align-items-center justify-content-center m-3">
-                        You don't have any managers yet.
-                        <div
-                          className="m-1"
-                          onClick={() => {
-                            if (hasValidSubscription("Manager")) {
-                              setMainSection("AddManager");
-                            } else {
-                              window.location.href = "/subscription";
-                            }
-                          }}
-                          style={{ color: "blue", cursor: "pointer" }}
-                        >
-                          Create manager
-                        </div>
-                      </div>
-                    ) : (
-                      ManagerData.map((manager) => (
-                        <div
-                          className="card m-3"
-                          style={{ width: "20rem" }}
-                          key={manager._id}
-                        >
-                          <div className="card-body">
-                            <div className="d-flex align-items-center">
-                              <div
-                                className="card-title m-3"
-                                style={{ fontWeight: "bold", fontSize: 25 }}
-                              >
-                                Username:
-                              </div>
-                              <div
-                                className="card-subtitle m-1"
-                                style={{ fontSize: 20 }}
-                              >
-                                {manager.username}
-                              </div>
-                            </div>
-                            <div>
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => editManagerModal(manager._id)}
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => deleteManagerModal(manager._id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  <div className="card-body p-0 m-2">
-                    <div className="m-3" style={{ fontWeight: "bold" }}>
-                      QSR Management
-                    </div>
-                    {QsrData.length === 0 ? (
-                      <div className="d-flex align-items-center justify-content-center m-3">
-                        You don't have any QSRs yet.
-                        <div
-                          className="m-1"
-                          onClick={() => {
-                            if (hasValidSubscription("QSR")) {
-                              setMainSection("AddQSR");
-                            } else {
-                              window.location.href = "/subscription";
-                            }
-                          }}
-                          style={{ color: "blue", cursor: "pointer" }}
-                        >
-                          Create QSR
-                        </div>
-                      </div>
-                    ) : (
-                      QsrData.map((qsr) => (
-                        <div
-                          className="card m-3"
-                          style={{ width: "20rem" }}
-                          key={qsr._id}
-                        >
-                          <div className="card-body">
-                            <div className="d-flex align-items-center">
-                              <div
-                                className="card-title m-3"
-                                style={{ fontWeight: "bold", fontSize: 25 }}
-                              >
-                                Username:
-                              </div>
-                              <div
-                                className="card-subtitle m-1"
-                                style={{ fontSize: 20 }}
-                              >
-                                {qsr.username}
-                              </div>
-                            </div>
-                            <div>
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => editQsrModal(qsr._id)}
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => deleteQsrModal(qsr._id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  <div className="card-body p-0 m-2">
-                    <div className="m-3" style={{ fontWeight: "bold" }}>
-                      Captain Management
-                    </div>
-                    {CaptainData.length === 0 ? (
-                      <div className="d-flex align-items-center justify-content-center m-3">
-                        You don't have any Captains yet.
-                        <div
-                          className="m-1"
-                          onClick={() => {
-                            if (hasValidSubscription("Captain")) {
-                              setMainSection("AddCaptain");
-                            } else {
-                              window.location.href = "/subscription";
-                            }
-                          }}
-                          style={{ color: "blue", cursor: "pointer" }}
-                        >
-                          Create Captain
-                        </div>
-                      </div>
-                    ) : (
-                      CaptainData.map((captain) => (
-                        <div
-                          className="card m-3"
-                          style={{ width: "20rem" }}
-                          key={captain._id}
-                        >
-                          <div className="card-body">
-                            <div className="d-flex align-items-center">
-                              <div
-                                className="card-title m-3"
-                                style={{ fontWeight: "bold", fontSize: 25 }}
-                              >
-                                Username:
-                              </div>
-                              <div
-                                className="card-subtitle m-1"
-                                style={{ fontSize: 20 }}
-                              >
-                                {captain.username}
-                              </div>
-                            </div>
-                            <div>
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => editCaptainModal(captain._id)}
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                type="button"
-                                className="btn btn-block btn-dark"
-                                onClick={() => deleteCaptainModal(captain._id)}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
+              {userSubscription.length > 0 && (
+                <div className="card mx-3">
+                  <div>
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Plan Name</th>
+                          <th>Start Date</th>
+                          <th>End Date</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {userSubscription.map(
+                          (subscription) =>
+                            subscription.is_addon === false && (
+                              <tr key={subscription._id}>
+                                <td>{subscription.plan_name}</td>
+                                <td>{formateDate(subscription.start_date)}</td>
+                                <td>{formateDate(subscription.end_date)}</td>
+                                <td>{subscription.status}</td>
+                                <td>
+                                  {subscription.status === "active" && (
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() =>
+                                        managePlan(subscription.plan_name)
+                                      }
+                                    >
+                                      Manage
+                                    </button>
+                                  )}
+                                  {subscription.status === "expired" && (
+                                    <button
+                                      className="btn btn-primary"
+                                      onClick={() =>
+                                        renewPlan(subscription._id)
+                                      }
+                                    >
+                                      Renew
+                                    </button>
+                                  )}
+                                </td>
+                              </tr>
+                            )
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <hr />
-              </div>
+              )}
+
+              {subscriptionPlans.length !== userSubscription.length &&
+                (() => {
+                  const filteredBasePlans = subscriptionPlans.filter((plan) => {
+                    const isPlanActive = userSubscription.some(
+                      (subscription) => subscription.plan_id === plan._id
+                    );
+                    return !isPlanActive && !plan.is_addon;
+                  });
+
+                  return filteredBasePlans.length > 0 ? (
+                    <>
+                      <div className="card">
+                        <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                          <h1 className="display-4">Our Plans</h1>
+                          <p className="lead">
+                            Choose various plans to fit your needs
+                          </p>
+                        </div>
+                        <div className="d-flex mb-3 text-center">
+                          {filteredBasePlans.map((plan, index) => (
+                            <PlanCard
+                              key={index}
+                              plan={plan}
+                              buyPlan={buyPlan}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <hr />
+                    </>
+                  ) : null;
+                })()}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="content">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-md-12">
               <div className="card">
                 <div className="card-header">
                   <h3 className="card-title">Tables</h3>
@@ -468,48 +259,6 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
           </div>
         </div>
       </section>
-
-      <EditManagerModal
-        show={showEditManagerModal}
-        handleClose={() => setShowEditManagerModal(false)}
-        data={editManagerModalData}
-        fetchManagerData={fetchManagerData}
-      />
-
-      <DeleteManagerModal
-        show={showDeleteManagerModal}
-        handleClose={() => setShowDeleteManagerModal(false)}
-        data={deleteManagerModalData}
-        fetchManagerData={fetchManagerData}
-      />
-
-      <EditQsrModal
-        show={showEditQsrModal}
-        handleClose={() => setShowEditQsrModal(false)}
-        data={editQsrModalData}
-        fetchQsrData={fetchQsrData}
-      />
-
-      <DeleteQsrModal
-        show={showDeleteQsrModal}
-        handleClose={() => setShowDeleteQsrModal(false)}
-        data={deleteQsrModalData}
-        fetchQsrData={fetchQsrData}
-      />
-
-      <EditCaptainModal
-        show={showEditCaptainModal}
-        handleClose={() => setShowEditCaptainModal(false)}
-        data={editCaptainModalData}
-        fetchCaptainData={fetchCaptainData}
-      />
-
-      <DeleteCaptainModal
-        show={showDeleteCaptainModal}
-        handleClose={() => setShowDeleteCaptainModal(false)}
-        data={deleteCaptainModalData}
-        fetchCaptainData={fetchCaptainData}
-      />
     </>
   );
 }

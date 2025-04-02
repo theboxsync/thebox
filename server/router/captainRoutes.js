@@ -9,19 +9,20 @@ const {
   changeCaptainPassword,
   captainLogin,
 } = require("../controllers/captainController");
+const adminAuth = require("../middlewares/adminAuth");
 
 const captainRouter = express.Router();
 
-captainRouter.route("/addcaptain").post(authMiddleware, addCaptain);
+captainRouter.route("/addcaptain").post(authMiddleware, adminAuth, addCaptain);
 
 captainRouter.route("/getcaptaindata").get(authMiddleware, getCaptainData);
 captainRouter.route("/getcaptaindata/:id").get(getCaptainDataById);
 
-captainRouter.route("/updatecaptain/:id").put(authMiddleware, updateCaptain);
-captainRouter.route("/deletecaptain").post(authMiddleware, deleteCaptain);
+captainRouter.route("/updatecaptain/:id").put(authMiddleware, adminAuth, updateCaptain);
+captainRouter.route("/deletecaptain").post(authMiddleware, adminAuth, deleteCaptain);
 captainRouter
   .route("/changecaptainpassword")
-  .post(authMiddleware, changeCaptainPassword);
+  .post(authMiddleware, adminAuth, changeCaptainPassword);
 
 captainRouter.route("/captain-login").post(captainLogin);
 

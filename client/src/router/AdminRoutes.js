@@ -31,6 +31,9 @@ import AdminSubscription from "../admin/pages/AdminSubscription";
 import AdminSettings from "../admin/pages/AdminSettings";
 import AdminFeedback from "../admin/pages/AdminFeedback";
 
+import AdminManageManager from "../admin/pages/AdminManageManager";
+import AdminManageQSR from "../admin/pages/AdminManageQSR";
+
 import PageNotFound from "../admin/PageNotFound";
 
 function AdminRoutes() {
@@ -83,6 +86,9 @@ function AdminRoutes() {
       <Route path="/change-qsr-password" element={<ChangeQsrPassword />} />
 
       <Route path="/feedbacks" element={<AdminFeedback />} />
+
+      <Route path="/manage-manager" element={<AdminManageManager />} />
+      <Route path="/manage-qsr" element={<AdminManageQSR />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

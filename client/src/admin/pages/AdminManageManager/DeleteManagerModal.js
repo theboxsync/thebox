@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Loading from "../../components/Loading";
 
 function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -39,9 +40,6 @@ function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
           if (res.status === 200) {
             setSuccess(res.data.message);
             setError("");
-            setTimeout(() => {
-              navigate("/subscription");
-            }, 1000);
             fetchManagerData();
             resetFields(); // Reset fields after successful deletion
             handleClose();

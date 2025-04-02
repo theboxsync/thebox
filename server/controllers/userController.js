@@ -61,7 +61,7 @@ const register = async (req, res) => {
     const newUser = new User(userdata);
     await newUser.save();
 
-    const token = await newUser.generateAuthToken();
+    const token = await newUser.generateAuthToken("Admin");
     res.cookie("jwttoken", token, {
       expires: new Date(Date.now() + 25892000000),
       httpOnly: true,
@@ -126,7 +126,7 @@ const login = async (req, res) => {
     if (!matchPass) {
       return res.json({ message: "Wrong Password" });
     } else {
-      token = await userExists.generateAuthToken();
+      token = await userExists.generateAuthToken("Admin");
       res.cookie("jwttoken", token, {
         expires: new Date(Date.now() + 25892000000),
         httpOnly: true,

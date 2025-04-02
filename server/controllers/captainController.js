@@ -1,4 +1,6 @@
 const Captain = require("../models/captainModel");
+const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
 const addCaptain = (req, res) => {
   try {
@@ -126,7 +128,7 @@ const captainLogin = async (req, res) => {
       return res.json({ message: "Invalid Password" });
     }
 
-    token = await user.generateAuthToken();
+    token = await user.generateAuthToken("Captain");
     res.cookie("jwttoken", token, {
       expires: new Date(Date.now() + 25892000000),
       httpOnly: true,

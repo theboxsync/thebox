@@ -42,7 +42,7 @@ const managerLogin = async (req, res) => {
       return res.json({ message: "Invalid Password" });
     }
 
-    token = await user.generateAuthToken();
+    token = await user.generateAuthToken("Manager");
     res.cookie("jwttoken", token, {
       expires: new Date(Date.now() + 25892000000),
       httpOnly: true,

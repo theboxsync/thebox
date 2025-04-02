@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Loading from "../Loading";
+import Loading from "../../components/Loading";
 
 function DeleteCaptainModal({ show, handleClose, data, fetchCaptainData }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,11 +42,8 @@ function DeleteCaptainModal({ show, handleClose, data, fetchCaptainData }) {
           if (res.status === 200) {
             setSuccess(res.data.message);
             setError("");
-            setTimeout(() => {
-              navigate("/dashboard");
-            }, 1000);
             fetchCaptainData();
-            resetFields(); // Reset fields after successful deletion
+            resetFields(); 
             handleClose();
           } else {
             setError(res.data.message);

@@ -1,31 +1,32 @@
 import React from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import { addQSR } from "../../../schemas"; // Validation schema for QSR form
+import { addManager } from "../../../schemas";
+import Loading from "../../components/Loading";
 
-function AddQSR({ setMainSection }) {
+function AddManager({ setMainSection, fetchManagerData }) {
   const formik = useFormik({
     initialValues: {
       username: "",
       password: "",
     },
-    validationSchema: addQSR, // Define this schema in your validation file
+    validationSchema: addManager,
     onSubmit: (values) => {
       console.log("Submitted", values);
       axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/addqsr`, values, {
+        .post(`${process.env.REACT_APP_ADMIN_API}/manager/addmanager`, values, {
           withCredentials: true,
         })
         .then((res) => {
           console.log(res.data);
-          setMainSection("DashboardSection");
+          fetchManagerData();
+          setMainSection("Dashboard");
         })
         .catch((err) => {
           console.log(err);
         });
     },
   });
-
   return (
     <section className="content">
       <div className="container-fluid">
@@ -33,11 +34,13 @@ function AddQSR({ setMainSection }) {
           <div className="col-md-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Add QSR</h3>
+                <h3 className="card-title">Table Management</h3>
                 <button
                   type="button"
                   className="btn float-right"
-                  onClick={() => setMainSection("DashboardSection")}
+                  onClick={() => {
+                    setMainSection("Dashboard");
+                  }}
                 >
                   Close
                 </button>
@@ -49,10 +52,10 @@ function AddQSR({ setMainSection }) {
                 onSubmit={formik.handleSubmit}
               >
                 <div className="card-body">
-                  <div className="px-3">
+                  <div className="px-3 ">
                     <div className="row">
-                      <div className="form-group col-md-6 mb-0">
-                        <label htmlFor="username">QSR Name</label>
+                      <div className="form-group col-md-4 mb-0">
+                        <label htmlFor="username">Username</label>
                         <input
                           type="text"
                           className="form-control"
@@ -62,13 +65,15 @@ function AddQSR({ setMainSection }) {
                           onBlur={formik.handleBlur}
                         />
                         <label className="text-danger">
-                          {formik.errors.username ? formik.errors.username : null}
+                          {formik.errors.username
+                            ? formik.errors.username
+                            : null}
                         </label>
                       </div>
-                      <div className="form-group col-md-6 mb-0">
+                      <div className="form-group col-md-4 mb-0">
                         <label htmlFor="password">Password</label>
                         <input
-                          type="password"
+                          type="text"
                           className="form-control"
                           name="password"
                           value={formik.values.password}
@@ -91,7 +96,8 @@ function AddQSR({ setMainSection }) {
                       name="submit"
                       className="btn btn-dark"
                     >
-                      Add QSR
+                      <img src="../../dist/img/add.svg" alt="Add" />
+                      Add Manager
                     </button>
                   </div>
                 </div>
@@ -104,4 +110,4 @@ function AddQSR({ setMainSection }) {
   );
 }
 
-export default AddQSR;
+export default AddManager;

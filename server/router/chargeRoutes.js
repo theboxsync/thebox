@@ -7,21 +7,24 @@ const {
   updateContainerCharge,
   deleteContainerCharge,
 } = require("../controllers/chargeController");
+const adminAuth = require("../middlewares/adminAuth");
 
 const chargeRouter = express.Router();
 
-chargeRouter.route("/updatecharges").put(authMiddleware, updateCharges);
+chargeRouter
+  .route("/updatecharges")
+  .put(authMiddleware, adminAuth, updateCharges);
 chargeRouter
   .route("/add-container-charge")
-  .post(authMiddleware, addContainerCharge);
+  .post(authMiddleware, adminAuth, addContainerCharge);
 chargeRouter
   .route("/get-container-charges")
   .get(authMiddleware, getContainerCharges);
 chargeRouter
   .route("/update-container-charge")
-  .put(authMiddleware, updateContainerCharge);
+  .put(authMiddleware, adminAuth, updateContainerCharge);
 chargeRouter
   .route("/delete-container-charge")
-  .delete(authMiddleware, deleteContainerCharge);
+  .delete(authMiddleware, adminAuth, deleteContainerCharge);
 
 module.exports = chargeRouter;

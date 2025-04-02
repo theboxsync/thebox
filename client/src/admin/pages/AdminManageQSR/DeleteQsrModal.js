@@ -39,9 +39,6 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
           if (res.status === 200) {
             setSuccess(res.data.message);
             setError("");
-            setTimeout(() => {
-              navigate("/subscription");
-            }, 1000);
             fetchQsrData();
             resetFields(); // Reset fields after successful deletion
             handleClose();

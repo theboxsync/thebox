@@ -122,11 +122,11 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-userSchema.methods.generateAuthToken = async function () {
+userSchema.methods.generateAuthToken = async function (role) {
   try {
     const user = this;
     const token = jwt.sign(
-      { _id: user._id.toString() },
+      { _id: user._id.toString(), Role: role },
       process.env.JWT_SECRETKEY,
       { expiresIn: "30d" }
     );

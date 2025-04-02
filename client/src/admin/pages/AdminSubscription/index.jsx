@@ -1,31 +1,109 @@
-import React from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+import Loading from "../../components/Loading";
 
 import "../../../style.css";
 import Navbar from "../../components/NavBar";
 
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
-
-import DashboardSection from "../../components/subscription/DashboardSection";
-import AddManager from "../../components/subscription/AddManager";
-import AddQSR from "../../components/subscription/AddQSR";
-import AddCaptain from "../../components/subscription/AddCaptain";
+import PlanCard from "../../components/ShowPlanCard";
 
 function AdminSubscription() {
-  const [mainSection, setMainSection] = React.useState("DashboardSection");
-  const displayMainSection = () => {
-    switch (mainSection) {
-      case "DashboardSection":
-        return <DashboardSection setMainSection={setMainSection} />;
-      case "AddManager":
-        return <AddManager setMainSection={setMainSection} />;
-      case "AddQSR":
-        return <AddQSR setMainSection={setMainSection} />;
-      case "AddCaptain":
-        return <AddCaptain  setMainSection={setMainSection} />;
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
+  const [userSubscription, setUserSubscription] = useState([]);
 
-      default:
-        return null;
+  const fetchData = async () => {
+    try {
+      const [plansResponse, userSubscriptionResponse] = await Promise.all([
+        axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/subscription/getsubscriptionplans`,
+          {
+            withCredentials: true,
+          }
+        ),
+        axios.get(
+          `${process.env.REACT_APP_ADMIN_API}/subscription/getusersubscriptioninfo`,
+          {
+            withCredentials: true,
+          }
+        ),
+      ]);
+
+      const plans = plansResponse.data;
+      setSubscriptionPlans(plans);
+
+      const enrichedSubscriptions = userSubscriptionResponse.data.map(
+        (subscription) => {
+          const plan = plans.find((plan) => plan._id === subscription.plan_id);
+          return {
+            ...subscription,
+            is_addon: plan.is_addon,
+            plan_name: plan ? plan.plan_name : "Unknown Plan",
+          };
+        }
+      );
+
+      setUserSubscription(enrichedSubscriptions);
+    } catch (error) {
+      console.error("Error in fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const formateDate = (date) => {
+    const dateObj = new Date(date);
+    const dateOptions = {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Asia/Kolkata",
+    };
+    const formattedDate = dateObj.toLocaleDateString("en-IN", dateOptions);
+    return formattedDate;
+  };
+
+  const buyPlan = async (planId) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_ADMIN_API}/subscription/buysubscriptionplan`,
+        { planId },
+        {
+          withCredentials: true,
+        }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const renewPlan = async (subscriptionId) => {
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_ADMIN_API}/subscription/renewsubscription`,
+        { subscriptionId },
+        { withCredentials: true }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error("Error renewing subscription:", error);
+      alert("Failed to renew subscription. Please try again.");
+    }
+  };
+
+  const managePlan = async (planName) => {
+    if (planName === "Manager") {
+      navigate("/manage-manager");
+    } else if (planName === "QSR") {
+      navigate("/manage-qsr");
     }
   };
 
@@ -40,7 +118,107 @@ function AdminSubscription() {
           </div>
         </div>
 
-        <div>{displayMainSection()}</div>
+        <div>
+          <section className="content">
+            <div className="container-fluid">
+              <div className="row">
+                <div className="col-md-12">
+                  {userSubscription.length > 0 && (
+                    <div className="card mx-3">
+                      <div>
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <th>Plan Name</th>
+                              <th>Start Date</th>
+                              <th>End Date</th>
+                              <th>Status</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {userSubscription.map(
+                              (subscription) =>
+                                subscription.is_addon === false && (
+                                  <tr key={subscription._id}>
+                                    <td>{subscription.plan_name}</td>
+                                    <td>
+                                      {formateDate(subscription.start_date)}
+                                    </td>
+                                    <td>
+                                      {formateDate(subscription.end_date)}
+                                    </td>
+                                    <td>{subscription.status}</td>
+                                    <td>
+                                      {subscription.status === "active" && (
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() =>
+                                            managePlan(subscription.plan_name)
+                                          }
+                                        >
+                                          Manage
+                                        </button>
+                                      )}
+                                      {subscription.status === "expired" && (
+                                        <button
+                                          className="btn btn-primary"
+                                          onClick={() =>
+                                            renewPlan(subscription._id)
+                                          }
+                                        >
+                                          Renew
+                                        </button>
+                                      )}
+                                    </td>
+                                  </tr>
+                                )
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+
+                  {subscriptionPlans.length !== userSubscription.length &&
+                    (() => {
+                      const filteredBasePlans = subscriptionPlans.filter(
+                        (plan) => {
+                          const isPlanActive = userSubscription.some(
+                            (subscription) => subscription.plan_id === plan._id
+                          );
+                          return !isPlanActive && !plan.is_addon;
+                        }
+                      );
+
+                      return filteredBasePlans.length > 0 ? (
+                        <>
+                          <div className="card">
+                            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                              <h1 className="display-4">Our Plans</h1>
+                              <p className="lead">
+                                Choose various plans to fit your needs
+                              </p>
+                            </div>
+                            <div className="d-flex mb-3 text-center">
+                              {filteredBasePlans.map((plan, index) => (
+                                <PlanCard
+                                  key={index}
+                                  plan={plan}
+                                  buyPlan={buyPlan}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <hr />
+                        </>
+                      ) : null;
+                    })()}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
 
         <Footer />
       </div>

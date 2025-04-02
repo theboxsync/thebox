@@ -1,4 +1,6 @@
 const QSR = require("../models/qsrModel");
+const User = require("../models/userModel");
+const bcrypt = require("bcryptjs");
 
 const addQSR = (req, res) => {
   try {
@@ -126,7 +128,7 @@ const qsrLogin = async (req, res) => {
       return res.json({ message: "Invalid Password" });
     }
 
-    token = await user.generateAuthToken();
+    token = await user.generateAuthToken("QSR");
     res.cookie("jwttoken", token, {
       expires: new Date(Date.now() + 25892000000),
       httpOnly: true,

@@ -4,28 +4,6 @@ const TokenCounter = require("../models/TokenCounter");
 
 const cron = require("node-cron");
 
-const addOrder = (req, res) => {
-  try {
-    const orderData = { ...req.body, restaurant_id: req.user };
-    Order.create(orderData)
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const updateOrder = (req, res) => {
-  try {
-    const orderData = req.body;
-    Order.updateOne({ _id: orderData._id }, orderData)
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 const addCustomer = (req, res) => {
   try {
     const customerData = { ...req.body, restaurant_id: req.user };
@@ -255,8 +233,6 @@ const orderHistory = async (req, res) => {
 };
 
 module.exports = {
-  addOrder,
-  updateOrder,
   addCustomer,
   getOrderData,
   getCustomerData,

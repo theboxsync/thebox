@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import axios from "axios";
 
 import { editQsr } from "../../../schemas";
-import Loading from "../Loading";
+import Loading from "../../components/Loading";
 
 function EditCaptainModal({ show, handleClose, data, fetchCaptainData }) {
   const [isLoading, setIsLoading] = useState(false);

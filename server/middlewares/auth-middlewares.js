@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -7,6 +6,7 @@ const authMiddleware = async (req, res, next) => {
 
     if (token) {
       const user = jwt.verify(token, process.env.JWT_SECRETKEY);
+      console.log("Middleware : ", user);
       req.user = user;
     } else {
       req.user = null;

@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import axios from "axios";
 
 import { editManager } from "../../../schemas";
+import Loading from "../../components/Loading";
 
 function EditManagerModal({ show, handleClose, data, fetchManagerData }) {
   const managerInfo = {
