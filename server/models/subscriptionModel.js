@@ -8,6 +8,12 @@ const subscriptionSchema = new Schema({
     plan_id: {
         type: String,
     },
+    plan_name: {
+        type: String,
+    },
+    plan_price: {
+        type: Number,
+    },
     start_date: {
         type: Date,
     },

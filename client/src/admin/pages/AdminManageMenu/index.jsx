@@ -7,6 +7,7 @@ import Footer from "../../components/Footer";
 
 import ViewMenu from "../../components/manageMenu/ViewMenu";
 import AddMenu from "../../components/manageMenu/AddMenu";
+import QrForMenu from "../../components/manageMenu/QrForMenu";
 
 export default function AdminManageMenu() {
   const [section, setSection] = useState("ViewMenu");
@@ -17,6 +18,8 @@ export default function AdminManageMenu() {
       return <ViewMenu setSection={setSection} />;
     } else if (section === "AddMenu") {
       return <AddMenu setSection={setSection} />;
+    } else if (section === "QrForMenu") {
+      return <QrForMenu setSection={setSection} />;
     }
   };
 

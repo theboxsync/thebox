@@ -7,7 +7,7 @@ const PlanCard = ({plan, buyPlan}) => {
   return (
     <div
       className="card m-4 box-shadow"
-      style={{ width: "20rem" }}
+      style={{ minWidth: "400px" }}
       key={plan._id}
     >
       <div className="card-header">

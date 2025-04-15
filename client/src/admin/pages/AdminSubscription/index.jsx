@@ -47,7 +47,10 @@ function AdminSubscription() {
           };
         }
       );
-
+      enrichedSubscriptions.sort(
+        (a, b) =>
+          new Date(b.start_date) - new Date(a.start_date)
+      )
       setUserSubscription(enrichedSubscriptions);
     } catch (error) {
       console.error("Error in fetching data:", error);
@@ -104,6 +107,20 @@ function AdminSubscription() {
       navigate("/manage-manager");
     } else if (planName === "QSR") {
       navigate("/manage-qsr");
+    } else if (planName === "Captain Panel") {
+      navigate("/manage-captain");
+    } else if (planName === "Staff Management") {
+      navigate("/staff");
+    } else if (planName === "Feedback") {
+      navigate("/feedbacks");
+    } else if (planName === "Scan For Menu") {
+      navigate("/manage-menu");
+    } else if (planName === "Restaurant Website") {
+      navigate("/manage-restaurant-website");
+    } else if (planName === "Online Order Reconciliation") {
+      navigate("/manage-online-order-reconciliation");
+    } else if (planName === "Reservation Manager") {
+      navigate("/manage-reservation-manager");
     }
   };
 
@@ -139,7 +156,7 @@ function AdminSubscription() {
                           <tbody>
                             {userSubscription.map(
                               (subscription) =>
-                                subscription.is_addon === false && (
+                                 (
                                   <tr key={subscription._id}>
                                     <td>{subscription.plan_name}</td>
                                     <td>
@@ -179,41 +196,41 @@ function AdminSubscription() {
                       </div>
                     </div>
                   )}
+                    {subscriptionPlans.length !== userSubscription.length &&
+                      (() => {
+                        const filteredBasePlans = subscriptionPlans.filter(
+                          (plan) => {
+                            const isPlanActive = userSubscription.some(
+                              (subscription) =>
+                                subscription.plan_id === plan._id
+                            );
+                            return !isPlanActive;
+                          }
+                        );
 
-                  {subscriptionPlans.length !== userSubscription.length &&
-                    (() => {
-                      const filteredBasePlans = subscriptionPlans.filter(
-                        (plan) => {
-                          const isPlanActive = userSubscription.some(
-                            (subscription) => subscription.plan_id === plan._id
-                          );
-                          return !isPlanActive && !plan.is_addon;
-                        }
-                      );
-
-                      return filteredBasePlans.length > 0 ? (
-                        <>
-                          <div className="card">
-                            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-                              <h1 className="display-4">Our Plans</h1>
-                              <p className="lead">
-                                Choose various plans to fit your needs
-                              </p>
+                        return filteredBasePlans.length > 0 ? (
+                          <>
+                            <div className="card">
+                              <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                                <h1 className="display-4">Our Addons</h1>
+                                <p className="lead">
+                                  Choose various plans to fit your needs
+                                </p>
+                              </div>
+                              <div className="d-flex mb-3 text-center" style={{ overflowX: "auto"}}>
+                                {filteredBasePlans.map((plan, index) => (
+                                  <PlanCard
+                                    key={index}
+                                    plan={plan}
+                                    buyPlan={buyPlan}
+                                  />
+                                ))}
+                              </div>
                             </div>
-                            <div className="d-flex mb-3 text-center">
-                              {filteredBasePlans.map((plan, index) => (
-                                <PlanCard
-                                  key={index}
-                                  plan={plan}
-                                  buyPlan={buyPlan}
-                                />
-                              ))}
-                            </div>
-                          </div>
-                          <hr />
-                        </>
-                      ) : null;
-                    })()}
+                            <hr />
+                          </>
+                        ) : null;
+                      })()}
                 </div>
               </div>
             </div>

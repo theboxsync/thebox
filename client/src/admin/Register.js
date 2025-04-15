@@ -17,17 +17,17 @@ export default function Register(props) {
 
   const data = {
     restaurant_code: "",
-    name: "", // Done By Form
-    logo: "", // Done By Form
-    gst_no: "", // Done By Form
-    email: "", // Done By Form
-    password: "", // Done By Form
-    mobile: "", // Done By Form
-    address: "", // Done By Form
-    country: "", // Done By Form
-    state: "", // Done By Form
-    city: "", // Done By Form
-    pincode: "", // Done By Form
+    name: "", 
+    logo: "", 
+    gst_no: "", 
+    email: "", 
+    password: "", 
+    mobile: "", 
+    address: "", 
+    country: "", 
+    state: "", 
+    city: "", 
+    pincode: "", 
     active: "",
   };
 
@@ -67,7 +67,7 @@ export default function Register(props) {
       .then((res) => {
         if (res.data.message === "Registered") {
           console.log("Registered Here ");
-          navigate("/");
+          navigate("/select-plan");
         }
       })
       .catch((err) => console.log(err))

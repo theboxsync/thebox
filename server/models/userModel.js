@@ -82,6 +82,9 @@ const userSchema = new Schema({
       feedback: { type: String },
     },
   ],
+  purchasedPlan: {
+    type: String,
+  },
 
   // username: {
   //   type: String,

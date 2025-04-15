@@ -1,80 +1,20 @@
-import React, { useState, useEffect } from "react";
+import { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { MdWorkspacePremium, MdFastfood } from "react-icons/md";
-import { GrUserManager } from "react-icons/gr";
+import { MdWorkspacePremium } from "react-icons/md";
 
-export default function MenuBar() {
-  const navigate = useNavigate();
-  const [userData, setUserData] = useState("");
-  const [subscriptionPlans, setSubscriptionPlans] = useState([]);
-  const [userSubscription, setUserSubscription] = useState([]);
-  const [activeSubscription, setActiveSubscription] = useState([]);
+import { AuthContext } from "../context/AuthContext";
+import Loading from "../components/Loading";
 
-  const fetchUserData = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
-        {
-          withCredentials: true,
-        }
-      );
-      if (response.data === "Null") {
-        navigate("/login");
-      } else {
-        setUserData(response.data);
-      }
-    } catch (error) {
-      console.log("Error fetching user data:", error);
-    }
-  };
+const MenuBar = () => {
+  const { user, activePlans, isLoading } = useContext(AuthContext);
 
-  const fetchData = async () => {
-    try {
-      const [plansResponse, userSubscriptionResponse] = await Promise.all([
-        axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/subscription/getsubscriptionplans`,
-          { withCredentials: true }
-        ),
-        axios.get(
-          `${process.env.REACT_APP_ADMIN_API}/subscription/getusersubscriptioninfo`,
-          { withCredentials: true }
-        ),
-      ]);
-
-      const plans = plansResponse.data;
-      setSubscriptionPlans(plans);
-
-      let activePlans = []; // To store all active subscriptions
-
-      const enrichedSubscriptions = userSubscriptionResponse.data.map(
-        (subscription) => {
-          const plan = plans.find((plan) => plan._id === subscription.plan_id);
-          if (plan) {
-            activePlans.push(plan.plan_name); // Store active subscriptions
-          }
-          return {
-            ...subscription,
-            is_addon: plan?.is_addon || false,
-            plan_name: plan ? plan.plan_name : "Unknown Plan",
-          };
-        }
-      );
-
-      setActiveSubscription(activePlans); // Update state with all active subscriptions
-      console.log("Active Subscriptions", activePlans);
-
-      setUserSubscription(enrichedSubscriptions);
-    } catch (error) {
-      console.error("Error in fetching data:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-    fetchUserData();
-  }, []);
+  if (user === null || isLoading) {
+    setInterval(() => {
+      console.log(user);
+      return <Loading />;
+    }, 1000);
+    
+  }
 
   return (
     <div className="menu">
@@ -102,9 +42,7 @@ export default function MenuBar() {
                 <div className="image mt-2 mb-2">
                   <img
                     src={`${
-                      process.env.REACT_APP_ADMIN_API +
-                      "/uploads/" +
-                      userData.logo
+                      process.env.REACT_APP_ADMIN_API + "/uploads/" + user?.logo
                     }`}
                     className="img-circle elevation-3"
                     alt="User Image"
@@ -113,7 +51,7 @@ export default function MenuBar() {
 
                 <div className="info">
                   <span style={{ color: "white" }} className="d-block">
-                    {userData.name}
+                    {user?.name}
                   </span>
                 </div>
               </NavLink>
@@ -150,7 +88,7 @@ export default function MenuBar() {
                   </NavLink>
                 </li>
 
-                {activeSubscription.includes("Manager") && (
+                {activePlans.includes("Manager") && (
                   <li className="nav-item">
                     <NavLink to={"/inventory"} className="nav-link">
                       <i className="nav-icon fas fa-tag"></i>
@@ -158,7 +96,7 @@ export default function MenuBar() {
                     </NavLink>
                   </li>
                 )}
-                {activeSubscription.includes("Manager") && (
+                {activePlans.includes("Staff Management") && (
                   <li className="nav-item">
                     <NavLink to={"/staff"} className="nav-link">
                       <i className="nav-icon fas fa-user-tie"></i>
@@ -166,12 +104,14 @@ export default function MenuBar() {
                     </NavLink>
                   </li>
                 )}
-                <li className="nav-item">
-                  <NavLink to={"/feedbacks"} className="nav-link">
-                    <i className="nav-icon fa fa-comments"></i>
-                    <p style={{ fontSize: "15px" }}>Feedbacks</p>
-                  </NavLink>
-                </li>
+                {activePlans.includes("Feedback") && (
+                  <li className="nav-item">
+                    <NavLink to={"/feedbacks"} className="nav-link">
+                      <i className="nav-icon fa fa-comments"></i>
+                      <p style={{ fontSize: "15px" }}>Feedbacks</p>
+                    </NavLink>
+                  </li>
+                )}
                 <li className="nav-item">
                   <NavLink to={"/subscription"} className="nav-link">
                     <MdWorkspacePremium
@@ -180,26 +120,6 @@ export default function MenuBar() {
                     <p style={{ fontSize: "15px" }}>Subscription</p>
                   </NavLink>
                 </li>
-                {activeSubscription.includes("Manager") && (
-                  <li className="nav-item">
-                    <NavLink to={"/manage-manager"} className="nav-link">
-                      <GrUserManager
-                        style={{ fontSize: "20px", marginRight: "5px" }}
-                      />
-                      <p style={{ fontSize: "15px" }}>Manage Manager</p>
-                    </NavLink>
-                  </li>
-                )}
-                {activeSubscription.includes("QSR") && (
-                  <li className="nav-item">
-                    <NavLink to={"/manage-qsr"} className="nav-link">
-                      <MdFastfood
-                        style={{ fontSize: "20px", marginRight: "5px" }}
-                      />
-                      <p style={{ fontSize: "15px" }}>Manage QSR</p>
-                    </NavLink>
-                  </li>
-                )}
 
                 <li className="nav-item">
                   <NavLink to={"/settings"} className="nav-link">
@@ -214,4 +134,6 @@ export default function MenuBar() {
       </div>
     </div>
   );
-}
+};
+
+export default MenuBar;

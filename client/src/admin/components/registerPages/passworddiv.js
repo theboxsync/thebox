@@ -74,7 +74,7 @@ function Passworddiv({ inputData, setInputData, handleGoNext }) {
           <div className="social-auth-links mt-2 mb-3">
             <button
               type="submit"
-              id="submit-pass"
+              id="next"
               className="btn btn-block btn-dark"
               style={{ Width: "160px" }}
             >

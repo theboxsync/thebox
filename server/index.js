@@ -19,6 +19,7 @@ const staffRouter = require("./router/staffRoutes");
 const subscriptionRouter = require("./router/subscriptionRoutes");
 const tableRouter = require("./router/tableRoutes");
 const userRouter = require("./router/userRoutes");
+const inquiryRouter = require("./router/inquiryRoutes");
 
 const PORT = process.env.PORT;
 const ORIGINS = process.env.ORIGINS ? process.env.ORIGINS.split(",") : [];
@@ -51,6 +52,7 @@ app.use("/api/staff", staffRouter);
 app.use("/api/subscription", subscriptionRouter);
 app.use("/api/table", tableRouter);
 app.use("/api/user", userRouter);
+app.use("/api/inquiry", inquiryRouter);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

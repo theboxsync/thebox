@@ -36,28 +36,23 @@ const addMenu = (req, res) => {
 
 const getMenuData = async (req, res) => {
   try {
-    // Extract query parameters
     const { mealType, category, searchText } = req.query;
+    
+    const query = req.params.id ? { hotel_id: req.params.id } : { hotel_id: req.user };
+    console.log(req.params.id);
 
-    // Build the query object
-    const query = { hotel_id: req.user };
-
-    // Add mealType filter if provided
     if (mealType) {
       query.meal_type = mealType;
     }
 
-    // Add category filter if provided
     if (category) {
       query.category = category;
     }
 
-    // Add searchText filter if provided
     if (searchText) {
-      query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; // Case-insensitive regex
+      query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; 
     }
 
-    // Fetch filtered menu data
     const menuData = await Menu.find(query);
     res.json(menuData);
   } catch (error) {
@@ -65,6 +60,30 @@ const getMenuData = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+// const getMenuDataByResCode = async (req, res) => {
+//   try {
+
+//     const query = ;
+
+//     if (mealType) {
+//       query.meal_type = mealType;
+//     }
+
+//     if (category) {
+//       query.category = category;
+//     }
+
+//     if (searchText) {
+//       query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; 
+//     }
+
+//     const menuData = await Menu.find(query);
+//     res.json(menuData);
+//   } catch (error) {
+//     console.error("Error fetching menu data:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// };
 
 const getMenuCategories = async (req, res) => {
   try {

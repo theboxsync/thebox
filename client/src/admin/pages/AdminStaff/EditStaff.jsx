@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -9,11 +9,17 @@ import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
 import { editStaff } from "../../../schemas";
+import { AuthContext } from "../../context/AuthContext";
+
+import Loading from "../../components/Loading";
 
 function EditStaff() {
   const { id } = useParams();
+
+  const [loading, setLoading] = useState(false);
   const [fileUploadError, setFileUploadError] = useState(null);
   const [staffData, setStaffData] = useState(null);
+  const { userSubscriptions, activePlans } = useContext(AuthContext);
 
   const [photoPreview, setPhotoPreview] = useState(null);
   const [frontImagePreview, setFrontImagePreview] = useState(null);
@@ -27,8 +33,27 @@ function EditStaff() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (userSubscriptions.length > 0) {
+      const hasStaffPlan = userSubscriptions.some(
+        (subscription) =>
+          subscription.plan_name === "Staff Management" &&
+          activePlans.includes("Staff Management")
+      );
+
+      if (!hasStaffPlan) {
+        alert(
+          "You need to buy or renew to Staff Management plan to access this page."
+        );
+        navigate("/subscription");
+        return;
+      }
+    }
+  }, [activePlans, userSubscriptions]);
+
+  useEffect(() => {
     const fetchStaffData = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${process.env.REACT_APP_ADMIN_API}/staff/staffdata/${id}`,
           { withCredentials: true }
@@ -72,6 +97,8 @@ function EditStaff() {
         }
       } catch (err) {
         console.error("Error fetching staff data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -82,6 +109,7 @@ function EditStaff() {
     setCountries(Country.getAllCountries());
     const fetchPositions = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
           `${process.env.REACT_APP_ADMIN_API}/staff/getstaffpositions`,
           { withCredentials: true }
@@ -89,6 +117,8 @@ function EditStaff() {
         setPositions(response.data); // Update positions state
       } catch (error) {
         console.error("Error fetching positions:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -136,6 +166,7 @@ function EditStaff() {
     validationSchema: editStaff,
     onSubmit: async (values) => {
       try {
+        setLoading(true);
         // Step 1: Upload files
         const formData = new FormData();
         if (values.photo) formData.append("photo", values.photo);
@@ -170,12 +201,14 @@ function EditStaff() {
         setFileUploadError(
           "File upload or staff update failed. Please try again."
         );
+      } finally {
+        setLoading(false);
       }
     },
   });
 
-  if (!staffData) {
-    return <div>Loading...</div>;
+  if (!staffData || loading) {
+    return <Loading />;
   }
 
   return (

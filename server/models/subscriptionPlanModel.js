@@ -19,9 +19,6 @@ const subscriptionPlanSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  compatible_with: {
-    type: Array,
-  },
   created_at: {
     type: Date,
     default: Date.now,

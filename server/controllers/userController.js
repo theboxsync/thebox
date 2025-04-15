@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const { sendEmail } = require("../utils/emailService");
 
 const emailCheck = async (req, res) => {
   try {
@@ -156,6 +157,16 @@ const getUserData = async (req, res) => {
     } else {
       res.send("Null");
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getUserDataByCode = async (req, res) => {
+  try {
+    const { code } = req.params;
+    const userdata = await User.findOne({ restaurant_code: code });
+    res.send(userdata);
   } catch (error) {
     console.log(error);
   }
@@ -341,15 +352,38 @@ const updateTax = async (req, res) => {
   }
 };
 
+const getTokenRole = async (req, res) => {
+  try {
+    const user = req.user;
+    const role = user.Role;
+    res.status(200).json({ role });
+  } catch (error) {
+    console.error("Error getting token role:", error);
+    res.status(500).json({ error: "Internal server error." });
+  }
+};
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("-password");
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching users" });
+  }
+};
+
 module.exports = {
   emailCheck,
   register,
   login,
   logout,
   getUserData,
+  getUserDataByCode,
   sendAdminOtp,
   verifyAdminOtp,
   resetAdminPassword,
   updateUser,
   updateTax,
+  getTokenRole,
+  getAllUsers,
 };

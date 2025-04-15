@@ -143,39 +143,34 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {userSubscription.map(
-                          (subscription) =>
-                            subscription.is_addon === false && (
-                              <tr key={subscription._id}>
-                                <td>{subscription.plan_name}</td>
-                                <td>{formateDate(subscription.start_date)}</td>
-                                <td>{formateDate(subscription.end_date)}</td>
-                                <td>{subscription.status}</td>
-                                <td>
-                                  {subscription.status === "active" && (
-                                    <button
-                                      className="btn btn-primary"
-                                      onClick={() =>
-                                        managePlan(subscription.plan_name)
-                                      }
-                                    >
-                                      Manage
-                                    </button>
-                                  )}
-                                  {subscription.status === "expired" && (
-                                    <button
-                                      className="btn btn-primary"
-                                      onClick={() =>
-                                        renewPlan(subscription._id)
-                                      }
-                                    >
-                                      Renew
-                                    </button>
-                                  )}
-                                </td>
-                              </tr>
-                            )
-                        )}
+                        {userSubscription.map((subscription) => (
+                          <tr key={subscription._id}>
+                            <td>{subscription.plan_name}</td>
+                            <td>{formateDate(subscription.start_date)}</td>
+                            <td>{formateDate(subscription.end_date)}</td>
+                            <td>{subscription.status}</td>
+                            <td>
+                              {subscription.status === "active" && (
+                                <button
+                                  className="btn btn-primary"
+                                  onClick={() =>
+                                    managePlan(subscription.plan_name)
+                                  }
+                                >
+                                  Manage
+                                </button>
+                              )}
+                              {subscription.status === "expired" && (
+                                <button
+                                  className="btn btn-primary"
+                                  onClick={() => renewPlan(subscription._id)}
+                                >
+                                  Renew
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>

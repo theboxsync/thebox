@@ -1,16 +1,13 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
+import { AuthContextProvider } from "../admin/context/AuthContext";
 
 import Login from "../admin/Login";
 import Register from "../admin/Register";
 import Logout from "../admin/components/Logout";
-import ForgotPassword from "../ForgotPassword";
 import ForgotAdminPassword from "../admin/ForgotAdminPassword";
-import OtpVerification from "../OtpVerification";
-import ChangePassword from "../ChangePassword";
-import RegistrationComplete from "../RegistrationComplete";
+import SelectPlan from "../admin/pages/SelectPlan";
 
-// Admin Imports
 import AdminProfile from "../admin/pages/AdminProfile";
 import AdminDashboard from "../admin/pages/AdminDashboard/AdminDashboard";
 import AdminOrderHistory from "../admin/pages/AdminOrderHistory";
@@ -33,6 +30,7 @@ import AdminFeedback from "../admin/pages/AdminFeedback";
 
 import AdminManageManager from "../admin/pages/AdminManageManager";
 import AdminManageQSR from "../admin/pages/AdminManageQSR";
+import AdminManageCaptain from "../admin/pages/AdminManageCaptain";
 
 import PageNotFound from "../admin/PageNotFound";
 
@@ -43,11 +41,9 @@ function AdminRoutes() {
 
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
       <Route path="/logout" element={<Logout />} />
       <Route path="/forgot-password" element={<ForgotAdminPassword />} />
-      <Route path="/otp-verification" element={<OtpVerification />} />
-      <Route path="/change-password" element={<ChangePassword />} />
-      <Route path="/registration-complete" element={<RegistrationComplete />} />
 
       <Route path="/" element={<AdminDashboard />} />
       <Route path="/profile" element={<AdminProfile />} />
@@ -56,7 +52,7 @@ function AdminRoutes() {
       <Route path="/order-details/:id" element={<OrderDetails />} />
       <Route path="/table-management" element={<AdminTable />} />
       <Route path="/manage-menu" element={<AdminManageMenu />} />
-
+      <Route path="/select-plan" element={<SelectPlan />} />
       <Route path="/inventory" element={<AdminInventory />} />
       <Route path="/inventory/complete" element={<CompleteInventory />} />
       <Route path="/inventory/details/:id" element={<InventoryDetails />} />
@@ -89,6 +85,7 @@ function AdminRoutes() {
 
       <Route path="/manage-manager" element={<AdminManageManager />} />
       <Route path="/manage-qsr" element={<AdminManageQSR />} />
+      <Route path="/manage-captain" element={<AdminManageCaptain />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

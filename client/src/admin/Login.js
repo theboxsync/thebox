@@ -29,7 +29,7 @@ export default function Login(props) {
         })
         .then((res) => {
           if (res.data.message === "Logged In") {
-            navigate("/dashboard");
+            window.location.href = `${process.env.REACT_APP_ADMIN_URL}/dashboard`;
           } else {
             setWrongMsg(res.data.message); // Print server response to console
           }

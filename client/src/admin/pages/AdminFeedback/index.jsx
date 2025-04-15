@@ -6,10 +6,13 @@ import Loading from "../../components/Loading";
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
+
+import QrOrUrl from "./QrOrUrl";
 import { Table, Button, Modal, Form } from "react-bootstrap";
 
 const AdminFeedback = () => {
   const [loading, setLoading] = useState(false);
+  const [section, setSection] = useState("see");
   const [feedbacks, setFeedbacks] = useState([]);
   const [showReplyModal, setShowReplyModal] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
@@ -35,7 +38,7 @@ const AdminFeedback = () => {
         alert(response.message);
       }
     } catch (error) {
-        console.error("Error fetching feedbacks:", error);
+      console.error("Error fetching feedbacks:", error);
     }
     setLoading(false);
   };
@@ -91,56 +94,108 @@ const AdminFeedback = () => {
       <div className="content-wrapper">
         <div className="content-header">
           <div className="container-fluid">
-            <h2 className="text-center">Feedback Management</h2>
-            <Table striped bordered hover className="mt-3">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Customer Name</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Rating</th>
-                  <th>Feedback</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {feedbacks.length > 0 ? (
-                  feedbacks.map((feedback, index) => (
-                    <tr key={feedback._id}>
-                      <td>{index + 1}</td>
-                      <td>{feedback.customer_name}</td>
-                      <td>{feedback.customer_email || "N/A"}</td>
-                      <td>{feedback.customer_phone || "N/A"}</td>
-                      <td>{feedback.rating}</td>
-                      <td>{feedback.feedback}</td>
-                      <td>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDelete(feedback._id)}
+            <section className="content" id="viewStaff">
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-12">
+                    <div className="card">
+                      <div className="card-header">
+                        <h3
+                          style={{ fontWeight: "bold" }}
+                          className="card-title"
                         >
-                          Delete
-                        </Button>{" "}
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          onClick={() => handleReply(feedback)}
-                        >
-                          Reply
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="7" className="text-center">
-                      No feedback available.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </Table>
+                          Manage Feedbacks
+                        </h3>
+                        <div className="card-tools">
+                          <button
+                            type="button"
+                            className="btn btn-block btn-dark"
+                            id="addStaffBtn"
+                            onClick={() => {
+                              section === "see"
+                                ? setSection("qr")
+                                : setSection("see");
+                            }}
+                          >
+                            <img src="../dist/img/icon/add.svg" /> Feedback QR
+                          </button>
+                        </div>
+                      </div>
+                      {section === "see" && (
+                        <div>
+                          <h2 className="text-center mt-3">
+                            Feedback Management
+                          </h2>
+                          <div className="m-3">
+                            <Table striped bordered hover className="">
+                              <thead>
+                                <tr>
+                                  <th>#</th>
+                                  <th>Customer Name</th>
+                                  <th>Email</th>
+                                  <th>Phone</th>
+                                  <th>Rating</th>
+                                  <th>Feedback</th>
+                                  <th>Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {feedbacks.length > 0 ? (
+                                  feedbacks.map((feedback, index) => (
+                                    <tr key={feedback._id}>
+                                      <td>{index + 1}</td>
+                                      <td>{feedback.customer_name}</td>
+                                      <td>
+                                        {feedback.customer_email || "N/A"}
+                                      </td>
+                                      <td>
+                                        {feedback.customer_phone || "N/A"}
+                                      </td>
+                                      <td>{feedback.rating}</td>
+                                      <td>{feedback.feedback}</td>
+                                      <td>
+                                        <Button
+                                          variant="danger"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleDelete(feedback._id)
+                                          }
+                                        >
+                                          Delete
+                                        </Button>{" "}
+                                        <Button
+                                          variant="primary"
+                                          size="sm"
+                                          onClick={() => handleReply(feedback)}
+                                        >
+                                          Reply
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan="7" className="text-center">
+                                      No feedback available.
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </Table>
+                          </div>
+                        </div>
+                      )}
+
+                      {section === "qr" && (
+                        <div className="d-flex justify-content-center m-5">
+                          <QrOrUrl />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
         </div>
 

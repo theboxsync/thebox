@@ -77,6 +77,21 @@ const getUserSubscriptionInfo = async (req, res) => {
   }
 };
 
+const getUserSubscriptionInfoById = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).lean();
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const subscriptions = await Subscription.find({ user_id: userId });
+
+    res.status(200).json({ user, subscriptions });
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const buySubscriptionPlan = async (req, res) => {
   try {
     console.log(req.body);
@@ -101,10 +116,12 @@ const buySubscriptionPlan = async (req, res) => {
     // Create a new subscription
     const newSubscription = new Subscription({
       user_id: userId,
-      plan_id: planId,
+      plan_id: planDetails._id,
+      plan_name: planDetails.plan_name,
+      plan_price: planDetails.plan_price,
       start_date: startDate,
       end_date: endDate,
-      status: "active", // Set the initial status to "active"
+      status: "active",
     });
 
     // Save the subscription to the database
@@ -154,11 +171,158 @@ const renewSubscription = async (req, res) => {
   }
 };
 
+const buyCompletePlan = async (req, res) => {
+  try {
+    const userId = req.user;
+    const { planType } = req.body; // Expected: "Core", "Growth", or "Scale"
+    console.log(userId, planType);
+    if (!userId || !planType) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Missing user or plan type." });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
+    }
+
+    // Define plans for each tier
+    const planMapping = {
+      Core: ["Manager"],
+      Growth: [
+        "Manager",
+        "QSR",
+        "Captain Panel",
+        "Staff Management",
+        "Feedback",
+        "Scan For Menu",
+        "Restaurant Website",
+        "Online Order Reconciliation",
+        "Reservation Manager",
+      ],
+      Scale: [
+        "Manager",
+        "QSR",
+        "Captain Panel",
+        "Staff Management",
+        "Feedback",
+        "Scan For Menu",
+        "Restaurant Website",
+        "Online Order Reconciliation",
+        "Reservation Manager",
+        "Payroll By Us",
+        "Dynamic Reports",
+      ],
+    };
+
+    const selectedPlanNames = planMapping[planType];
+    if (!selectedPlanNames) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid plan type." });
+    }
+
+    // Fetch all plan documents
+    const selectedPlans = await SubscriptionPlan.find({
+      plan_name: { $in: selectedPlanNames },
+    });
+
+    if (selectedPlans.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No plans found." });
+    }
+
+    const startDate = new Date();
+    const createdSubscriptions = [];
+
+    for (const plan of selectedPlans) {
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + plan.plan_duration);
+
+      // Check if already subscribed and active
+      const existing = await Subscription.findOne({
+        user_id: userId,
+        plan_id: plan._id,
+        status: "active",
+      });
+
+      if (!existing) {
+        const newSubscription = new Subscription({
+          user_id: userId,
+          plan_id: plan._id,
+          plan_name: plan.plan_name,
+          plan_price: plan.plan_price,
+          start_date: startDate,
+          end_date: endDate,
+          status: "active",
+        });
+
+        const savedSub = await newSubscription.save();
+        createdSubscriptions.push(savedSub);
+      }
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { purchasedPlan: planType },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    await updatedUser.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Plan(s) subscribed successfully.",
+      subscriptions: createdSubscriptions,
+    });
+  } catch (error) {
+    console.error("Error in buyCompletePlan:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+const getAllSubscriptions = async (req, res) => {
+  try {
+    const users = await User.find({});
+    const subscriptions = await Subscription.find({});
+
+    const data = users.map((user) => {
+      const userSubscriptions = subscriptions.filter(
+        (sub) => sub.user_id === user._id.toString()
+      );
+      return {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        mobile: user.mobile,
+        restaurant_code: user.restaurant_code,
+        subscriptions: userSubscriptions,
+      };
+    });
+
+    res.status(200).json(data);
+  } catch (error) {
+    console.error("Error fetching user subscriptions:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 module.exports = {
   addSubscriptionPlan,
   getSubscriptionPlans,
   getAddonPlans,
   getUserSubscriptionInfo,
+  getUserSubscriptionInfoById,
   buySubscriptionPlan,
   renewSubscription,
+  buyCompletePlan,
+  getAllSubscriptions,
 };

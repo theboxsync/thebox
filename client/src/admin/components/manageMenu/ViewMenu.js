@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import DeleteDishModal from "./DeleteDishModal";
 import EditDishModal from "./EditDishModal";
 import SpecialDishModal from "./SpecialDishModal";
 import RemoveSpecialModal from "./RemoveSpecialModal";
 import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
+import { AuthContext } from "../../context/AuthContext";
 
 function ViewMenu({ setSection }) {
+  const { activePlans } = useContext(AuthContext);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSpecialModal, setShowSpecialModal] = useState(false);
@@ -137,7 +139,7 @@ function ViewMenu({ setSection }) {
               <div className="card">
                 <div className="card-header">
                   <h3 className="card-title">View Menu</h3>
-                  <div className="card-tools">
+                  <div className="card-tools mx-2">
                     <button
                       type="button"
                       className="btn btn-block btn-dark"
@@ -147,6 +149,19 @@ function ViewMenu({ setSection }) {
                       <img src="../../dist/img/add.svg" alt="Add" /> Add Dishes
                     </button>
                   </div>
+                  {/* {activePlans.includes("Scan For Menu") && ( */}
+                    <div className="card-tools mx-2">
+                      <button
+                        type="button"
+                        className="btn btn-block btn-dark"
+                        id="addBtn"
+                        onClick={() => setSection("QrForMenu")}
+                      >
+                        <img src="../../dist/img/add.svg" alt="Add" /> QR for
+                        Menu
+                      </button>
+                    </div>
+                  {/* )} */}
                 </div>
               </div>
             </div>

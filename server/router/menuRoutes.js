@@ -17,6 +17,7 @@ const menuRouter = express.Router();
 
 menuRouter.route("/addmenu").post(authMiddleware, adminAuth, addMenu);
 menuRouter.route("/getmenudata").get(authMiddleware, getMenuData);
+menuRouter.route("/getmenu/:id").get(authMiddleware, getMenuData);
 menuRouter.route("/getmenudata/:id").get(getMenuDataById);
 menuRouter.route("/getmenucategories").get(authMiddleware, getMenuCategories);
 menuRouter.route("/updatemenu/:id").put(authMiddleware, adminAuth, updateMenu);
