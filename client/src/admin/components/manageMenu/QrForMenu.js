@@ -46,7 +46,7 @@ const QrForMenu = ({ setSection }) => {
     newWindow.close();
   };
 
-  const menuLink = `http://menu.localhost:3000/${restaurant_code}`;
+  const menuLink = `${process.env.REACT_APP_MENU_URL}/${restaurant_code}`;
 
   if (isLoading) {
     return <Loading />;
