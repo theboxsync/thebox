@@ -22,7 +22,7 @@ const Pricing = () => {
     e.preventDefault();
     console.log(formData);
     axios
-      .post(`${process.env.REACT_APP_ADMIN_API}/inquiry/create`, formData)
+      .post(`${process.env.REACT_APP_API}/inquiry/create`, formData)
       .then((res) => {
         if (res.data.success) {
           alert(res.data.message);
