@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import Loading from "../Loading";
 import PlanCard from "../ShowPlanCard";
 
 function DashboardSection({ setMainSection, setTableId, setOrderId }) {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);

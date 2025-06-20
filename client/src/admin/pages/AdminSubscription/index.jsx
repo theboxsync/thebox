@@ -121,6 +121,8 @@ function AdminSubscription() {
       navigate("/manage-online-order-reconciliation");
     } else if (planName === "Reservation Manager") {
       navigate("/manage-reservation-manager");
+    } else if (planName === "Payroll By The Box") {
+      navigate("/manage-payroll");
     }
   };
 

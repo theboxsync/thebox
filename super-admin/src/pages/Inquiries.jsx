@@ -12,6 +12,9 @@ const Inquiries = () => {
         `${import.meta.env.VITE_APP_API_URL}/api/inquiry/getall`,
         { withCredentials: true }
       );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
       setInquiries(response.data);
     } catch (error) {
       console.error("Failed to fetch inquiries:", error);
@@ -22,11 +25,14 @@ const Inquiries = () => {
 
   const updateStatus = async (id, newStatus) => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `${import.meta.env.VITE_APP_API_URL}/api/inquiry/updatestatus/${id}`,
         { status: newStatus },
         { withCredentials: true }
       );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
       fetchInquiries(); // Refresh data
     } catch (error) {
       console.error("Failed to update status:", error);

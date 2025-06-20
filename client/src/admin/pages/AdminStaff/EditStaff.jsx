@@ -1,8 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
+
+import { Modal } from "react-bootstrap";
+import * as faceapi from "face-api.js";
+import Webcam from "react-webcam";
 
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
@@ -30,7 +34,31 @@ function EditStaff() {
   const [cities, setCities] = useState([]);
   const [positions, setPositions] = useState([]);
 
+  const [showFaceModal, setShowFaceModal] = useState(false);
+  const webcamRef = useRef(null);
+  const [faceDescriptor, setFaceDescriptor] = useState(null);
+
+  const [faceBox, setFaceBox] = useState(null);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
+
+  const [captureStatus, setCaptureStatus] = useState("none"); // "none", "success", "error"
+  const [captureErrorMessage, setCaptureErrorMessage] = useState("");
+
   const navigate = useNavigate();
+
+  const loadModels = async () => {
+    // await faceapi.nets.tinyYolov2.loadFromUri("/models");
+    await faceapi.nets.tinyFaceDetector.loadFromUri("/models");
+    await faceapi.nets.faceRecognitionNet.loadFromUri("/models");
+    await faceapi.nets.faceLandmark68Net.loadFromUri("/models");
+  };
+
+  useEffect(() => {
+    loadModels().then(() => {
+      console.log("Models loaded");
+    });
+  }, []);
 
   useEffect(() => {
     if (userSubscriptions.length > 0) {
@@ -125,6 +153,51 @@ function EditStaff() {
     fetchPositions();
   }, []);
 
+  useEffect(() => {
+    let interval;
+    const detectFace = async () => {
+      if (
+        webcamRef.current &&
+        webcamRef.current.video.readyState === 4 &&
+        faceapi.nets.tinyFaceDetector.params
+      ) {
+        const video = webcamRef.current.video;
+        const detection = await faceapi
+          .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+          .withFaceLandmarks()
+          .withFaceDescriptor();
+
+        const canvas = document.getElementById("faceCanvas");
+        const dims = faceapi.matchDimensions(canvas, video, true);
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        if (detection) {
+          const resized = faceapi.resizeResults(detection, dims);
+          faceapi.draw.drawDetections(canvas, resized);
+          setFaceBox(resized.detection.box);
+        } else {
+          setFaceBox(null);
+        }
+      }
+    };
+
+    if (showFaceModal) {
+      setIsDetecting(true);
+      interval = setInterval(detectFace, 300); // scan every 300ms
+    }
+
+    return () => {
+      setIsDetecting(false);
+      clearInterval(interval);
+      const clearCanvas = document.getElementById("faceCanvas");
+      if (clearCanvas) {
+        const ctx = clearCanvas.getContext("2d");
+        ctx.clearRect(0, 0, clearCanvas.width, clearCanvas.height);
+      }
+    };
+  }, [showFaceModal]);
+
   const handleCountryChange = (event) => {
     const countryIsoCode = event.target.value;
     formik.setFieldValue("country", countryIsoCode);
@@ -167,7 +240,10 @@ function EditStaff() {
     onSubmit: async (values) => {
       try {
         setLoading(true);
-        // Step 1: Upload files
+        if (faceDescriptor) {
+          values.face_encoding = faceDescriptor;
+        }
+
         const formData = new FormData();
         if (values.photo) formData.append("photo", values.photo);
         if (values.front_image)
@@ -175,7 +251,7 @@ function EditStaff() {
         if (values.back_image) formData.append("back_image", values.back_image);
 
         const uploadResponse = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/uploadstaff`,
+          `${process.env.REACT_APP_ADMIN_API}/upload/uploadstaff`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },
@@ -206,6 +282,30 @@ function EditStaff() {
       }
     },
   });
+
+  const handleFaceCapture = async () => {
+    try {
+      const screenshot = webcamRef.current.getScreenshot();
+      const img = await faceapi.fetchImage(screenshot);
+      const detection = await faceapi
+        .detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks()
+        .withFaceDescriptor();
+
+      if (detection) {
+        const descriptorArray = Array.from(detection.descriptor);
+        setFaceDescriptor(descriptorArray);
+        setCaptureStatus("success");
+        setCaptureErrorMessage("");
+      } else {
+        setCaptureStatus("error");
+        setCaptureErrorMessage("No face detected. Please try again.");
+      }
+    } catch (err) {
+      setCaptureStatus("error");
+      setCaptureErrorMessage("Error capturing face. Try again.");
+    }
+  };
 
   if (!staffData || loading) {
     return <Loading />;
@@ -661,6 +761,65 @@ function EditStaff() {
                   </div>
                 </div>
 
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="card card-secondary">
+                      <div className="card-header">
+                        <h3 className="card-title">Face Capture</h3>
+                      </div>
+                      <div className="card-body d-flex flex-column align-items-center">
+                        {captureStatus === "success" ? (
+                          <div className="alert alert-success">
+                            Face captured successfully. You can now update the
+                            staff record.
+                          </div>
+                        ) : captureStatus === "error" ? (
+                          <div className="alert alert-danger">
+                            {captureErrorMessage}
+                          </div>
+                        ) : staffData.face_encoding &&
+                          staffData.face_encoding.length > 0 ? (
+                          <div className="alert alert-info">
+                            Face data is already captured. You can recapture if
+                            needed.
+                          </div>
+                        ) : (
+                          <div className="alert alert-warning">
+                            Face data not captured yet. Please capture to
+                            proceed.
+                          </div>
+                        )}
+                        {captureStatus === "success" ? (
+                          <div className="mx-3">
+                            <button
+                              type="submit"
+                              className="btn btn-primary mt-3 float-right"
+                            >
+                              Update
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            className={`btn ${
+                              staffData.face_encoding &&
+                              staffData.face_encoding.length > 0
+                                ? "btn-warning"
+                                : "btn-dark"
+                            } ml-3`}
+                            onClick={() => setShowFaceModal(true)}
+                          >
+                            {staffData.face_encoding &&
+                            staffData.face_encoding.length > 0
+                              ? "Recapture Face"
+                              : "Capture Now"}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {fileUploadError && (
                   <div className="alert alert-danger mt-3">
                     {fileUploadError}
@@ -672,6 +831,86 @@ function EditStaff() {
         </div>
         <Footer />
       </div>
+      <Modal
+        show={showFaceModal}
+        onHide={() => setShowFaceModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Face Capture</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="d-flex flex-column align-items-center">
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: "640px",
+              aspectRatio: "4 / 3", // Enforces 4:3 webcam shape
+              margin: "0 auto", // Center it
+              background: "#000", // Prevent visual flicker
+            }}
+          >
+            <Webcam
+              ref={webcamRef}
+              audio={false}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{
+                facingMode: "user",
+              }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                zIndex: 1,
+                borderRadius: "8px",
+              }}
+            />
+
+            <canvas
+              id="faceCanvas"
+              width={640}
+              height={480}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                zIndex: 2,
+                pointerEvents: "none",
+              }}
+            />
+          </div>
+
+          <button
+            type="button"
+            className="btn btn-dark mt-4"
+            disabled={!faceBox || isCapturing}
+            onClick={async () => {
+              setIsCapturing(true);
+              await handleFaceCapture();
+              setIsCapturing(false);
+              setShowFaceModal(false);
+            }}
+          >
+            {isCapturing ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Capturing...
+              </>
+            ) : (
+              "Capture Face"
+            )}
+          </button>
+        </Modal.Body>
+      </Modal>
     </>
   );
 }

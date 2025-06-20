@@ -152,7 +152,37 @@ const getUserData = async (req, res) => {
   try {
     if (req.user != null) {
       const user = req.user;
-      const userdata = await User.findOne({ _id: user._id });
+      const fetchuser = await User.findOne({ _id: user._id });
+      const userdata = {};
+      if(req.user.Role === "Admin") {
+        userdata.restaurant_code = fetchuser.restaurant_code;
+        userdata.name = fetchuser.name;
+        userdata.logo = fetchuser.logo;
+        userdata.gst_no = fetchuser.gst_no;
+        userdata.email = fetchuser.email;
+        userdata.mobile = fetchuser.mobile;
+        userdata.address = fetchuser.address;
+        userdata.country = fetchuser.country;
+        userdata.state = fetchuser.state;
+        userdata.city = fetchuser.city;
+        userdata.pincode = fetchuser.pincode;
+        userdata.createdAt = fetchuser.createdAt;
+        userdata.taxInfo = fetchuser.taxInfo;
+        userdata.containerCharges = fetchuser.containerCharges;
+        userdata.purchasedPlan = fetchuser.purchasedPlan;
+      } else {
+        userdata.restaurant_code = fetchuser.restaurant_code;
+        userdata.name = fetchuser.name;
+        userdata.logo = fetchuser.logo;
+        userdata.email = fetchuser.email;
+        userdata.mobile = fetchuser.mobile;
+        userdata.address = fetchuser.address;
+        userdata.country = fetchuser.country;
+        userdata.state = fetchuser.state;
+        userdata.city = fetchuser.city;
+        userdata.pincode = fetchuser.pincode;
+      }
+
       res.send(userdata);
     } else {
       res.send("Null");

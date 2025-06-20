@@ -8,6 +8,7 @@ import ManagerRoutes from "./router/ManagerRoutes";
 import QsrRoutes from "./router/QsrRoutes";
 import CaptainRoutes from "./router/CaptainRoutes";
 import ScanForMenuRoutes from "./router/ScanForMenuRoutes";
+import AttendanceRoutes from "./router/AttendanceRoutes";
 
 import { AuthContextProvider } from "./admin/context/AuthContext";
 
@@ -29,6 +30,8 @@ export default function App() {
     routes = <CaptainRoutes />;
   } else if (hostname.startsWith("menu")) {
     routes = <ScanForMenuRoutes />;
+  } else if (hostname.startsWith("attendance")) {
+    routes = <AttendanceRoutes />;
   } else {
     routes = <AllRoutes />;
   }

@@ -85,28 +85,6 @@ const userSchema = new Schema({
   purchasedPlan: {
     type: String,
   },
-
-  // username: {
-  //   type: String,
-  // },
-  // password: {
-  //   type: String,
-  // },
-  // start_date: {
-  //   type: Date,
-  // },
-  // end_date: {
-  //   type: Date,
-  // },
-  // otp: {
-  //   type: Number,
-  // },
-  // email_verification: {
-  //   type: Number,
-  // },
-  // active: {
-  //   type: Number,
-  // },
 });
 
 userSchema.pre("save", async function (next) {

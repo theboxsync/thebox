@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { addMenu } from "../../../schemas";
@@ -36,6 +36,7 @@ function AddMenu({ setSection }) {
         {
           dish_name: "",
           dish_price: "",
+          dish_img: null,
           description: "",
           quantity: "",
           unit: "",
@@ -43,19 +44,53 @@ function AddMenu({ setSection }) {
       ],
     },
     validationSchema: addMenu,
-    onSubmit: (values) => {
-      console.log("Submitted", values);
-      axios
-        .post(`${process.env.REACT_APP_ADMIN_API}/menu/addmenu`, values, {
-          withCredentials: true,
-        })
-        .then((res) => {
-          console.log(res.data);
-          setSection("ViewMenu");
-        })
-        .catch((err) => {
-          console.log(err);
+    onSubmit: async (values) => {
+      try {
+        const dishImageFormData = new FormData();
+
+        // Append each file to formData
+        values.dishes.forEach((dish, index) => {
+          if (dish.dish_img instanceof File) {
+            dishImageFormData.append("dish_imgs", dish.dish_img);
+          }
         });
+
+        // Upload images first
+        const uploadRes = await axios.post(
+          `${process.env.REACT_APP_ADMIN_API}/upload/uploadmenuimages`,
+          dishImageFormData,
+          {
+            withCredentials: true,
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+
+        const uploadedFilenames = uploadRes.data.filenames;
+
+        // Replace File objects with uploaded filenames
+        const updatedDishes = values.dishes.map((dish, idx) => ({
+          ...dish,
+          dish_img: uploadedFilenames[idx] || "", // match by index
+        }));
+
+        // Send menu data
+        const payload = {
+          ...values,
+          dishes: updatedDishes,
+        };
+
+        const saveRes = await axios.post(
+          `${process.env.REACT_APP_ADMIN_API}/menu/addmenu`,
+          payload,
+          { withCredentials: true }
+        );
+
+        console.log("Saved:", saveRes.data);
+        setSection("ViewMenu");
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Something went wrong while adding the menu.");
+      }
     },
     context: { showAdvancedOptions },
   });
@@ -71,6 +106,7 @@ function AddMenu({ setSection }) {
       {
         dish_name: "",
         dish_price: "",
+        dish_img: null,
         description: "",
         quantity: "",
         unit: "",
@@ -138,7 +174,6 @@ function AddMenu({ setSection }) {
         <div className="row">
           <div className="col-md-12">
             <div className="card card-secondary m-3">
-              
               {/* form start  */}
               <form
                 autoComplete="off"
@@ -204,7 +239,7 @@ function AddMenu({ setSection }) {
                       </ButtonGroup>
                     </div>
                   </div>
-                  <hr style={{ borderTop: "2px solid lightgrey" }}/>
+                  <hr style={{ borderTop: "2px solid lightgrey" }} />
                   {formik.values.dishes.map((dish, index) => (
                     <div key={index} className="px-3 ">
                       <div className="row">
@@ -259,6 +294,32 @@ function AddMenu({ setSection }) {
                         </div>
                       </div>
                       <div className="row my-3">
+                        <div className="form-group col-md-4 mb-0">
+                          <label htmlFor={`dishes.${index}.dish_img`}>
+                            Image
+                          </label>
+                          <input
+                            type="file"
+                            className="form-control"
+                            name={`dishes.${index}.dish_img`}
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (!file) return;
+
+                              const updatedDishes = [...formik.values.dishes];
+                              updatedDishes[index].dish_img = file; // Save actual File object (not string)
+                              formik.setFieldValue("dishes", updatedDishes);
+                            }}
+                          />
+
+                          <label className="text-danger">
+                            {formik.errors.dishes?.[index]?.dish_img &&
+                            formik.touched.dishes?.[index]?.dish_img
+                              ? formik.errors.dishes[index].dish_img
+                              : null}
+                          </label>
+                        </div>
                         <div className="form-group col-md-4 mb-0">
                           <label htmlFor={`dishes.${index}.description`}>
                             Description

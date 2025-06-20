@@ -7,7 +7,7 @@ const addStaff = new Schema({
   f_name: {
     type: String,
   },
-  l_name:{
+  l_name: {
     type: String,
   },
   birth_date: {
@@ -55,9 +55,33 @@ const addStaff = new Schema({
   back_image: {
     type: String,
   },
-  hotel_id: {
+  face_encoding: {
+    type: [Number], // An array of numbers representing the face encoding vector
+    default: [],
+  },
+  face_embeddings: {
+    type: [Number],
+    default: [],
+  },
+  restaurant_id: {
     type: String,
   },
+  attandance: [
+    {
+      date: {
+        type: String,
+      },
+      status: {
+        type: String,
+      },
+      in_time: {
+        type: String,
+      },
+      out_time: {
+        type: String,
+      },
+    },
+  ],
 });
 
 const Staff = mongoose.model("staff", addStaff);

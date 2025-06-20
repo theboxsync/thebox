@@ -7,6 +7,8 @@ const {
   getUserSubscriptionInfo,
   getUserSubscriptionInfoById,
   buySubscriptionPlan,
+  pauseSubscriptions,
+  expandSubscriptions,
   renewSubscription,
   buyCompletePlan,
   getAllSubscriptions,
@@ -35,6 +37,14 @@ subscriptionRouter
 subscriptionRouter
   .route("/buysubscriptionplan")
   .post(authMiddleware, buySubscriptionPlan);
+
+subscriptionRouter
+  .route("/pause")
+  .post(authMiddleware, pauseSubscriptions);
+
+subscriptionRouter
+  .route("/expand")
+  .post(authMiddleware, expandSubscriptions);
 
 subscriptionRouter
   .route("/renewsubscription")

@@ -8,7 +8,7 @@ const {
   uploadBillFiles,
 } = require("../controllers/upload-controller");
 
-const router = express.Router();
+const uploadRouter = express.Router();
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -21,7 +21,10 @@ const storage = multer.diskStorage({
       file.fieldname === "back_image"
     ) {
       uploadPath = path.join(uploadPath, "staff/id_cards");
+    } else if (file.fieldname.includes("dish_img")) {
+      uploadPath = path.join(uploadPath, "menu/dishes");
     }
+
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
@@ -34,10 +37,10 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Route for uploading the logo
-router.post("/uploadlogo", upload.single("logo"), uploadLogo);
+uploadRouter.post("/uploadlogo", upload.single("logo"), uploadLogo);
 
 // Route for uploading staff details and photos
-router.post(
+uploadRouter.post(
   "/uploadstaff",
   upload.fields([
     { name: "photo" },
@@ -47,6 +50,27 @@ router.post(
   uploadStaff
 );
 
-router.post("/uploadbillfiles", uploadBillFiles);
+uploadRouter.post("/uploadbillfiles", uploadBillFiles);
 
-module.exports = router;
+uploadRouter.post(
+  "/uploadmenuimages",
+  multer({
+    storage: multer.diskStorage({
+      destination: (req, file, cb) => {
+        const dir = path.join(__dirname, "../uploads/menu");
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+      },
+      filename: (req, file, cb) => {
+        const uniqueName = Date.now() + path.extname(file.originalname);
+        cb(null, uniqueName);
+      },
+    }),
+  }).array("dish_imgs"),
+  (req, res) => {
+    const filenames = req.files.map((f) => f.filename);
+    res.json({ filenames }); // send array of filenames
+  }
+);
+
+module.exports = uploadRouter;

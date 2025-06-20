@@ -46,7 +46,7 @@ function AddStaff({ setSection }) {
         if (values.back_image) formData.append("back_image", values.back_image);
 
         const uploadResponse = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/uploadstaff`,
+          `${process.env.REACT_APP_ADMIN_API}/upload/uploadstaff`,
           formData,
           {
             headers: { "Content-Type": "multipart/form-data" },

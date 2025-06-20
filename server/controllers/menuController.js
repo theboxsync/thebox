@@ -1,44 +1,62 @@
 const Menu = require("../models/menuListModel");
 
-const addMenu = (req, res) => {
+const addMenu = async (req, res) => {
   try {
-    console.log(req.body);
-    const menuData = { ...req.body, hotel_id: req.user };
-    const category = req.body.category;
-    const mealType = req.body.meal_type;
+    const hotel_id = req.user;
+    const { category, meal_type, dishes } = req.body;
 
-    Menu.findOne({
-      category: category,
-      meal_type: mealType,
-      hotel_id: req.user,
-    })
-      .then((data) => {
-        if (data) {
-          Menu.findOneAndUpdate(
-            { category: category, meal_type: mealType, hotel_id: req.user },
-            {
-              $push: { dishes: req.body.dishes },
-            }
-          )
-            .then((data) => res.json(data))
-            .catch((err) => res.json(err));
-        } else {
-          Menu.create(menuData)
-            .then((data) => res.json(data))
-            .catch((err) => res.json(err));
-        }
-      })
-      .catch((err) => res.json(err));
+    if (!category || !meal_type || !Array.isArray(dishes)) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Parse dishes if sent as JSON string
+    const parsedDishes =
+      typeof dishes === "string" ? JSON.parse(dishes) : dishes;
+
+    const menuData = {
+      category,
+      meal_type,
+      hotel_id,
+    };
+
+    // Check if menu already exists
+    const existingMenu = await Menu.findOne({
+      category,
+      meal_type,
+      hotel_id,
+    });
+
+    if (existingMenu) {
+      // Add new dishes to existing menu
+      existingMenu.dishes.push(...parsedDishes);
+      await existingMenu.save();
+      return res
+        .status(200)
+        .json({ message: "Menu updated", data: existingMenu });
+    } else {
+      // Create new menu
+      const newMenu = new Menu({
+        ...menuData,
+        dishes: parsedDishes,
+      });
+      await newMenu.save();
+      return res.status(201).json({ message: "Menu created", data: newMenu });
+    }
   } catch (error) {
-    console.log(error);
+    console.error("Error adding menu:", error);
+    return res
+      .status(500)
+      .json({ message: "Server error", error: error.message });
   }
 };
 
 const getMenuData = async (req, res) => {
   try {
     const { mealType, category, searchText } = req.query;
-    
-    const query = req.params.id ? { hotel_id: req.params.id } : { hotel_id: req.user };
+
+    const query = req.params.id
+      ? { hotel_id: req.params.id }
+      : { hotel_id: req.user };
     console.log(req.params.id);
 
     if (mealType) {
@@ -50,7 +68,7 @@ const getMenuData = async (req, res) => {
     }
 
     if (searchText) {
-      query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; 
+      query["dishes.dish_name"] = { $regex: searchText, $options: "i" };
     }
 
     const menuData = await Menu.find(query);
@@ -74,7 +92,7 @@ const getMenuData = async (req, res) => {
 //     }
 
 //     if (searchText) {
-//       query["dishes.dish_name"] = { $regex: searchText, $options: "i" }; 
+//       query["dishes.dish_name"] = { $regex: searchText, $options: "i" };
 //     }
 
 //     const menuData = await Menu.find(query);
@@ -110,25 +128,33 @@ const getMenuDataById = (req, res) => {
   }
 };
 
-const updateMenu = (req, res) => {
+const updateMenu = async (req, res) => {
   try {
     const dishId = req.params.id;
-    const { dish_name, dish_price } = req.body; // Extract only the fields to be updated
+    const { dish_name, dish_price, description, quantity, unit, dish_img } =
+      req.body;
 
-    Menu.updateOne(
-      { "dishes._id": dishId }, // Find the menu document containing the dish with the specified ID
-      {
-        $set: {
-          "dishes.$.dish_name": dish_name, // Update the dish name
-          "dishes.$.dish_price": dish_price, // Update the dish price
-        },
-      }
-    )
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
+    const updateFields = {
+      "dishes.$.dish_name": dish_name,
+      "dishes.$.dish_price": dish_price,
+      "dishes.$.description": description,
+      "dishes.$.quantity": quantity,
+      "dishes.$.unit": unit,
+    };
+
+    if (dish_img) {
+      updateFields["dishes.$.dish_img"] = dish_img;
+    }
+
+    const result = await Menu.updateOne(
+      { "dishes._id": dishId },
+      { $set: updateFields }
+    );
+
+    res.json({ success: true, message: "Dish updated", result });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("An error occurred");
+    console.error("Error updating menu:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 

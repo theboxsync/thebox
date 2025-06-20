@@ -37,7 +37,7 @@ function AddInventory({ setSection }) {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/uploadbillfiles`,
+        `${process.env.REACT_APP_ADMIN_API}/upload/uploadbillfiles`,
         formData,
         {
           withCredentials: true,

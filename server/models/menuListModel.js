@@ -38,8 +38,12 @@ const addMenu = new Schema({
         type: Boolean,
         default: true,
       },
-    }
-  ]
+    },
+  ],
+  show_on_website: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Menu = mongoose.model("menulist", addMenu);

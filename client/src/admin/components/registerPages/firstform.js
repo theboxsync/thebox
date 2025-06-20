@@ -23,7 +23,7 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
         const formData = new FormData();
         formData.append("logo", values.logo);
         const uploadResponse = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API}/uploadlogo`,
+          `${process.env.REACT_APP_ADMIN_API}/upload/uploadlogo`,
           formData,
           {
             headers: {

@@ -21,6 +21,8 @@ import UpdateCompletedInventory from "../admin/pages/AdminInventory/UpdateComple
 import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
+import ManageAttendance from "../admin/pages/AdminManagePayroll/ManageAttendance";
+import ViewAttandance from "../admin/pages/AdminManagePayroll/ViewAttandance";
 import AdminTable from "../admin/pages/AdminTable";
 import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
 import ChangeQsrPassword from "../admin/pages/AdminDashboard/ChangeQsrPassword";
@@ -31,6 +33,9 @@ import AdminFeedback from "../admin/pages/AdminFeedback";
 import AdminManageManager from "../admin/pages/AdminManageManager";
 import AdminManageQSR from "../admin/pages/AdminManageQSR";
 import AdminManageCaptain from "../admin/pages/AdminManageCaptain";
+import AdminManagePayroll from "../admin/pages/AdminManagePayroll";
+
+import ManageWebsite from "../admin/pages/ManageWebsite";
 
 import PageNotFound from "../admin/PageNotFound";
 
@@ -70,6 +75,9 @@ function AdminRoutes() {
       />
       <Route path="/staff" element={<AdminStaff />} />
       <Route path="/staff/update/:id" element={<EditStaff />} />
+      <Route path="/staff/attendance" element={<ManageAttendance />} />
+      <Route path="/staff/attendance/:id" element={<ViewAttandance />} />
+
       <Route path="/table-booking" element={<AdminTable />} />
 
       <Route path="/subscription" element={<AdminSubscription />} />
@@ -86,6 +94,9 @@ function AdminRoutes() {
       <Route path="/manage-manager" element={<AdminManageManager />} />
       <Route path="/manage-qsr" element={<AdminManageQSR />} />
       <Route path="/manage-captain" element={<AdminManageCaptain />} />
+      <Route path="/manage-payroll" element={<AdminManagePayroll />} />
+
+      <Route path="/manage-restaurant-website" element={<ManageWebsite />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

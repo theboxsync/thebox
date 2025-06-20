@@ -20,6 +20,7 @@ export const AuthContextProvider = ({ children }) => {
       if (response.data === "Null") {
         navigate("/login");
       } else {
+        console.log("User Data : ", response.data);
         setUser(response.data);
       }
     } catch (error) {

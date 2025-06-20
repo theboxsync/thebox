@@ -1,0 +1,42 @@
+{
+  "name": "react",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "main": "src/index.tsx",
+  "dependencies": {
+    "@formatjs/intl-numberformat": "8.15.4",
+    "@fortawesome/fontawesome-svg-core": "6.7.2",
+    "@fortawesome/free-solid-svg-icons": "6.7.2",
+    "@fortawesome/react-fontawesome": "0.2.2",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "react": "^19.0.0",
+    "react-bootstrap": "2.10.9",
+    "react-dom": "^19.0.0",
+    "react-scripts": "^5.0.0",
+    "react-scroll-to-top": "3.0.0",
+    "slick-carousel-latest": "1.9.0",
+    "styled-components": "6.1.17",
+    "swiper": "11.2.6",
+    "swiper-bundle": "0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "loader-utils": "3.2.1",
+    "typescript": "5.7.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
+}

@@ -2,18 +2,18 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = async (req, res, next) => {
   try {
-    const token = req.cookies.jwttoken;
+    const token = req.cookies.jwttoken || req.cookies.superadmin_token;
 
     if (token) {
       const user = jwt.verify(token, process.env.JWT_SECRETKEY);
-      console.log("Middleware : ", user);
       req.user = user;
     } else {
       req.user = null;
     }
     next();
   } catch (error) {
-    console.log(error);
+    console.log(error.message);
+    res.send("Null");
   }
 };
 

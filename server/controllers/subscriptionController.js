@@ -137,6 +137,47 @@ const buySubscriptionPlan = async (req, res) => {
   }
 };
 
+const pauseSubscriptions = async (req, res) => {
+  try {
+    const { subscriptionIds } = req.body;
+
+    if (!subscriptionIds || subscriptionIds.length === 0) {
+      return res.status(400).json({ message: "No subscription IDs provided" });
+    }
+
+    const result = await Subscription.updateMany(
+      { _id: { $in: subscriptionIds } },
+      { $set: { status: "paused" } }
+    );
+
+    res.status(200).json({ message: "Subscriptions paused", result });
+  } catch (error) {
+    console.error("Error pausing subscriptions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const expandSubscriptions = async (req, res) => {
+  try {
+    const { subscriptionIds, newEndDate } = req.body;
+    console.log(req.body);
+
+    if (!subscriptionIds || subscriptionIds.length === 0 || !newEndDate) {
+      return res.status(400).json({ message: "Missing subscription data" });
+    }
+
+    const result = await Subscription.updateMany(
+      { _id: { $in: subscriptionIds } },
+      { $set: { end_date: newEndDate, status: "active" } }
+    );
+
+    res.status(200).json({ message: "Subscriptions extended", result });
+  } catch (error) {
+    console.error("Error updating subscriptions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const renewSubscription = async (req, res) => {
   try {
     const { subscriptionId } = req.body;
@@ -211,7 +252,7 @@ const buyCompletePlan = async (req, res) => {
         "Restaurant Website",
         "Online Order Reconciliation",
         "Reservation Manager",
-        "Payroll By Us",
+        "Payroll By The Box",
         "Dynamic Reports",
       ],
     };
@@ -322,6 +363,8 @@ module.exports = {
   getUserSubscriptionInfo,
   getUserSubscriptionInfoById,
   buySubscriptionPlan,
+  pauseSubscriptions,
+  expandSubscriptions,
   renewSubscription,
   buyCompletePlan,
   getAllSubscriptions,

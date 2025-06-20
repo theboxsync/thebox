@@ -4,6 +4,8 @@ import axios from "axios";
 import StaffProfileModal from "./StaffProfileModal";
 import StaffDeleteModal from "./StaffDeleteModal";
 
+import { MdManageAccounts } from "react-icons/md";
+
 function ViewStaff({ setSection }) {
   const [staff, setStaff] = useState([]);
   const [selectedStaffData, setSelectedStaffData] = useState({});

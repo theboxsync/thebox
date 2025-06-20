@@ -6,6 +6,13 @@ import DeleteContainerModal from "./DeleteContainerModal";
 
 function SettingsDashboard() {
   const [userData, setUserData] = useState("");
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editableProfile, setEditableProfile] = useState({
+    name: "",
+    logo: "",
+    gst_no: "",
+  });
+  const [logoFile, setLogoFile] = useState(null);
   const [taxInfo, setTaxInfo] = useState({ cgst: 0, sgst: 0 });
   const [isEditingTax, setIsEditingTax] = useState(false);
   const [isEditingContact, setIsEditingContact] = useState(false);
@@ -48,6 +55,11 @@ function SettingsDashboard() {
         navigate("/login");
       } else {
         setUserData(response.data);
+        setEditableProfile({
+          name: response.data.name || "",
+          logo: response.data.logo || "",
+          gst_no: response.data.gst_no || "",
+        });
         setTaxInfo(response.data.taxInfo || { cgst: 0, sgst: 0 });
         setEditableContact({
           mobile: response.data.mobile,
@@ -69,6 +81,56 @@ function SettingsDashboard() {
     } catch (error) {
       console.log("Error fetching user data:", error);
     }
+  };
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setEditableProfile({ ...editableProfile, [name]: value });
+  };
+
+  const handleLogoChange = (e) => {
+    setLogoFile(e.target.files[0]);
+  };
+
+  const uploadLogo = async () => {
+    if (!logoFile) return null;
+    const formData = new FormData();
+    formData.append("logo", logoFile);
+
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_ADMIN_API}/upload/uploadlogo`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
+      console.log("Logo uploaded successfully:", res.data);
+      return res.data.logo; // adjust based on your backend response
+    } catch (error) {
+      console.error("Logo upload failed:", error);
+      alert("Failed to upload logo.");
+      return null;
+    }
+  };
+
+  const saveProfileInfo = async () => {
+    let uploadedLogoUrl = userData.logo;
+
+    if (logoFile) {
+      const url = await uploadLogo();
+      if (!url) return; // cancel if upload fails
+      uploadedLogoUrl = url;
+    }
+
+    updateUserInfo({
+      name: editableProfile.name,
+      logo: uploadedLogoUrl,
+      gst_no: editableProfile.gst_no,
+    });
+
+    setIsEditingProfile(false);
   };
 
   const updateTaxInfo = async () => {
@@ -239,6 +301,110 @@ function SettingsDashboard() {
               <h3 className="card-title">Contact and Address Info</h3>
             </div>
             <div className="card-body">
+              {/* Profile Info */}
+              <div className="m-3">
+                <h5
+                  className="mb-3"
+                  style={{ color: "black", fontWeight: "bold" }}
+                >
+                  Profile Info
+                </h5>
+                <form className="mx-3">
+                  <div className="row">
+                    <div className="form-group col-md-4">
+                      <h5>Name:</h5>
+                      {isEditingProfile ? (
+                        <input
+                          type="text"
+                          name="name"
+                          value={editableProfile.name}
+                          onChange={handleProfileChange}
+                          className="form-control"
+                        />
+                      ) : (
+                        <p>{userData.name}</p>
+                      )}
+                    </div>
+                    <div className="form-group col-md-4">
+                      <h5>Logo:</h5>
+                      {isEditingProfile ? (
+                        <>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleLogoChange}
+                            className="form-control"
+                          />
+                          {logoFile && (
+                            <img
+                              className="rounded"
+                              src={URL.createObjectURL(logoFile)}
+                              alt="Preview"
+                              style={{ height: "75px", marginTop: "10px" }}
+                            />
+                          )}
+                        </>
+                      ) : userData.logo ? (
+                        <img
+                          className="rounded"
+                          src={`${
+                            process.env.REACT_APP_ADMIN_API +
+                            "/uploads/" +
+                            userData?.logo
+                          }`}
+                          alt="Logo"
+                          style={{ maxHeight: 75 }}
+                        />
+                      ) : (
+                        <p>No logo available</p>
+                      )}
+                    </div>
+
+                    <div className="form-group col-md-4">
+                      <h5>GST Number:</h5>
+                      {isEditingProfile ? (
+                        <input
+                          type="text"
+                          name="gst_no"
+                          value={editableProfile.gst_no}
+                          onChange={handleProfileChange}
+                          className="form-control"
+                        />
+                      ) : (
+                        <p>{userData.gst_no || "N/A"}</p>
+                      )}
+                    </div>
+                  </div>
+                  {!isEditingProfile ? (
+                    <button
+                      type="button"
+                      className="btn btn-dark mx-2"
+                      onClick={() => setIsEditingProfile(true)}
+                    >
+                      Edit Profile Info
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-success mx-2"
+                        onClick={saveProfileInfo}
+                      >
+                        Save
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-secondary mx-2"
+                        onClick={() => setIsEditingProfile(false)}
+                      >
+                        Cancel
+                      </button>
+                    </>
+                  )}
+                </form>
+                <hr />
+              </div>
+
               {/* Contact Info */}
               <div className="m-3">
                 <h5

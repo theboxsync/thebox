@@ -7,6 +7,10 @@ const {
   addStaff,
   updateStaff,
   deleteStaff,
+  checkIn,
+  checkOut,
+  markAbsent,
+  getAllFaceEncodings,
 } = require("../controllers/staffController");
 const adminAuth = require("../middlewares/adminAuth");
 
@@ -22,5 +26,10 @@ staffRouter
 staffRouter
   .route("/deletestaff/:id")
   .delete(authMiddleware, adminAuth, deleteStaff);
+
+staffRouter.post("/checkin", checkIn);
+staffRouter.post("/checkout", checkOut);
+staffRouter.post("/markabsent", markAbsent);
+staffRouter.get("/face-data", authMiddleware, getAllFaceEncodings);
 
 module.exports = staffRouter;

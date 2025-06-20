@@ -7,13 +7,9 @@ import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 
-
 function AdminProfile() {
   const navigate = useNavigate();
   const [userData, setUserData] = useState("");
-  const [taxInfo, setTaxInfo] = useState({ cgst: 0, sgst: 0 });
-  const [isEditingTax, setIsEditingTax] = useState(false);
-
 
   const fetchUserData = async () => {
     try {
@@ -27,13 +23,11 @@ function AdminProfile() {
         navigate("/login");
       } else {
         setUserData(response.data);
-        setTaxInfo(response.data.taxInfo || { cgst: 0, sgst: 0 });
       }
     } catch (error) {
       console.log("Error fetching user data:", error);
     }
   };
-
 
   useEffect(() => {
     fetchUserData();
@@ -111,9 +105,26 @@ function AdminProfile() {
                             </td>
                           </tr>
                         </table>
-                        
                       </div>
+                    </div>
+                    <div className="row mt-4 mb-2">
                       <div className="col-md-2"></div>
+                      <div className="col-md-8">
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={() => navigate("/settings")}
+                        >
+                          Update Profile
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-primary ml-2"
+                          onClick={() => navigate("/forgot-password")}
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

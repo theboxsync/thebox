@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { Modal, Button, Form } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+import { forwardRef } from "react";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 const UserDetails = () => {
   const { id } = useParams();
@@ -9,19 +14,26 @@ const UserDetails = () => {
 
   const [user, setUser] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [selectedSubs, setSelectedSubs] = useState([]);
+  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [showExpandModal, setShowExpandModal] = useState(false);
+  const [newEndDate, setNewEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUserData = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(
+      const response = await axios.get(
         `${
           import.meta.env.VITE_APP_API_URL
         }/api/subscription/getusersubscriptioninfo/${id}`,
         { withCredentials: true }
       );
-      setUser(res.data.user);
-      setSubscriptions(res.data.subscriptions);
+      if (response.data === "Null") {
+        navigate("/login");
+      }
+      setUser(response.data.user);
+      setSubscriptions(response.data.subscriptions);
     } catch (error) {
       console.error("Failed to fetch user details:", error);
     } finally {
@@ -32,6 +44,75 @@ const UserDetails = () => {
   useEffect(() => {
     fetchUserData();
   }, [id]);
+
+  const toggleSelectSub = (subId) => {
+    setSelectedSubs((prev) =>
+      prev.includes(subId)
+        ? prev.filter((id) => id !== subId)
+        : [...prev, subId]
+    );
+  };
+
+  const confirmPausePlans = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/api/subscription/pause`,
+        { subscriptionIds: selectedSubs },
+        { withCredentials: true }
+      );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
+      setShowPauseModal(false);
+      setSelectedSubs([]);
+      fetchUserData();
+    } catch (error) {
+      console.error("Error pausing plans:", error);
+    }
+  };
+
+  const confirmExpandPlans = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/api/subscription/expand`,
+        {
+          subscriptionIds: selectedSubs,
+          newEndDate: newEndDate?.toISOString().split("T")[0], // format: YYYY-MM-DD
+        },
+        { withCredentials: true }
+      );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
+      setShowExpandModal(false);
+      setSelectedSubs([]);
+      setNewEndDate("");
+      fetchUserData();
+    } catch (error) {
+      console.error("Error expanding plans:", error);
+    }
+  };
+
+  const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
+    <div className="input-group">
+      <input
+        type="text"
+        className="form-control"
+        value={value}
+        onClick={onClick}
+        ref={ref}
+        readOnly
+        placeholder="Select a date"
+      />
+      <span
+        className="input-group-text"
+        onClick={onClick}
+        style={{ cursor: "pointer" }}
+      >
+        <FaRegCalendarAlt />
+      </span>
+    </div>
+  ));
 
   if (loading) {
     return (
@@ -88,58 +169,181 @@ const UserDetails = () => {
           </div>
         </div>
 
-        {/* Subscriptions */}
-        <div className="card shadow-sm">
-          <div className="card-header bg-dark text-white">
+        {/* Subscriptions Table */}
+        <div className="card">
+          <div className="card-header d-flex justify-content-between align-items-center">
             <h5 className="mb-0">Subscriptions</h5>
-          </div>
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-striped table-hover mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th>Plan Name</th>
-                    <th>Price (₹)</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {subscriptions.length > 0 ? (
-                    subscriptions.map((sub) => (
-                      <tr key={sub._id}>
-                        <td>{sub.plan_name}</td>
-                        <td>{sub.plan_price}</td>
-                        <td>{new Date(sub.start_date).toLocaleDateString()}</td>
-                        <td>{new Date(sub.end_date).toLocaleDateString()}</td>
-                        <td>
-                          <span
-                            className={`badge px-3 py-2 rounded-pill ${
-                              sub.status === "active"
-                                ? "bg-success"
-                                : sub.status === "expired"
-                                ? "bg-danger"
-                                : "bg-secondary"
-                            }`}
-                          >
-                            {sub.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="5" className="text-center p-4">
-                        No subscriptions found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+            <div>
+              <button
+                className="btn btn-warning btn-sm me-2"
+                disabled={!selectedSubs.length}
+                onClick={() => setShowPauseModal(true)}
+              >
+                Pause Plans
+              </button>
+              <button
+                className="btn btn-info btn-sm"
+                disabled={!selectedSubs.length}
+                onClick={() => setShowExpandModal(true)}
+              >
+                Expand Plans
+              </button>
             </div>
           </div>
+          <div className="table-responsive">
+            <table className="table table-bordered table-hover">
+              <thead className="table-light">
+                <tr>
+                  <th>
+                    <input
+                      type="checkbox"
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedSubs(subscriptions.map((s) => s._id));
+                        } else {
+                          setSelectedSubs([]);
+                        }
+                      }}
+                      checked={selectedSubs?.length === subscriptions?.length}
+                    />
+                  </th>
+                  <th>Plan</th>
+                  <th>Price</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subscriptions?.map((sub) => (
+                  <tr key={sub._id}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={selectedSubs.includes(sub._id)}
+                        onChange={() => toggleSelectSub(sub._id)}
+                      />
+                    </td>
+                    <td>{sub.plan_name}</td>
+                    <td>{sub.plan_price}</td>
+                    <td>{new Date(sub.start_date).toLocaleDateString()}</td>
+                    <td>{new Date(sub.end_date).toLocaleDateString()}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          sub.status === "active"
+                            ? "bg-success"
+                            : sub.status === "expired"
+                            ? "bg-danger"
+                            : "bg-secondary"
+                        }`}
+                      >
+                        {sub.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        {/* Pause Modal */}
+        <Modal show={showPauseModal} onHide={() => setShowPauseModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Pause Subscriptions</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to pause {selectedSubs.length} plan(s)?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowPauseModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="warning" onClick={confirmPausePlans}>
+              Confirm Pause
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Expand Modal */}
+        <Modal show={showExpandModal} onHide={() => setShowExpandModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Expand Subscriptions</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Group>
+              <Form.Label style={{ marginRight: "10px" }}>
+                Select New End Date :{" "}
+              </Form.Label>
+              <DatePicker
+                selected={newEndDate}
+                onChange={(date) => setNewEndDate(date)}
+                minDate={new Date()}
+                dateFormat="yyyy-MM-dd"
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                customInput={<CustomDateInput />}
+              />
+            </Form.Group>
+
+            <div className="mt-3">
+              <span className="me-2 fw-bold">Quick Add:</span>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="me-2"
+                onClick={
+                  () => setNewEndDate(new Date(Date.now() + 86400000)) // +1 day
+                }
+              >
+                +1 Day
+              </Button>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="me-2"
+                onClick={
+                  () => setNewEndDate(new Date(Date.now() + 7 * 86400000)) // +1 week
+                }
+              >
+                +1 Week
+              </Button>
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => {
+                  const today = new Date();
+                  const nextMonth = new Date(
+                    today.setMonth(today.getMonth() + 1)
+                  );
+                  setNewEndDate(nextMonth);
+                }}
+              >
+                +1 Month
+              </Button>
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowExpandModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="info"
+              onClick={confirmExpandPlans}
+              disabled={!newEndDate}
+            >
+              Confirm Expand
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );

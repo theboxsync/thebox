@@ -16,6 +16,9 @@ const Dashboard = () => {
         }/api/subscription/getallsubscriptions`,
         { withCredentials: true }
       );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
       setUsers(response.data);
     } catch (error) {
       console.error("Failed to fetch users", error);
