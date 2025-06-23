@@ -7,10 +7,10 @@
   width: 70px;
   height: 70px;
   font-size: 30px;
-  border: 2px solid #00000099;
+  border: 3px solid #e77726;
   border-radius: 5px;
-  background-color: lightgrey;
-  color: #00000099;
+  background-color: #992920;
+  color: #fff;
 }
 
 .outline-green {

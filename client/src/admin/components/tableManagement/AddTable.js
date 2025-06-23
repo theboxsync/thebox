@@ -161,7 +161,7 @@ const AddTable = ({ setSection }) => {
                   <hr style={{ borderTop: "2px solid lightgrey" }} />
                   {formik.values.tables.map((table, index) => (
                     <div key={index}>
-                      <div className="row m-3">
+                      <div className="row">
                         <div className="form-group col-md-4">
                           <label htmlFor="table_no">Table No</label>
                           <input
