@@ -112,11 +112,14 @@ const captainLogin = async (req, res) => {
       console.log("User not found");
       return res.json({ message: "Invalid restaurant code" });
     }
-    console.log("user : " + user);
+    console.log("captain : " + user);
+
     const captain = await Captain.findOne({
-      username,
+      username: username,
       restaurant_id: user._id,
     });
+
+   
 
     if (!captain) {
       return res.json({ message: "Invalid Username" });
