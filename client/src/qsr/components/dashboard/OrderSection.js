@@ -146,7 +146,7 @@ function OrderSection({
                   </button>
                 </div>
               </div>
-              <div className="card-body row p-0" style={{ height: "80vh" }}>
+              <div className="card-body row p-0" style={{ height: "90vh" }}>
                 <OrderMenuShow addItemToOrder={addItemToOrder} />
                 <CustomerOrderDetail
                   order={{ ...order, order_items: orderItems }} // Pass combined order object

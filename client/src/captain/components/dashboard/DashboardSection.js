@@ -100,20 +100,20 @@ function DashboardSection({
               <div className="row w-100">
                 <div className="col-md-12">
                   <div className="card">
-                    <div className="card-header">
+                    {/* <div className="card-header">
                       <h3 className="card-title">Table List</h3>
-                    </div>
+                    </div> */}
                     {tableData.map((table) => (
                       <div className="card-body p-0 m-2" key={table._id}>
-                        <div className="m-3" style={{ fontWeight: "bold" }}>
+                        <div className="m-3" style={{ fontWeight: "bold", fontSize: "30px" }}>
                           {table.area}
                         </div>
                         <ul className="row" style={{ listStyle: "none" }}>
                           {table.tables.map((table) => (
-                            <li key={table._id}>
-                              <div className="container">
+                            <li key={table._id} className="mt-2">
+                              <div className="container-fluid">
                                 <div
-                                  className={`dashboard-table d-flex justify-content-center align-items-center ${
+                                  className={`dashboard-table d-flex justify-content-center align-items-center flex-column ${
                                     table.current_status === "Save"
                                       ? "table-save"
                                       : table.current_status === "KOT" ||
@@ -123,9 +123,13 @@ function DashboardSection({
                                       : ""
                                   }`}
                                   onClick={() => onClickTable(table._id)}
-                                  style={{ cursor: "pointer" }}
+                                  style={{ cursor: "pointer", width: "150px", height: "150px" }}
                                 >
-                                  <div align="center">{table.table_no}</div>
+                                  <div align="center" style={{ fontSize: "50px" }} >{table.table_no}</div>
+                                  {/* <hr style={{ width: "100%", height: "0.5px", backgroundColor: "black" }} />
+                                  <h5>
+                                    Price: 100
+                                  </h5> */}
                                 </div>
                               </div>
                             </li>

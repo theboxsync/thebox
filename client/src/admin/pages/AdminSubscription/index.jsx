@@ -214,12 +214,12 @@ function AdminSubscription() {
                           <>
                             <div className="card">
                               <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-                                <h1 className="display-4">Our Addons</h1>
+                                <h1 className="display-4">Our Add-ons</h1>
                                 <p className="lead">
                                   Choose various plans to fit your needs
                                 </p>
                               </div>
-                              <div className="d-flex mb-3 text-center" style={{ overflowX: "auto"}}>
+                              <div className="d-flex mb-3 text-center row">
                                 {filteredBasePlans.map((plan, index) => (
                                   <PlanCard
                                     key={index}

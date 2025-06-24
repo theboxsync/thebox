@@ -71,8 +71,6 @@ export default function ManagerDashboard() {
   return (
     <div className="wrapper" style={{ overflow: "hidden" }}>
       <Navbar />
-
-      <MenuBar />
       <div className="content-wrapper p-2">
         {displayMainSection()}
         <Footer />

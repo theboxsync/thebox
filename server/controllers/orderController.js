@@ -1,6 +1,7 @@
 const Order = require("../models/orderModel");
 const Customer = require("../models/customerModel");
 const TokenCounter = require("../models/TokenCounter");
+const Table = require("../models/tableModel");
 
 const cron = require("node-cron");
 
