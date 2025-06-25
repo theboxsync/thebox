@@ -10,6 +10,7 @@ const Pricing = () => {
     phone: "",
     city: "",
     restaurant_name: "",
+    purpose: "Restaurant Registration",
     message: "",
   });
 

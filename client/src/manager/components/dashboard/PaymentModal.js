@@ -14,8 +14,8 @@ function PaymentModal({
 
   const calculateTaxes = () => {
     const subtotal = parseFloat(paymentData.subTotal) || 0;
-    const cgstAmount = (subtotal * taxRates.cgst) / 100;
-    const sgstAmount = (subtotal * taxRates.sgst) / 100;
+    const cgstAmount = (subtotal * taxRates.cgst || 0) / 100;
+    const sgstAmount = (subtotal * taxRates.sgst || 0) / 100;
     const total = subtotal + cgstAmount + sgstAmount;
     return {
       cgstAmount: cgstAmount.toFixed(2),

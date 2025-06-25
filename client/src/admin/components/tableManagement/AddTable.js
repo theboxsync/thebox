@@ -206,10 +206,10 @@ const AddTable = ({ setSection }) => {
                         <div className="form-group col-md-4">
                           <button
                             type="button"
-                            className="btn btn-danger mt-4 float-right"
+                            className="btn btn-dark mt-4 float-right"
                             onClick={() => removeTable(index)}
                           >
-                            Remove
+                           <img src="../../dist/img/icon/delete.svg" alt="delete Details" style={{verticalAlign:"text-top"}} />Delete
                           </button>
                         </div>
                       </div>
@@ -223,7 +223,7 @@ const AddTable = ({ setSection }) => {
                     className="btn btn-dark mx-2"
                     onClick={addMoreTable}
                   >
-                    <img src="../../dist/img/icon/add.svg" className="mx-1" />
+                    <img src="../../dist/img/icon/add.svg" className="mx-1" style={{verticalAlign:"text-top"}}/>
                     Add More Tables
                   </button>
                   <button
@@ -231,7 +231,7 @@ const AddTable = ({ setSection }) => {
                     name="submit"
                     className="btn btn-dark mx-2"
                   >
-                    <img src="../../dist/img/icon/add.svg" className="mx-1" />
+                    <img src="../../dist/img/icon/add.svg" className="mx-1"  style={{verticalAlign:"text-top"}}/>
                     Add
                   </button>
                 </div>

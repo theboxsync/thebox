@@ -69,6 +69,7 @@ const Inquiries = () => {
                 <th>Phone</th>
                 <th>City</th>
                 <th>Restaurant</th>
+                <th>Purpose</th>
                 <th>Message</th>
                 <th>Date</th>
                 <th>Status</th>
@@ -84,6 +85,7 @@ const Inquiries = () => {
                   <td>{inq.phone}</td>
                   <td>{inq.city}</td>
                   <td>{inq.restaurant_name}</td>
+                  <td>{inq.purpose}</td>
                   <td>{inq.message}</td>
                   <td>{new Date(inq.date).toLocaleDateString()}</td>
                   <td>

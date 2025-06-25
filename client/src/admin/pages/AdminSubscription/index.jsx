@@ -10,12 +10,21 @@ import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
 import PlanCard from "../../components/ShowPlanCard";
+import RaiseInquiryModal from "./RaiseInquiryModal";
+
+import AddManager from "./manager/AddManager";
+import DeleteManagerModal from "./manager/DeleteManagerModal";
+import EditManagerModal from "./manager/EditManagerModal";
 
 function AdminSubscription() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [subscriptionPlans, setSubscriptionPlans] = useState([]);
   const [userSubscription, setUserSubscription] = useState([]);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquirySubId, setInquirySubId] = useState(null);
+  const [inquirySubName, setInquirySubName] = useState(null);
+  const [inquiryDetails, setInquiryDetails] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -102,6 +111,12 @@ function AdminSubscription() {
     }
   };
 
+  const openInquiryModal = (subscriptionName) => {
+    setInquirySubName(subscriptionName);
+    setShowInquiryModal(true);
+  };
+
+
   const managePlan = async (planName) => {
     if (planName === "Manager") {
       navigate("/manage-manager");
@@ -127,84 +142,103 @@ function AdminSubscription() {
   };
 
   return (
-    <div className="wrapper">
-      <Navbar />
-      <MenuBar />
-      <div className="content-wrapper">
-        <div className="content-header">
-          <div className="container-fluid">
-            <div className="row mb-2"></div>
-          </div>
-        </div>
-
-        <div>
-          <section className="content">
+    <>
+      <div className="wrapper">
+        <Navbar />
+        <MenuBar />
+        <div className="content-wrapper">
+          <div className="content-header">
             <div className="container-fluid">
-              <div className="row">
-                <div className="col-md-12">
-                  {userSubscription.length > 0 && (
-                    <div className="card mx-3">
-                      <div>
-                        <table className="table">
-                          <thead>
-                            <tr>
-                              <th>Plan Name</th>
-                              <th>Start Date</th>
-                              <th>End Date</th>
-                              <th>Status</th>
-                              <th>Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {userSubscription.map(
-                              (subscription) =>
-                                 (
-                                  <tr key={subscription._id}>
-                                    <td>{subscription.plan_name}</td>
-                                    <td>
-                                      {formateDate(subscription.start_date)}
-                                    </td>
-                                    <td>
-                                      {formateDate(subscription.end_date)}
-                                    </td>
-                                    <td>{subscription.status}</td>
-                                    <td>
-                                      {subscription.status === "active" && (
-                                        <button
-                                          className="btn btn-primary"
-                                          onClick={() =>
-                                            managePlan(subscription.plan_name)
-                                          }
-                                        >
-                                          Manage
-                                        </button>
-                                      )}
-                                      {subscription.status === "expired" && (
-                                        <button
-                                          className="btn btn-primary"
-                                          onClick={() =>
-                                            renewPlan(subscription._id)
-                                          }
-                                        >
-                                          Renew
-                                        </button>
-                                      )}
-                                    </td>
-                                  </tr>
-                                )
-                            )}
-                          </tbody>
-                        </table>
+              <div className="row mb-2"></div>
+            </div>
+          </div>
+
+          <div>
+            <section className="content">
+              <div className="container-fluid">
+                <div className="row">
+                  <div className="col-md-12">
+                    {userSubscription.length > 0 && (
+                      <div className="card mx-3">
+                        <div>
+                          <table className="table">
+                            <thead>
+                              <tr>
+                                <th>Plan Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {userSubscription.map((subscription) => (
+                                <tr key={subscription._id}>
+                                  <td>{subscription.plan_name}</td>
+                                  <td>{formateDate(subscription.start_date)}</td>
+                                  <td>{formateDate(subscription.end_date)}</td>
+                                  <td>
+                                    {subscription.status === "active" && (
+                                      <span className="badge bg-success p-2">
+                                        Active
+                                      </span>
+                                    )}
+                                    {subscription.status === "inactive" && (
+                                      <span className="badge bg-warning p-2">
+                                        Inactive
+                                      </span>
+                                    )}
+                                    {subscription.status === "blocked" && (
+                                      <span className="badge bg-danger p-2">
+                                        Blocked
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td>
+                                    {subscription.status === "active" && (
+                                      <button
+
+                                        onClick={() =>
+                                          managePlan(subscription.plan_name)
+                                        }
+                                      >
+                                        Manage <button class="btn btn-transparent bg-transparent" title="Edit"><img src="../../dist/img/icon/edit-b.svg" alt="edit Details" /></button>
+                                        <button class="btn btn-transparent bg-transparent" title="delete"><img src="../../dist/img/icon/delete-b.svg" alt="delete Details" /></button>
+                                      </button>
+
+                                    )}
+                                    {subscription.status === "inactive" && (
+                                      <button
+
+                                        onClick={() => renewPlan(subscription._id)}
+                                      >
+                                        Renew <button class="btn btn-transparent bg-transparent" title="Renew"><img src="../../dist/img/icon/renew.png" width="20" alt="Renew Details" /></button>
+                                      </button>
+                                    )}
+                                    {subscription.status === "blocked" && (
+                                      <button
+                                        class="btn btn-dark" 
+                                        title="Renew"
+                                        onClick={() => openInquiryModal(subscription.plan_name)}
+                                      >
+                                        Raise inquiry <img src="../../dist/img/icon/enquriy.png" width="20"  alt="Renew Details" style={{ filter: "invert(1)", marginLeft: "5px" }} />
+                                      </button>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  )}
-                    {subscriptionPlans.length !== userSubscription.length &&
+                    )}
+                    {subscriptionPlans.length !== userSubscription.length || userSubscription.some((subscription) => subscription.status === "inactive") &&
                       (() => {
                         const filteredBasePlans = subscriptionPlans.filter(
                           (plan) => {
                             const isPlanActive = userSubscription.some(
                               (subscription) =>
-                                subscription.plan_id === plan._id
+                                subscription.plan_id === plan._id && (subscription.status === "active" || subscription.status === "blocked")
                             );
                             return !isPlanActive;
                           }
@@ -232,16 +266,24 @@ function AdminSubscription() {
                             <hr />
                           </>
                         ) : null;
-                      })()}
+                      })
+                        ()}
+                  </div>
                 </div>
               </div>
-            </div>
-          </section>
-        </div>
+            </section>
+          </div>
 
-        <Footer />
+
+          <Footer />
+        </div>
       </div>
-    </div>
+      <RaiseInquiryModal
+        show={showInquiryModal}
+        handleClose={() => setShowInquiryModal(false)}
+        subscriptionName={inquirySubName}
+      />
+    </>
   );
 }
 

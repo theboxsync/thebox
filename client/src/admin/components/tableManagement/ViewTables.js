@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableAddedModal from "./TableAddedModal";
 import TableDeleteModal from "./TableDeleteModal";
+import EditTableModal from "./EditTableModal";
 
 function ViewTables({ setSection }) {
   const [showTableAddedModal, setShowTableAddedModal] = useState(false);
@@ -9,6 +10,8 @@ function ViewTables({ setSection }) {
   const [deleteModalData, setDeleteModalData] = useState({
     id: "",
   });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editModalData, setEditModalData] = useState(null);
   const [tableData, setTableData] = useState([]);
   const fetchTableData = async () => {
     try {
@@ -35,6 +38,12 @@ function ViewTables({ setSection }) {
     console.log(deleteModalData);
   };
 
+  const editModal = (table) => {
+    setEditModalData(table);
+    setShowEditModal(true);
+  };
+
+
   return (
     <>
       <section className="content m-3">
@@ -60,24 +69,43 @@ function ViewTables({ setSection }) {
                     <h3 className="m-4">Area Type : {table.area}</h3>
                     <ul className="row my-5" style={{ listStyle: "none" }}>
                       {table.tables.map((table) => (
-                        <li className="col-md-2 my-3" key={table._id}>
-                          <div className="container d-flex align-items-center">
+                        <li className="my-3" key={table._id}>
+                          <div className="container position-relative">
                             <div
                               className={`dashboard-table d-flex flex-column justify-content-center align-items-center`}
                             >
-                              <div align="center">{table.table_no}</div>
+                              <div align="center">{table.table_no}
+                                <hr style={{ margin: "0px", padding: "0px", border: "1px solid #212529" }} />
+                                <span style={{ fontSize: "14px" }}> Max Person : </span>
+                                <span style={{ fontSize: "16px" }}>{table.max_person}</span>
+                              </div>
                             </div>
-                            <div>
+
+                            <div className="position-absolute" style={{ top: 0, right: 0 }}>
                               <h5 className="mx-3">
-                                Max Person : {table.max_person}
+                                {/* Max Person : {table.max_person} */}
                               </h5>
                               <button
-                                className="btn btn-transparent bg-transparent  mx-3"
+                                className="btn btn-transparent bg-transparent"
                                 onClick={() => deleteModal(table._id)}
                               >
                                 <img
                                   src="../../dist/img/delete-b.svg"
                                   alt="delete"
+                                />
+                              </button>
+                            </div>
+                            <div className="position-absolute" style={{ top: 0, left: 0 }}>
+                              <h5 className="mx-3">
+                                {/* Max Person : {table.max_person} */}
+                              </h5>
+                              <button
+                                className="btn btn-transparent bg-transparent"
+                                onClick={() => editModal(table)}
+                              >
+                                <img
+                                  src="../../dist/img/edit-b.svg"
+                                  alt="edit"
                                 />
                               </button>
                             </div>
@@ -105,6 +133,14 @@ function ViewTables({ setSection }) {
         data={deleteModalData}
         fetchTableData={fetchTableData}
       />
+
+      <EditTableModal
+        show={showEditModal}
+        handleClose={() => setShowEditModal(false)}
+        data={editModalData}
+        fetchTableData={fetchTableData}
+      />
+
     </>
   );
 }
