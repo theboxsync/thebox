@@ -211,33 +211,31 @@ function AddMenu({ setSection }) {
                       </label>
                     </div>
                     <div className="form-group col-md-4">
-                      <label className="w-100">Meal Type</label>
-                      <ButtonGroup>
+                      <label className="w-100 mb-2">Meal Type</label>
+                      <div className="meal-type-wrapper d-flex">
                         {mealTypes.map((radio, index) => (
-                          <ToggleButton
-                            className="mx-2"
-                            key={index}
-                            id={`meal_type-${index}`}
-                            type="radio"
-                            variant={
-                              index === 0
-                                ? "outline-success"
-                                : index === 1
-                                ? "outline-warning"
-                                : index === 2
-                                ? "outline-danger"
-                                : null
-                            }
-                            name="meal_type"
-                            value={radio.value}
-                            checked={mealTypeValue === radio.value}
-                            onChange={(e) => radioButtonHandler(e, radio.value)}
-                          >
-                            {radio.name}
-                          </ToggleButton>
+                          <div className="meal-type-option mr-3" key={index}>
+                            <input
+                              type="radio"
+                              id={`meal-${radio.value}`}
+                              name="meal_type"
+                              value={radio.value}
+                              checked={mealTypeValue === radio.value}
+                              onChange={(e) => radioButtonHandler(e)}
+                              className="meal-type-input"
+                              style={{ accentColor: `${radio.value === mealTypeValue && radio.value === "veg" ? "green" : (radio.value === "egg" ? "#d56f1a" : (radio.value === "non-veg" ? "red" : "")) }` }}
+                            />
+                            <label
+                              htmlFor={`meal-${radio.value}`}
+                              className={`meal-type-label m-2 ${mealTypeValue === radio.value ? radio.value : ""}`}
+                            >
+                              {radio.name}
+                            </label>
+                          </div>
                         ))}
-                      </ButtonGroup>
+                      </div>
                     </div>
+
                   </div>
                   <hr style={{ borderTop: "2px solid lightgrey" }} />
                   {formik.values.dishes.map((dish, index) => (
@@ -257,7 +255,7 @@ function AddMenu({ setSection }) {
                           />
                           <label className="text-danger">
                             {formik.errors.dishes?.[index]?.dish_name &&
-                            formik.touched.dishes?.[index]?.dish_name
+                              formik.touched.dishes?.[index]?.dish_name
                               ? formik.errors.dishes[index].dish_name
                               : null}
                           </label>
@@ -276,7 +274,7 @@ function AddMenu({ setSection }) {
                           />
                           <label className="text-danger">
                             {formik.errors.dishes?.[index]?.dish_price &&
-                            formik.touched.dishes?.[index]?.dish_price
+                              formik.touched.dishes?.[index]?.dish_price
                               ? formik.errors.dishes[index].dish_price
                               : null}
                           </label>
@@ -285,10 +283,10 @@ function AddMenu({ setSection }) {
                           <div className="float-right">
                             <button
                               type="button"
-                              className="btn btn-danger"
+                              className="btn btn-dark"
                               onClick={() => removeDish(index)}
                             >
-                              Remove
+                              <img src="../../dist/img/icon/delete.svg" alt="delete Details" style={{ verticalAlign: "text-top" }} />Delete
                             </button>
                           </div>
                         </div>
@@ -315,7 +313,7 @@ function AddMenu({ setSection }) {
 
                           <label className="text-danger">
                             {formik.errors.dishes?.[index]?.dish_img &&
-                            formik.touched.dishes?.[index]?.dish_img
+                              formik.touched.dishes?.[index]?.dish_img
                               ? formik.errors.dishes[index].dish_img
                               : null}
                           </label>
@@ -360,7 +358,7 @@ function AddMenu({ setSection }) {
                                 />
                                 <label className="text-danger">
                                   {formik.errors.dishes?.[index]?.quantity &&
-                                  formik.touched.dishes?.[index]?.quantity
+                                    formik.touched.dishes?.[index]?.quantity
                                     ? formik.errors.dishes[index].quantity
                                     : null}
                                 </label>
@@ -388,7 +386,7 @@ function AddMenu({ setSection }) {
                                 </select>
                                 <label className="text-danger">
                                   {formik.errors.dishes?.[index]?.unit &&
-                                  formik.touched.dishes?.[index]?.unit
+                                    formik.touched.dishes?.[index]?.unit
                                     ? formik.errors.dishes[index].unit
                                     : null}
                                 </label>
@@ -416,7 +414,8 @@ function AddMenu({ setSection }) {
                       name="submit"
                       className="btn btn-dark"
                     >
-                      <img src="../../dist/img/add.svg" alt="Add" />
+                      <img src="../../dist/img/add.svg" alt="Add" className="mx-1" style={{ verticalAlign: "text-top" }}
+                      />
                       Add
                     </button>
                   </div>

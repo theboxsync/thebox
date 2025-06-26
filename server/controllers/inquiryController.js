@@ -2,13 +2,14 @@ const Inquiry = require("../models/inquiryModel");
 
 const createInquiry = async (req, res) => {
   try {
-    const { name, email, phone, city, restaurant_name, message } = req.body;
+    const { name, email, phone, city, restaurant_name, purpose, message } = req.body;
     const inquiry = await Inquiry.create({
       name,
       email,
       phone,
       city,
       restaurant_name,
+      purpose,
       message,
       status: "Pending",
     });

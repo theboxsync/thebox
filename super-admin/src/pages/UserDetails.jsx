@@ -15,7 +15,10 @@ const UserDetails = () => {
   const [user, setUser] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [selectedSubs, setSelectedSubs] = useState([]);
-  const [showPauseModal, setShowPauseModal] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [selectedSub4unblock, setselectedSub4unblock] = useState(null);
+  const [selectedSubName4unblock, setselectedSubName4unblock] = useState(null);  
+  const [showUnblockModal, setShowUnblockModal] = useState(false);
   const [showExpandModal, setShowExpandModal] = useState(false);
   const [newEndDate, setNewEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,8 +27,7 @@ const UserDetails = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_APP_API_URL
+        `${import.meta.env.VITE_APP_API_URL
         }/api/subscription/getusersubscriptioninfo/${id}`,
         { withCredentials: true }
       );
@@ -53,21 +55,40 @@ const UserDetails = () => {
     );
   };
 
-  const confirmPausePlans = async () => {
+  const confirmBlockPlans = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_APP_API_URL}/api/subscription/pause`,
+        `${import.meta.env.VITE_APP_API_URL}/api/subscription/block`,
         { subscriptionIds: selectedSubs },
         { withCredentials: true }
       );
       if (response.data === "Null") {
         navigate("/login");
       }
-      setShowPauseModal(false);
+      setShowBlockModal(false);
       setSelectedSubs([]);
       fetchUserData();
     } catch (error) {
       console.error("Error pausing plans:", error);
+    }
+  };
+
+  const confirmUnblockPlans = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/api/subscription/unblock`,
+        { subscriptionId: selectedSub4unblock },
+        { withCredentials: true }
+      );
+      if (response.data === "Null") {
+        navigate("/login");
+      }
+      setShowUnblockModal(false);
+      setselectedSub4unblock(null);
+      setselectedSubName4unblock(null);
+      fetchUserData();
+    } catch (error) {
+      console.error("Error resuming plans:", error);
     }
   };
 
@@ -177,9 +198,9 @@ const UserDetails = () => {
               <button
                 className="btn btn-warning btn-sm me-2"
                 disabled={!selectedSubs.length}
-                onClick={() => setShowPauseModal(true)}
+                onClick={() => setShowBlockModal(true)}
               >
-                Pause Plans
+                Block Plans
               </button>
               <button
                 className="btn btn-info btn-sm"
@@ -229,17 +250,27 @@ const UserDetails = () => {
                     <td>{new Date(sub.start_date).toLocaleDateString()}</td>
                     <td>{new Date(sub.end_date).toLocaleDateString()}</td>
                     <td>
-                      <span
-                        className={`badge ${
-                          sub.status === "active"
-                            ? "bg-success"
-                            : sub.status === "expired"
-                            ? "bg-danger"
-                            : "bg-secondary"
-                        }`}
-                      >
-                        {sub.status}
-                      </span>
+                      {sub.status === "active" && (
+                        <span className="badge bg-success">Active</span>
+                      )}
+                      {sub.status === "inactive" && (
+                        <span className="badge bg-warning">Inactive</span>
+                      )}
+                      {sub.status === "blocked" && (
+                        <>
+                          <span className="badge bg-danger">Blocked</span>
+                          <button
+                            className="btn btn-primary btn-sm ms-2"
+                            onClick={() => {
+                              setselectedSub4unblock(sub._id);
+                              setselectedSubName4unblock(sub.plan_name);
+                              setShowUnblockModal(true);
+                            }}
+                          >
+                            Unblock
+                          </button>
+                        </>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -248,23 +279,44 @@ const UserDetails = () => {
           </div>
         </div>
 
-        {/* Pause Modal */}
-        <Modal show={showPauseModal} onHide={() => setShowPauseModal(false)}>
+        {/* Block Modal */}
+        <Modal show={showBlockModal} onHide={() => setShowBlockModal(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Pause Subscriptions</Modal.Title>
+            <Modal.Title>Block Subscriptions</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Are you sure you want to pause {selectedSubs.length} plan(s)?
+            Are you sure you want to block {selectedSubs.length} plan(s)?
           </Modal.Body>
           <Modal.Footer>
             <Button
               variant="secondary"
-              onClick={() => setShowPauseModal(false)}
+              onClick={() => setShowBlockModal(false)}
             >
               Cancel
             </Button>
-            <Button variant="warning" onClick={confirmPausePlans}>
-              Confirm Pause
+            <Button variant="warning" onClick={confirmBlockPlans}>
+              Confirm Block
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Unblock Modal */}
+        <Modal show={showUnblockModal} onHide={() => setShowUnblockModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Unblock Subscriptions</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to unblock {selectedSubName4unblock} plan(s)?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowUnblockModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button variant="info" onClick={confirmUnblockPlans}>
+              Confirm Unblock
             </Button>
           </Modal.Footer>
         </Modal>
