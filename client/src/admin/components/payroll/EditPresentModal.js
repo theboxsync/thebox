@@ -25,8 +25,14 @@ function EditPresentModal({ show, handleClose, staffId, date, fetchStaff }) {
   };
   return (
     <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Edit Present</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Form id="editPresentForm">
         <Modal.Body>

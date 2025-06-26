@@ -2964,8 +2964,8 @@ fieldset:disabled a.btn {
 .btn-primary:not(:disabled):not(.disabled):active,
 .show>.btn-primary.dropdown-toggle {
     color: #fff;
-    background-color: #e77726;
-    border-color: #e77726;
+    background-color: #212529 ;
+    border-color: #212529 ;
 }
 
 .btn-primary:not(:disabled):not(.disabled).active:focus,
@@ -4173,7 +4173,7 @@ input[type=submit].btn-block {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #e77726;
+    color: #212529 ;
     text-align: center;
     white-space: nowrap;
     background-color: #e9ecef;
@@ -33994,8 +33994,8 @@ html.maximized-card {
 .dark-mode .btn-primary:not(:disabled):not(.disabled):active,
 .show>.dark-mode .btn-primary.dropdown-toggle {
     color: #fff;
-    background-color:#e77726;
-    border-color: #e77726;
+    background-color:#212529 ;
+    border-color: #212529 ;
 }
 
 .dark-mode .btn-primary:not(:disabled):not(.disabled).active:focus,
@@ -34014,8 +34014,8 @@ html.maximized-card {
 
 .dark-mode .btn-secondary:hover {
     color: #fff;
-    background-color: #e77726;
-    border-color: #e77726
+    background-color: #212529 ;
+    border-color: #212529 
 }
 
 .dark-mode .btn-secondary.focus,

@@ -36,8 +36,14 @@ function EditTableModal({ show, handleClose, data, fetchTableData }) {
 
     return (
         <Modal show={show} onHide={handleClose} backdrop="static">
-            <Modal.Header closeButton>
+            <Modal.Header>
                 <Modal.Title>Edit Table</Modal.Title>
+                <button
+                    type="button"
+                    className="btn-close"
+                    aria-label="Close"
+                    onClick={handleClose}
+                >x</button>
             </Modal.Header>
             <Modal.Body>
                 <Form>
@@ -60,8 +66,8 @@ function EditTableModal({ show, handleClose, data, fetchTableData }) {
                         />
                     </Form.Group>
                 </Form>
-                <div className="mt-4 d-flex justify-content-end">
-                    <Button variant="secondary" onClick={handleClose} className="me-2">
+                <div className="mt-4 text-right">
+                    <Button variant="secondary" onClick={handleClose} className="m-2">
                         Cancel
                     </Button>
                     <Button variant="dark" onClick={updateTable}>

@@ -69,7 +69,7 @@ function ViewTables({ setSection }) {
                     <h3 className="m-4">Area Type : {table.area}</h3>
                     <ul className="row my-5" style={{ listStyle: "none" }}>
                       {table.tables.map((table) => (
-                        <li className="my-3" key={table._id}>
+                        <li className="m-3" key={table._id}>
                           <div className="container position-relative">
                             <div
                               className={`dashboard-table d-flex flex-column justify-content-center align-items-center`}
@@ -81,31 +81,24 @@ function ViewTables({ setSection }) {
                               </div>
                             </div>
 
-                            <div className="position-absolute" style={{ top: 0, right: 0 }}>
-                              <h5 className="mx-3">
-                                {/* Max Person : {table.max_person} */}
-                              </h5>
+                            <div className="d-flex justify-content-between pt-1" style={{ top: 0, right: 0 }}>
+                             
                               <button
-                                className="btn btn-transparent bg-transparent"
-                                onClick={() => deleteModal(table._id)}
-                              >
-                                <img
-                                  src="../../dist/img/delete-b.svg"
-                                  alt="delete"
-                                />
-                              </button>
-                            </div>
-                            <div className="position-absolute" style={{ top: 0, left: 0 }}>
-                              <h5 className="mx-3">
-                                {/* Max Person : {table.max_person} */}
-                              </h5>
-                              <button
-                                className="btn btn-transparent bg-transparent"
+                                className="btn btn-transparent bg-transparent p-0"
                                 onClick={() => editModal(table)}
                               >
                                 <img
                                   src="../../dist/img/edit-b.svg"
                                   alt="edit"
+                                />
+                              </button>
+                              <button
+                                className="btn btn-transparent bg-transparent p-0"
+                                onClick={() => deleteModal(table._id)}
+                              >
+                                <img
+                                  src="../../dist/img/delete-b.svg"
+                                  alt="delete"
                                 />
                               </button>
                             </div>
