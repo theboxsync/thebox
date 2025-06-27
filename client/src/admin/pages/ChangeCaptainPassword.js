@@ -1,23 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
-import Navbar from "../../components/NavBar";
-import MenuBar from "../../components/MenuBar";
-import Footer from "../../components/Footer";
+import Navbar from "../components/NavBar";
+import MenuBar from "../components/MenuBar";
+import Footer from "../components/Footer";
 
-function ChangeQsrPassword() {
+const ChangeCaptainPassword = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { qsrId } = location.state || {}; // Get the QSR ID from state
+  const { captainId } = location.state || {}; 
   const [adminPassword, setAdminPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  if (!qsrId) {
-    console.log("QSR ID not found in state");
+  if (!captainId) {
+    console.log("Captain ID not found in state");
     navigate("/");
   }
 
@@ -29,11 +29,11 @@ function ChangeQsrPassword() {
     }
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_ADMIN_API}/qsr/changeqsrpassword`,
+        `${process.env.REACT_APP_ADMIN_API}/captain/changecaptainpassword`,
         {
           adminPassword,
           newPassword,
-          qsrId,
+          captainId,
         },
         { withCredentials: true }
       );
@@ -44,11 +44,10 @@ function ChangeQsrPassword() {
         navigate("/dashboard");
       }, 1000);
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred.");
+      setError(err.response.data.message || "An error occurred.");
       setSuccess("");
     }
   };
-
   return (
     <div className="wrapper">
       <Navbar />
@@ -56,7 +55,7 @@ function ChangeQsrPassword() {
       <MenuBar />
       <div className="content-wrapper p-2">
         <div className="container mt-5" style={{ maxWidth: "500px" }}>
-          <h2 className="mb-4">Change QSR Password</h2>
+          <h2 className="mb-4">Change Captain Password</h2>
           <form onSubmit={handleSubmit} className="mb-4">
             <div className="form-group">
               <label>Admin Password</label>
@@ -100,6 +99,6 @@ function ChangeQsrPassword() {
       </div>
     </div>
   );
-}
+};
 
-export default ChangeQsrPassword;
+export default ChangeCaptainPassword;

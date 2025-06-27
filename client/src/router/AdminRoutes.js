@@ -1,6 +1,4 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
-import { AuthContextProvider } from "../admin/context/AuthContext";
 
 import Login from "../admin/Login";
 import Register from "../admin/Register";
@@ -21,19 +19,18 @@ import UpdateCompletedInventory from "../admin/pages/AdminInventory/UpdateComple
 import AdminManageMenu from "../admin/pages/AdminManageMenu";
 import AdminStaff from "../admin/pages/AdminStaff";
 import EditStaff from "../admin/pages/AdminStaff/EditStaff";
-import ManageAttendance from "../admin/pages/AdminManagePayroll/ManageAttendance";
-import ViewAttandance from "../admin/pages/AdminManagePayroll/ViewAttandance";
+import ManageAttendance from "../admin/pages/AdminStaff/ManageAttendance";
+import ViewAttandance from "../admin/pages/AdminStaff/ViewAttandance";
 import AdminTable from "../admin/pages/AdminTable";
-import ChangeManagerPassword from "../admin/pages/AdminDashboard/ChangeManagerPassword";
-import ChangeQsrPassword from "../admin/pages/AdminDashboard/ChangeQsrPassword";
+
+import ChangeManagerPassword from "../admin/pages/ChangeManagerPassword";
+import ChangeQsrPassword from "../admin/pages/ChangeQsrPassword";
+import ChangeCaptainPassword from "../admin/pages/ChangeCaptainPassword";
+import ChangeAttendancePassword from "../admin/pages/ChangeAttendancePassword";
+
 import AdminSubscription from "../admin/pages/AdminSubscription";
 import AdminSettings from "../admin/pages/AdminSettings";
 import AdminFeedback from "../admin/pages/AdminFeedback";
-
-import AdminManageManager from "../admin/pages/AdminManageManager";
-import AdminManageQSR from "../admin/pages/AdminManageQSR";
-import AdminManageCaptain from "../admin/pages/AdminManageCaptain";
-import AdminManagePayroll from "../admin/pages/AdminManagePayroll";
 
 import ManageWebsite from "../admin/pages/ManageWebsite";
 
@@ -88,13 +85,17 @@ function AdminRoutes() {
         element={<ChangeManagerPassword />}
       />
       <Route path="/change-qsr-password" element={<ChangeQsrPassword />} />
+      <Route
+        path="/change-captain-password"
+        element={<ChangeCaptainPassword />}
+      />
+      <Route
+        path="/change-attendance-password"
+        element={<ChangeAttendancePassword />}
+      />
 
       <Route path="/feedbacks" element={<AdminFeedback />} />
 
-      <Route path="/manage-manager" element={<AdminManageManager />} />
-      <Route path="/manage-qsr" element={<AdminManageQSR />} />
-      <Route path="/manage-captain" element={<AdminManageCaptain />} />
-      <Route path="/manage-payroll" element={<AdminManagePayroll />} />
 
       <Route path="/manage-restaurant-website" element={<ManageWebsite />} />
 

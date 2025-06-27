@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import axios from "axios";
 
-function RaiseInquiryModal({ show, handleClose, subscriptionName }) {
+function RaiseInquiryModal({ show, handleClose, subscriptionName, fetchData }) {
     const [message, setMessage] = useState("");
     const [saving, setSaving] = useState(false);
     const [purpose, setPurpose] = useState("");
@@ -23,6 +23,7 @@ function RaiseInquiryModal({ show, handleClose, subscriptionName }) {
                 { withCredentials: true }
             );
             // you might want to show a toast here
+            fetchData();
             handleClose();
         } catch (err) {
             console.error("Error raising inquiry:", err);

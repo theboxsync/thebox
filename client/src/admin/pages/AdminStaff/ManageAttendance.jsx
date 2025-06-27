@@ -119,7 +119,7 @@ export default function ManageAttendance() {
               <div className="col-12">
                 <div className="card">
                   <div className="card-header">
-                    <h3 className="card-title">Manage Staff</h3>
+                    <h3 className="card-title">Manage Attendance</h3>
                     <div className="card-tools mx-2">
                       <Link to={"/staff"}>
                         <button

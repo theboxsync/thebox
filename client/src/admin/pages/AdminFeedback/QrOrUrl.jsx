@@ -50,7 +50,7 @@ const QrOrUrl = () => {
             </style>
           </head>
           <body>
-            <div class="qr-container">
+            <div className="qr-container">
               <h2 style="margin-bottom: 25px;">Scan the QR Code to Give Feedback</h2>
               ${printContent}
             </div>

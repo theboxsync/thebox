@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Loading from "../../components/Loading";
+import Loading from "../../../components/Loading";
 
 function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData }) {
   const [isLoading, setIsLoading] = useState(false);

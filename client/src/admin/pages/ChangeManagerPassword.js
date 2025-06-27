@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
-import Navbar from "../../components/NavBar";
-import MenuBar from "../../components/MenuBar";
-import Footer from "../../components/Footer";
+import Navbar from "../components/NavBar";
+import MenuBar from "../components/MenuBar";
+import Footer from "../components/Footer";
 
 function ChangeManagerPassword() {
   const location = useLocation();
