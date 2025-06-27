@@ -11,33 +11,51 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 const UserDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const [user, setUser] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [selectedSubs, setSelectedSubs] = useState([]);
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [selectedSub4unblock, setselectedSub4unblock] = useState(null);
-  const [selectedSubName4unblock, setselectedSubName4unblock] = useState(null);  
+  const [selectedSubName4unblock, setselectedSubName4unblock] = useState(null);
   const [showUnblockModal, setShowUnblockModal] = useState(false);
   const [showExpandModal, setShowExpandModal] = useState(false);
   const [newEndDate, setNewEndDate] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  const [queries, setQueries] = useState([]);
 
   const fetchUserData = async () => {
     try {
       setLoading(true);
+
+      // Fetch user and subscriptions
       const response = await axios.get(
-        `${import.meta.env.VITE_APP_API_URL
+        `${
+          import.meta.env.VITE_APP_API_URL
         }/api/subscription/getusersubscriptioninfo/${id}`,
         { withCredentials: true }
       );
+
       if (response.data === "Null") {
         navigate("/login");
+        return;
       }
+
       setUser(response.data.user);
       setSubscriptions(response.data.subscriptions);
+
+      // Fetch customer queries
+      const queriesRes = await axios.get(
+        `${
+          import.meta.env.VITE_APP_API_URL
+        }/api/customerquery/query-user-id/${id}`,
+        { withCredentials: true }
+      );
+      setQueries(queriesRes.data);
+      console.log("Aueries : ", queriesRes.data);
     } catch (error) {
-      console.error("Failed to fetch user details:", error);
+      console.error("Failed to fetch user details or queries:", error);
     } finally {
       setLoading(false);
     }
@@ -134,6 +152,21 @@ const UserDetails = () => {
       </span>
     </div>
   ));
+
+  const handleCompleteQuery = async (queryId) => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_APP_API_URL}/api/customerquery/complete-query`,
+        { queryId },
+        { withCredentials: true }
+      );
+      alert("Marked as completed.");
+      fetchUserData(); // refresh queries
+    } catch (err) {
+      alert("Failed to mark as completed.");
+      console.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -279,6 +312,62 @@ const UserDetails = () => {
           </div>
         </div>
 
+        {/* Customer Queries Section */}
+        <div className="card mt-4">
+          <div className="card-header">
+            <h5 className="mb-0">Customer Queries</h5>
+          </div>
+          <div className="card-body">
+            {queries.length === 0 ? (
+              <p>No queries found.</p>
+            ) : (
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Message</th>
+                    <th>Purpose</th>
+                    <th>Created</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {queries.map((q) => (
+                    <tr key={q._id}>
+                      <td>{q.message}</td>
+                      <td>{q.purpose}</td>
+                      <td>{new Date(q.created_at).toLocaleString()}</td>
+                      <td>
+                        {q.completed_at ? (
+                          <span className="badge bg-success">Completed</span>
+                        ) : (
+                          <span className="badge bg-warning">Pending</span>
+                        )}
+                      </td>
+                      <td>
+                        {/* <button
+                          className="btn btn-sm btn-outline-primary me-2"
+                          onClick={() => handleSendEmail(q._id)}
+                        >
+                          Send Email
+                        </button> */}
+                        {!q.completed_at && (
+                          <button
+                            className="btn btn-sm btn-outline-success"
+                            onClick={() => handleCompleteQuery(q._id)}
+                          >
+                            Mark Completed
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+
         {/* Block Modal */}
         <Modal show={showBlockModal} onHide={() => setShowBlockModal(false)}>
           <Modal.Header closeButton>
@@ -301,7 +390,10 @@ const UserDetails = () => {
         </Modal>
 
         {/* Unblock Modal */}
-        <Modal show={showUnblockModal} onHide={() => setShowUnblockModal(false)}>
+        <Modal
+          show={showUnblockModal}
+          onHide={() => setShowUnblockModal(false)}
+        >
           <Modal.Header closeButton>
             <Modal.Title>Unblock Subscriptions</Modal.Title>
           </Modal.Header>

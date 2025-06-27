@@ -89,7 +89,7 @@ const ViewAttandance = () => {
               <div className="col-12">
                 <div className="card">
                   <div className="card-header">
-                    <h3 className="card-title">Manage Staff</h3>
+                    <h3 className="card-title">{staffData?.f_name} {staffData?.l_name}'s Attendance Info</h3>
                     <div className="card-tools mx-2">
                       <button
                         type="button"
@@ -105,9 +105,6 @@ const ViewAttandance = () => {
             </div>
           </div>
 
-          <h2 className="text-center mb-4">
-            {staffData?.f_name} {staffData?.l_name}'s Attendance
-          </h2>
 
           <div className="container card p-4">
             <FullCalendar

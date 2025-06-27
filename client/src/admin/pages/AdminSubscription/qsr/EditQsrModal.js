@@ -3,7 +3,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
 
-import { editQsr } from "../../../schemas";
+import { editQsr } from "../../../../schemas";
 
 function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
   const qsrInfo = {

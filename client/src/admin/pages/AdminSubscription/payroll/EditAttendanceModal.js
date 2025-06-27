@@ -4,8 +4,8 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
 
-import { editQsr } from "../../../schemas";
-import Loading from "../../components/Loading";
+import { editQsr } from "../../../../schemas";
+import Loading from "../../../components/Loading";
 
 function EditAttendanceModal({ show, handleClose, data, fetchAttendanceData }) {
   const [isLoading, setIsLoading] = useState(false);

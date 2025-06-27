@@ -22,5 +22,5 @@ const customerQuerySchema = new mongoose.Schema({
     },
 });
 
-const CustomerQuery = mongoose.model("customerQuery", customerQuerySchema);
+const CustomerQuery = mongoose.model("CustomerQuery", customerQuerySchema);
 module.exports = CustomerQuery;

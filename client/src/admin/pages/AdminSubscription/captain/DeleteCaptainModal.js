@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Loading from "../../components/Loading";
+import Loading from "../../../components/Loading";
 
-function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData }) {
+function DeleteCaptainModal({ show, handleClose, data, fetchCaptainData }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [showPasswordField, setShowPasswordField] = useState(false);
@@ -31,9 +31,9 @@ function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData })
       console.log("DATA : ", data);
       await axios
         .post(
-          `${process.env.REACT_APP_ADMIN_API}/attendance/deleteattendance`,
+          `${process.env.REACT_APP_ADMIN_API}/captain/deletecaptain`,
           {
-            attendanceId: data.id,
+            captainId: data.id,
             adminPassword,
           },
           { withCredentials: true }
@@ -42,7 +42,7 @@ function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData })
           if (res.status === 200) {
             setSuccess(res.data.message);
             setError("");
-            fetchAttendanceData();
+            fetchCaptainData();
             resetFields(); 
             handleClose();
           } else {
@@ -51,11 +51,11 @@ function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData })
           }
         })
         .catch((err) => {
-          setError(err.response?.data?.message || "Failed to delete Attendance.");
+          setError(err.response?.data?.message || "Failed to delete Captain.");
           setSuccess("");
         });
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete Attendance.");
+      setError(err.response?.data?.message || "Failed to delete Captain.");
     } finally {
       setIsLoading(false);
     }
@@ -85,12 +85,12 @@ function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData })
         keyboard={false}
       >
         <Modal.Header closeButton>
-          <Modal.Title id="deleteAttendanceModalLabel">Delete Attendance</Modal.Title>
+          <Modal.Title id="deleteCaptainModalLabel">Delete Captain</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {!showPasswordField ? (
             <>
-              <h5>Are you sure you want to delete this Attendance?</h5>
+              <h5>Are you sure you want to delete this Captain?</h5>
               <p>This action cannot be undone.</p>
             </>
           ) : (
@@ -133,4 +133,4 @@ function DeleteAttendanceModal({ show, handleClose, data, fetchAttendanceData })
   );
 }
 
-export default DeleteAttendanceModal;
+export default DeleteCaptainModal;
