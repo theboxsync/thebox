@@ -2941,15 +2941,15 @@ fieldset:disabled a.btn {
 
 .btn-primary:hover {
     color: #fff;
-    background-color: #b40fe7;
-    border-color: #b40fe7
+    background-color: #bbacd8;
+    border-color: #bbacd8
 }
 
 .btn-primary.focus,
 .btn-primary:focus {
     color: #fff;
-    background-color: #b40fe7;
-    border-color: #b40fe7;
+    background-color: #bbacd8;
+    border-color: #bbacd8;
     box-shadow: 0 0 0 0 rgba(245, 76, 217, 0.5)
 }
 
@@ -2983,15 +2983,15 @@ fieldset:disabled a.btn {
 
 .btn-secondary:hover {
     color: #fff;
-    background-color: #b40fe7;
-    border-color: #b40fe7;
+    background-color: #bbacd8;
+    border-color: #bbacd8;
 }
 
 .btn-secondary.focus,
 .btn-secondary:focus {
     color: #fff;
-    background-color: #b40fe7;
-    border-color: #b40fe7;
+    background-color: #bbacd8;
+    border-color: #bbacd8;
     box-shadow: 0 0 0 0 rgba(170, 42, 221, 0.5))))
 }
 
@@ -28505,7 +28505,7 @@ body.text-sm .input-group-text {
 }
 
 .card-secondary:not(.card-outline)>.card-header {
-    background-color: #9b2a23
+    background-color: #212529
 }
 
 .card-secondary:not(.card-outline)>.card-header,
@@ -30945,7 +30945,7 @@ html.maximized-card {
 }
 
 .dark-mode .card-secondary:not(.card-outline)>.card-header {
-    background-color: #6c757d
+    background-color: #202326
 }
 
 .dark-mode .card-secondary:not(.card-outline)>.card-header,
@@ -33971,15 +33971,15 @@ html.maximized-card {
 
 .dark-mode .btn-primary:hover {
     color: #fff;
-    background-color: #b40fe7;
+    background-color: #bbacd8;
     border-color: #304e6d
 }
 
 .dark-mode .btn-primary.focus,
 .dark-mode .btn-primary:focus {
     color: #fff;
-    background-color: #b40fe7;
-    border-color: #b40fe7;
+    background-color: #bbacd8;
+    border-color: #bbacd8;
     box-shadow: 0 0 0 0 rgba(92, 126, 162, .5)
 }
 

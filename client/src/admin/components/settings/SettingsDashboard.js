@@ -381,7 +381,7 @@ function SettingsDashboard() {
                       className="btn btn-dark mx-2"
                       onClick={() => setIsEditingProfile(true)}
                     >
-                      Edit Profile Info
+                    <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit Profile Info
                     </button>
                   ) : (
                     <>

@@ -239,7 +239,7 @@ function AddMenu({ setSection }) {
                   </div>
                   <hr style={{ borderTop: "2px solid lightgrey" }} />
                   {formik.values.dishes.map((dish, index) => (
-                    <div key={index} className="px-3 ">
+                    <div key={index} className="">
                       <div className="row">
                         <div className="form-group col-md-4 mb-0">
                           <label htmlFor={`dishes.${index}.dish_name`}>
