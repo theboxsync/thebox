@@ -3,22 +3,23 @@ import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
 
-import { editQsr } from "../../../../schemas";
+import { editManager } from "../../../schemas";
+import Loading from "../../components/Loading";
 
-function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
-  const qsrInfo = {
+function EditManagerModal({ show, handleClose, data, fetchManagerData }) {
+  const managerInfo = {
     username: data?.username || "", // Provide a fallback to avoid undefined
   };
 
   const { values, handleSubmit, handleChange, touched, errors } = useFormik({
-    initialValues: qsrInfo,
+    initialValues: managerInfo,
     enableReinitialize: true,
-    validationSchema: editQsr,
+    validationSchema: editManager,
     onSubmit: (values) => {
       console.log(values);
       axios
         .put(
-          `${process.env.REACT_APP_ADMIN_API}/qsr/updateqsr/${data._id}`,
+          `${process.env.REACT_APP_ADMIN_API}/manager/updatemanager/${data._id}`,
           values,
           {
             withCredentials: true,
@@ -27,7 +28,7 @@ function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
         .then((res) => {
           console.log(res.data);
           handleClose();
-          fetchQsrData();
+          fetchManagerData();
         })
         .catch((err) => {
           console.log(err);
@@ -38,13 +39,13 @@ function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
   const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
   const navigateToChangePassword = () => {
-    navigate("/change-qsr-password", { state: { qsrId: data._id } });
+    navigate("/change-manager-password", { state: { managerId: data._id } });
   };
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header>
-        <Modal.Title>Edit Qsr</Modal.Title>
+        <Modal.Title>Edit Manager</Modal.Title>
         <button
           type="button"
           className="btn-close"
@@ -71,13 +72,13 @@ function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
             <Button variant="secondary" onClick={handleClose} className="mr-2">
               <img src="../../dist/img/cancel.svg" alt="Cancel" /> Cancel
             </Button>
-            <Button variant="dark" type="submit" id="update_qsrInfo_btn">
+            <Button variant="dark" type="submit" id="update_manager_btn">
               <img src="../../dist/img/update.svg" alt="Update" /> Update
             </Button>
           </Form.Group>
           <Form.Group className="mb-3">
             <div className="mt-3" onClick={navigateToChangePassword} style={{ cursor: "pointer", color: "cornflowerblue" }}>
-              Do you want to change qsrInfo password?
+              Do you want to change manager password?
             </div>
           </Form.Group>
         </Form>
@@ -86,4 +87,4 @@ function EditQsrModal({ show, handleClose, data, fetchQsrData }) {
   );
 }
 
-export default EditQsrModal;
+export default EditManagerModal;

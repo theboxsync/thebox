@@ -33964,15 +33964,15 @@ html.maximized-card {
 
 .dark-mode .btn-primary:hover {
     color: #fff;
-    background-color: #335476;
-    border-color: #304e6d
+    background-color: #bbacd8;
+    border-color:#bbacd8
 }
 
 .dark-mode .btn-primary.focus,
 .dark-mode .btn-primary:focus {
     color: #fff;
-    background-color: #335476;
-    border-color: #304e6d;
+    background-color: #bbacd8;
+    border-color: #bbacd8;
     box-shadow: 0 0 0 0 rgba(92, 126, 162, .5)
 }
 

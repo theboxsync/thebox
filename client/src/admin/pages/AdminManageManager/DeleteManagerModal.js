@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Loading from "../../components/Loading";
 
-function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
+function DeleteManagerModal({ show, handleClose, data, fetchManagerData }) {
   const [showPasswordField, setShowPasswordField] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,9 +29,9 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
       console.log("DATA : ", data);
       await axios
         .post(
-          `${process.env.REACT_APP_ADMIN_API}/qsr/deleteqsr`,
+          `${process.env.REACT_APP_ADMIN_API}/manager/deletemanager`,
           {
-            qsrId: data.id,
+            managerId: data.id,
             adminPassword,
           },
           { withCredentials: true }
@@ -39,7 +40,7 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
           if (res.status === 200) {
             setSuccess(res.data.message);
             setError("");
-            fetchQsrData();
+            fetchManagerData();
             resetFields(); // Reset fields after successful deletion
             handleClose();
           } else {
@@ -48,11 +49,11 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
           }
         })
         .catch((err) => {
-          setError(err.response?.data?.message || "Failed to delete QSR.");
+          setError(err.response?.data?.message || "Failed to delete manager.");
           setSuccess("");
         });
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to delete QSR.");
+      setError(err.response?.data?.message || "Failed to delete manager.");
     }
   };
 
@@ -78,7 +79,7 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
       keyboard={false}
     >
       <Modal.Header>
-        <Modal.Title id="deleteQsrModalLabel">Delete QSR</Modal.Title>
+        <Modal.Title id="deleteManagerModalLabel">Delete Manager</Modal.Title>
         <button
           type="button"
           className="btn-close"
@@ -89,7 +90,7 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
       <Modal.Body>
         {!showPasswordField ? (
           <>
-            <h5>Are you sure you want to delete this QSR?</h5>
+            <h5>Are you sure you want to delete this manager?</h5>
             <p>This action cannot be undone.</p>
           </>
         ) : (
@@ -131,4 +132,4 @@ function DeleteQsrModal({ show, handleClose, data, fetchQsrData }) {
   );
 }
 
-export default DeleteQsrModal;
+export default DeleteManagerModal;
