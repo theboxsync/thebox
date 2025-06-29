@@ -131,8 +131,15 @@ const getMenuDataById = (req, res) => {
 const updateMenu = async (req, res) => {
   try {
     const dishId = req.params.id;
-    const { dish_name, dish_price, description, quantity, unit, dish_img } =
-      req.body;
+    const {
+      dish_name,
+      dish_price,
+      description,
+      quantity,
+      unit,
+      dish_img,
+      is_special,
+    } = req.body;
 
     const updateFields = {
       "dishes.$.dish_name": dish_name,
@@ -140,6 +147,7 @@ const updateMenu = async (req, res) => {
       "dishes.$.description": description,
       "dishes.$.quantity": quantity,
       "dishes.$.unit": unit,
+      "dishes.$.is_special": is_special,
     };
 
     if (dish_img) {

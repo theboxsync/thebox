@@ -57,12 +57,12 @@ function ViewOrderHistory() {
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
+        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
         { withCredentials: true }
       );
 
@@ -140,18 +140,18 @@ function ViewOrderHistory() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>CGST (${
-                  order.cgst_amount
+                  order.cgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.cgst_amount * order.bill_amount) / 100
+                  ((order.cgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>SGST (${
-                  order.sgst_amount
+                  order.sgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.sgst_amount * order.bill_amount) / 100
+                  ((order.sgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
@@ -160,7 +160,9 @@ function ViewOrderHistory() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
-                <td style="text-align: right;">- ₹ ${order.discount_amount || 0}</td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
