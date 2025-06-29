@@ -371,10 +371,21 @@ function AdminSubscription() {
                                       (existingQueries[
                                         subscription.plan_name
                                       ] ? (
-                                        <span>Already query was sent</span>
+                                        <span> <button
+                                            className="btn btn-transparent bg-transparent"
+                                            title="Already query was sent"
+                                            onClick={() =>
+                                              navigate("/dynamic-reports")
+                                            }
+                                          >
+                                            <img
+                                              src="../../dist/img/icon/sandclock.png" width="20px"
+                                              alt="Already query was sent"
+                                            />
+                                          </button></span>
                                       ) : (
                                         <button
-                                          className="btn btn-dark"
+                                          className="btn btn-dark bg-transparent"
                                           title="Raise Inquiry"
                                           onClick={() =>
                                             openInquiryModal(
@@ -382,13 +393,12 @@ function AdminSubscription() {
                                             )
                                           }
                                         >
-                                          Raise Inquiry{" "}
+                                         
                                           <img
                                             src="../../dist/img/icon/enquriy.png"
                                             width="20"
                                             alt="Raise Inquiry"
                                             style={{
-                                              filter: "invert(1)",
                                               marginLeft: "5px",
                                             }}
                                           />

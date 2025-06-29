@@ -113,10 +113,10 @@ function UpdateRequestedInventory() {
                         <h3 className="card-title">Item {index + 1}</h3>
                         <button
                           type="button"
-                          className="btn btn-danger btn-sm float-right"
+                          className="btn btn-dark btn-sm float-right"
                           onClick={() => removeItemField(index)}
                         >
-                          Remove
+                          <button className="btn btn-transparent bg-transparent p-0"><img src="../../dist/img/delete.svg" alt="delete" /></button> Delete
                         </button>
                       </div>
                       <div className="card-body row">
@@ -177,7 +177,7 @@ function UpdateRequestedInventory() {
                 </div>
                 <div className="form-group col-md-12">
                   <button type="submit" className="btn btn-dark">
-                    Update Inventory
+                   <img src="../../dist/img/add.svg" alt="Add" class="mx-1" /> Update Inventory
                   </button>
                 </div>
               </div>

@@ -466,7 +466,7 @@ function CompleteInventory() {
                               <input
                                 type="number"
                                 name={`items.${index}.item_price`}
-                                value={item.item_price || ""}
+                                value={item.item_price || 0}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 className="form-control"

@@ -381,7 +381,7 @@ function SettingsDashboard() {
                       className="btn btn-dark mx-2"
                       onClick={() => setIsEditingProfile(true)}
                     >
-                      Edit Profile Info
+                    <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit Profile Info
                     </button>
                   ) : (
                     <>
@@ -450,7 +450,7 @@ function SettingsDashboard() {
                       className="btn btn-dark mx-2"
                       onClick={() => setIsEditingContact(true)}
                     >
-                      Edit Contact Info
+                     <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit Contact Info
                     </button>
                   ) : (
                     <>
@@ -591,7 +591,7 @@ function SettingsDashboard() {
                       className="btn btn-dark"
                       onClick={() => setIsEditingAddress(true)}
                     >
-                      Edit Address Info
+                      <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" /> Edit Address Info
                     </button>
                   ) : (
                     <>
@@ -657,7 +657,7 @@ function SettingsDashboard() {
                     className="btn btn-primary mx-2"
                     onClick={() => setIsEditingTax(true)}
                   >
-                    Edit Tax Info
+                   <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit Tax Info
                   </button>
                 ) : (
                   <>

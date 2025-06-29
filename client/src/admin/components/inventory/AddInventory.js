@@ -374,7 +374,7 @@ function AddInventory({ setSection }) {
                             className="btn btn-danger float-right"
                             onClick={() => removeItem(index)}
                           >
-                            Remove
+                           <button className="btn btn-transparent bg-transparent p-0"><img src="../../dist/img/delete.svg" alt="delete" /></button> Delete
                           </button>
                         </div>
                       </div>
