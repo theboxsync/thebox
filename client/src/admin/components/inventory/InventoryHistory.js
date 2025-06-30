@@ -195,22 +195,22 @@ function InventoryHistory({ setSection }) {
       cell: (row) => (
         <div>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="View Details"
+            className="btn-transparent bg-transparent"
+            title="View Details"  style={{border:"none"}}
             onClick={() => navigate(`/inventory/complete-details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Edit"
+            className="btn-transparent bg-transparent"
+            title="Edit" style={{border:"none"}}
             onClick={() => navigate(`/inventory/completed-update/${row._id}`)}
           >
             <img src="../../dist/img/edit-b.svg" alt="Edit" />
           </button>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Delete"
+            className="btn-transparent bg-transparent"
+            title="Delete"  style={{border:"none"}}
             onClick={() => handleDelete(row._id)}
           >
             <img src="../../dist/img/delete-b.svg" alt="Delete" />
@@ -242,15 +242,15 @@ function InventoryHistory({ setSection }) {
       cell: (row) => (
         <>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="View Details"
+            className="btn-transparent bg-transparent"
+            title="View Details"  style={{border:"none"}}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Delete"
+            className="btn-transparent bg-transparent"
+            title="Delete"  style={{border:"none"}}
             onClick={() => handleDelete(row._id)}
           >
             <img src="../../dist/img/delete-b.svg" alt="Delete" />
@@ -281,7 +281,7 @@ function InventoryHistory({ setSection }) {
             <div className="card-tools">
               <button
                 type="button"
-                className="btn btn-dark mx-2"
+                className="btn-dark mx-2"  style={{border:"none"}}
                 onClick={() => setSection("ViewInventory")}
               >
                 <img
@@ -293,7 +293,7 @@ function InventoryHistory({ setSection }) {
               </button>
               <button
                 type="button"
-                className="btn btn-dark"
+                className="btn-dark"  style={{border:"none"}}
                 onClick={() => setSection("AddInventory")}
               >
                 <img src="../../dist/img/add.svg" alt="Add" className="mx-1" />

@@ -449,7 +449,11 @@ function AddInventory({ setSection }) {
                       className="btn btn-dark"
                       onClick={addItem}
                     >
-                      + Add More Item
+                       <img
+                        src="../../dist/img/add.svg"
+                        alt="Add"
+                        className="mx-1"
+                      /> Add More Item
                     </button>
                   </div>
                   <div className="form-group">

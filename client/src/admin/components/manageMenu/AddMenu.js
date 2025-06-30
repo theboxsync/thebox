@@ -405,7 +405,8 @@ function AddMenu({ setSection }) {
                       className="btn btn-dark"
                       onClick={addDish}
                     >
-                      + Add More Dishes
+                      <img src="../../dist/img/add.svg" alt="Add" className="mx-1" style={{ verticalAlign: "text-top" }}
+                      /> Add More Dishes
                     </button>
                   </div>
                   <div className="form-group">

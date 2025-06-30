@@ -101,15 +101,15 @@ function ViewInventory({ setSection }) {
       cell: (row) => (
         <div>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="View Details"
+            className="btn-transparent bg-transparent"
+            title="View Details" style={{border:"none"}}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Complete"
+            className="btn-transparent bg-transparent"
+            title="Complete" style={{border:"none"}}
             onClick={() =>
               navigate("/inventory/complete", { state: { id: row._id } })
             }
@@ -117,8 +117,8 @@ function ViewInventory({ setSection }) {
             <img src="../../dist/img/icon/approve -b.svg" alt="Approve" />
           </button>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Reject"
+            className="btn-transparent bg-transparent"
+            title="Reject"  style={{border:"none", backgroundColor:"none"}}
             onClick={() => openRejectModal(row._id)}
           >
             <img src="../../dist/img/icon/cancel-b.svg" alt="Reject" />
