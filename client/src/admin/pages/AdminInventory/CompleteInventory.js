@@ -30,7 +30,7 @@ function CompleteInventory() {
         item_name: "",
         item_quantity: 0,
         unit: "",
-        item_price: null,
+        item_price: 0,
       },
     ],
   });
@@ -388,6 +388,7 @@ function CompleteInventory() {
                                 className="mx-2"
                                 checked={item.completed}
                                 onChange={(e) => {
+                                  console.log("ohhho")
                                   setFieldValue(
                                     `items.${index}.completed`,
                                     e.target.checked
@@ -395,7 +396,7 @@ function CompleteInventory() {
                                   if (!e.target.checked) {
                                     setFieldValue(
                                       `items.${index}.item_price`,
-                                      null
+                                      0
                                     ); // Reset price if unchecked
                                   }
                                 }}
@@ -486,9 +487,7 @@ function CompleteInventory() {
                           <hr style={{ border: "1px solid #ccc" }} />
                         </div>
                       ))}
-                      {touched.items && errors.items && (
-                        <div className="text-danger">{errors.items}</div>
-                      )}
+                      
                       <button
                         type="submit"
                         className="btn btn-success mt-4"

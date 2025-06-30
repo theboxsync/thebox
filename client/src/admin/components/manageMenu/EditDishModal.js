@@ -16,6 +16,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
       quantity: data.quantity || "",
       unit: data.unit || "",
       dish_img: null,
+      is_special: data.is_special || false,
     },
     enableReinitialize: true,
     onSubmit: async (values) => {
@@ -60,6 +61,10 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
     formik.setFieldValue("unit", "");
   };
 
+  const handleSpecialDishChange = (event) => {
+    formik.setFieldValue("is_special", event.target.checked);
+  };
+
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
       <Modal.Header>
@@ -69,7 +74,9 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
           className="btn-close"
           aria-label="Close"
           onClick={handleClose}
-        >x</button>
+        >
+          x
+        </button>
       </Modal.Header>
       <Modal.Body>
         <Form id="edit_Dish_form" onSubmit={formik.handleSubmit} noValidate>
@@ -172,6 +179,17 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
               </Form.Group>
             </>
           )}
+
+          <Form.Group className="mb-3">
+            <label htmlFor={`showAdvancedOptions`}>
+              <input
+                type="checkbox"
+                onChange={() => handleSpecialDishChange()}
+                checked={formik.values.is_special}
+              />{" "}
+              Special Dish
+            </label>
+          </Form.Group>
 
           <div className="d-flex justify-content-end">
             <Button variant="secondary" onClick={handleClose} className="me-2">

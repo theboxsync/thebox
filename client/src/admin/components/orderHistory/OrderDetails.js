@@ -134,11 +134,15 @@ function OrderDetails() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
-                <td style="text-align: right;">- ₹ ${order.discount_amount || 0}</td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
-                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${order.bill_amount}</td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>
@@ -241,15 +245,15 @@ function OrderDetails() {
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
-                          <strong>CGST ({data.cgst_amount} %):</strong>
+                          <strong>CGST ({data.cgst_amount || 0} %):</strong>
                         </td>
-                        <td>₹ {(data.cgst_amount * data.sub_total) / 100}</td>
+                        <td>₹ {((data.cgst_amount || 0) * data.sub_total) / 100}</td>
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
-                          <strong>SGST ({data.sgst_amount} %):</strong>
+                          <strong>SGST ({data.sgst_amount || 0} %):</strong>
                         </td>
-                        <td>₹ {(data.sgst_amount * data.sub_total) / 100}</td>
+                        <td>₹ {((data.sgst_amount || 0) * data.sub_total) / 100}</td>
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
