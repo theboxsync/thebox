@@ -43,27 +43,7 @@ function ViewTables({ setSection }) {
     setShowEditModal(true);
   };
 
-  const checkTableExists = async (area, table_no) => {
-    if (!area || !table_no) return;
-
-    try {
-      if (tableData.filter((t) => t.area === area).length === 0) return;{
-        setTableErrors((prev) => ({
-          ...prev,
-          [index]: "Table number already exists in this area.",
-        }));
-      } else {
-        setTableErrors((prev) => {
-          const updatedErrors = { ...prev };
-          delete updatedErrors[index];
-          return updatedErrors;
-        });
-      }
-    } catch (error) {
-      console.error("Error checking table existence:", error);
-    }
-  };
-
+  
   return (
     <>
       <section className="content m-3">
@@ -116,7 +96,7 @@ function ViewTables({ setSection }) {
                               >
                                 <button
                                   className="btn btn-transparent bg-transparent p-0"
-                                  onClick={() => editModal(table)}
+                                  onClick={() => editModal(table)} title="Edit"
                                 >
                                   <img
                                     src="../../dist/img/edit-b.svg"
@@ -125,7 +105,7 @@ function ViewTables({ setSection }) {
                                 </button>
                                 <button
                                   className="btn btn-transparent bg-transparent p-0 ml-2"
-                                  onClick={() => deleteModal(table._id)}
+                                  onClick={() => deleteModal(table._id)} title="Delete"
                                 >
                                   <img
                                     src="../../dist/img/delete-b.svg"
@@ -140,7 +120,7 @@ function ViewTables({ setSection }) {
                     </div>
                   ))}
                 </div>
-                {tableData.map((table) => (
+                {/* {tableData.map((table) => (
                   <div className="card-body p-0 m-2" key={table._id}>
                     <h3 className="m-4">Area Type : {table.area}</h3>
                     <ul className="row my-5" style={{ listStyle: "none" }}>
@@ -175,7 +155,7 @@ function ViewTables({ setSection }) {
                             >
                               <button
                                 className="btn btn-transparent bg-transparent p-0"
-                                onClick={() => editModal(table)}
+                                onClick={() => editModal(table)} title="Edit"
                               >
                                 <img
                                   src="../../dist/img/edit-b.svg"
@@ -184,7 +164,7 @@ function ViewTables({ setSection }) {
                               </button>
                               <button
                                 className="btn btn-transparent bg-transparent p-0"
-                                onClick={() => deleteModal(table._id)}
+                                onClick={() => deleteModal(table._id)} title="Delete"
                               >
                                 <img
                                   src="../../dist/img/delete-b.svg"
@@ -198,7 +178,7 @@ function ViewTables({ setSection }) {
                     </ul>
                     <hr />
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>

@@ -11,6 +11,7 @@ import AddManager from "../../components/dashboard/AddManager";
 import AddQSR from "../../components/dashboard/AddQSR";
 import AddCaptain from "../../components/dashboard/AddCaptain";
 
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
 
@@ -100,7 +101,7 @@ export default function AdminDashboard() {
                           <div className="card-body">
                             <div className="row">
                               <div className="col-md-9">
-                                <b>{dish.dish_name}</b>
+                                <b>{dish.dish_name} </b>
                               </div>
                               <div className="col-md-3">{dish.dish_price}</div>
                             </div>

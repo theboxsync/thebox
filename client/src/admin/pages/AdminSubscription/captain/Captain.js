@@ -95,8 +95,8 @@ const AdminManageCaptain = ({ setCaptainName }) => {
           (
             <>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="Add"
+                className="btn-transparent bg-transparent"
+                title="Add" style={{border:"none"}}
                 onClick={() => setShowAddCaptainModal(true)}
               >
                 <img
@@ -110,15 +110,15 @@ const AdminManageCaptain = ({ setCaptainName }) => {
         : CaptainData.map((captain) => (
             <div key={captain._id}>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="Edit"
+                className="btn-transparent bg-transparent"
+              title="Edit" style={{ border: "none" }}
                 onClick={() => editCaptainModal(captain._id)}
               >
                 <img src="../../dist/img/icon/edit-b.svg" alt="edit Details" />
               </button>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="delete"
+                className="btn-transparent bg-transparent"
+              title="delete" style={{ border: "none" }}
                 onClick={() => deleteCaptainModal(captain._id)}
               >
                 <img

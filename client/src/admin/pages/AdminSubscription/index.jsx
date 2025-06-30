@@ -238,8 +238,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Scan For Menu" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{border:"none"}}
                                             onClick={() =>
                                               navigate("/manage-menu")
                                             }
@@ -253,8 +253,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Restaurant Website" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-restaurant-website"
@@ -270,8 +270,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Reservation Manager" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-reservation-manager"
@@ -287,8 +287,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Online Order Reconciliation" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-online-order-reconciliation"
@@ -304,8 +304,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Feedback" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/manage-feedback")
                                             }
@@ -319,8 +319,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Staff Management" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="View"
+                                            className="btn-transparent bg-transparent"
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/manage-staff")
                                             }
@@ -334,8 +334,8 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Dynamic Reports" && (
                                           <button
-                                            className="btn btn-transparent bg-dark"
-                                            title="View"
+                                            className="btn-transparent bg-transparent "
+                                            title="View" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/dynamic-reports")
                                             }
@@ -356,8 +356,8 @@ function AdminSubscription() {
                                       >
                                         Renew{" "}
                                         <button
-                                          className="btn btn-transparent bg-transparent"
-                                          title="Renew"
+                                          className="btn-transparent bg-transparent"
+                                          title="Renew" style={{ border: "none" }}
                                         >
                                           <img
                                             src="../../dist/img/icon/renew.png"
@@ -372,8 +372,8 @@ function AdminSubscription() {
                                         subscription.plan_name
                                       ] ? (
                                         <span> <button
-                                            className="btn btn-transparent bg-transparent"
-                                            title="Already query was sent"
+                                            className="btn-transparent bg-transparent"
+                                          title="Already query was sent" style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/dynamic-reports")
                                             }
@@ -385,8 +385,8 @@ function AdminSubscription() {
                                           </button></span>
                                       ) : (
                                         <button
-                                          className="btn btn-dark bg-transparent"
-                                          title="Raise Inquiry"
+                                          className="btn-dark bg-transparent"
+                                          title="Raise Inquiry" style={{ border: "none" }}
                                           onClick={() =>
                                             openInquiryModal(
                                               subscription.plan_name

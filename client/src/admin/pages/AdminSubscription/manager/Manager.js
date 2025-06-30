@@ -91,8 +91,8 @@ const Manager = ({ setManagerName }) => {
       {ManagerData.length === 0 ? (
         <>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Add"
+            className="btn-transparent bg-transparent"
+            title="Add" style={{ border: "none" }}
             onClick={() => addManagerModal()}
           >
             <img
@@ -106,15 +106,15 @@ const Manager = ({ setManagerName }) => {
         ManagerData.map((manager) => (
           <div key={manager._id}>
             <button
-              className="btn btn-transparent bg-transparent"
-              title="Edit"
+              className="btn-transparent bg-transparent"
+              title="Edit" style={{ border: "none" }}
               onClick={() => editManagerModal(manager._id)}
             >
               <img src="../../dist/img/icon/edit-b.svg" alt="edit Details" />
             </button>
             <button
-              className="btn btn-transparent bg-transparent"
-              title="delete"
+              className="btn-transparent bg-transparent"
+              title="delete" style={{ border: "none" }}
               onClick={() => deleteManagerModal(manager._id)}
             >
               <img
