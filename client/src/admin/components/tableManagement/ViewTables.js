@@ -38,30 +38,9 @@ function ViewTables({ setSection }) {
     console.log(deleteModalData);
   };
 
-  const editModal = (table) => {
-    setEditModalData(table);
+  const editModal = (area, table) => {
+    setEditModalData({...table, area});
     setShowEditModal(true);
-  };
-
-  const checkTableExists = async (area, table_no) => {
-    if (!area || !table_no) return;
-
-    try {
-      if (tableData.filter((t) => t.area === area).length === 0) return;{
-        setTableErrors((prev) => ({
-          ...prev,
-          [index]: "Table number already exists in this area.",
-        }));
-      } else {
-        setTableErrors((prev) => {
-          const updatedErrors = { ...prev };
-          delete updatedErrors[index];
-          return updatedErrors;
-        });
-      }
-    } catch (error) {
-      console.error("Error checking table existence:", error);
-    }
   };
 
   return (
@@ -104,11 +83,11 @@ function ViewTables({ setSection }) {
                             </div>
                           </div>
 
-                          {table.tables.map((table) => (
-                            <div key={table._id} className="row">
-                              <div className="col-md-4">{table.table_no}</div>
+                          {table.tables.map((t) => (
+                            <div key={t._id} className="row">
+                              <div className="col-md-4">{t.table_no}</div>
                               <div className="col-md-4 d-flex align-items-center">
-                                {table.max_person}
+                                {t.max_person}
                               </div>
                               <div
                                 className="d-flex justify-content-between pt-1"
@@ -116,7 +95,7 @@ function ViewTables({ setSection }) {
                               >
                                 <button
                                   className="btn btn-transparent bg-transparent p-0"
-                                  onClick={() => editModal(table)}
+                                  onClick={() => editModal(table.area, t)}
                                 >
                                   <img
                                     src="../../dist/img/edit-b.svg"
@@ -125,7 +104,7 @@ function ViewTables({ setSection }) {
                                 </button>
                                 <button
                                   className="btn btn-transparent bg-transparent p-0 ml-2"
-                                  onClick={() => deleteModal(table._id)}
+                                  onClick={() => deleteModal(t._id)}
                                 >
                                   <img
                                     src="../../dist/img/delete-b.svg"
