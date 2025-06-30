@@ -257,7 +257,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                     </div>
                     <ul className="row" style={{ listStyle: "none" }}>
                       {table.tables.map((table) => (
-                        <li key={table._id}>
+                        <li key={table._id} className="pt-2">
                           <div className="container">
                             <div
                               className={`dashboard-table d-flex justify-content-center align-items-center ${table.current_status === "Save"

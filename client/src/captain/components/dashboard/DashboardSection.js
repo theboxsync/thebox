@@ -105,31 +105,44 @@ function DashboardSection({
                     </div> */}
                     {tableData.map((table) => (
                       <div className="card-body p-0 m-2" key={table._id}>
-                        <div className="m-3" style={{ fontWeight: "bold", fontSize: "30px" }}>
+                        <div className="m-3" style={{ fontWeight: "bold" }}>
                           {table.area}
                         </div>
                         <ul className="row" style={{ listStyle: "none" }}>
                           {table.tables.map((table) => (
-                            <li key={table._id} className="mt-2">
-                              <div className="container-fluid">
+                            <li key={table._id}>
+                              <div className="container">
                                 <div
-                                  className={`dashboard-table d-flex justify-content-center align-items-center flex-column ${
+                                  className={`dashboard-table d-flex justify-content-center align-items-center ${
                                     table.current_status === "Save"
                                       ? "table-save"
-                                      : table.current_status === "KOT" ||
-                                        table.current_status ===
-                                          "Order Delevered"
+                                      : table.current_status === "KOT"
                                       ? "table-kot"
                                       : ""
                                   }`}
-                                  onClick={() => onClickTable(table._id)}
-                                  style={{ cursor: "pointer", width: "150px", height: "150px" }}
                                 >
-                                  <div align="center" style={{ fontSize: "50px" }} >{table.table_no}</div>
-                                  {/* <hr style={{ width: "100%", height: "0.5px", backgroundColor: "black" }} />
-                                  <h5>
-                                    Price: 100
-                                  </h5> */}
+                                  <div align="center">
+                                    <span style={{ fontSize: "14px" }}>
+                                      No.{" "}
+                                    </span>
+                                    <span style={{ fontSize: "26px" }}>
+                                      {table.table_no}
+                                    </span>
+                                    <hr
+                                      style={{
+                                        margin: "0px",
+                                        padding: "0px",
+                                        border: "1px solid #212529",
+                                      }}
+                                    />
+                                    <span style={{ fontSize: "14px" }}>
+                                      {" "}
+                                      Max Person :{" "}
+                                    </span>
+                                    <span style={{ fontSize: "16px" }}>
+                                      {table.max_person}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </li>

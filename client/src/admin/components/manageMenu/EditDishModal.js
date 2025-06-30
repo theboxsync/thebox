@@ -181,11 +181,12 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
           )}
 
           <Form.Group className="mb-3">
-            <label htmlFor={`showAdvancedOptions`}>
+            <label htmlFor={`is_special`}>
               <input
                 type="checkbox"
-                onChange={() => handleSpecialDishChange()}
+                onChange={(e) => handleSpecialDishChange(e)}
                 checked={formik.values.is_special}
+                id={`is_special`}
               />{" "}
               Special Dish
             </label>

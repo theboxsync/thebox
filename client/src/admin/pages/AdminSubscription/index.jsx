@@ -334,7 +334,7 @@ function AdminSubscription() {
                                         {subscription.plan_name ===
                                           "Dynamic Reports" && (
                                           <button
-                                            className="btn btn-transparent bg-transparent"
+                                            className="btn btn-transparent bg-dark"
                                             title="View"
                                             onClick={() =>
                                               navigate("/dynamic-reports")

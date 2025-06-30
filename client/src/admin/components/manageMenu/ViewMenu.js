@@ -150,17 +150,16 @@ function ViewMenu({ setSection }) {
                     </button>
                   </div>
                   {/* {activePlans.includes("Scan For Menu") && ( */}
-                    <div className="card-tools mx-2">
-                      <button
-                        type="button"
-                        className="btn btn-block btn-dark"
-                        id="addBtn"
-                        onClick={() => setSection("QrForMenu")}
-                      >
-                        <img src="../../dist/img/add.svg" alt="Add" /> QR for
-                        Menu
-                      </button>
-                    </div>
+                  <div className="card-tools mx-2">
+                    <button
+                      type="button"
+                      className="btn btn-block btn-dark"
+                      id="addBtn"
+                      onClick={() => setSection("QrForMenu")}
+                    >
+                      <img src="../../dist/img/add.svg" alt="Add" /> QR for Menu
+                    </button>
+                  </div>
                   {/* )} */}
                 </div>
               </div>
@@ -258,35 +257,22 @@ function ViewMenu({ setSection }) {
 
                   {data.dishes.map((dish) => (
                     <div key={dish._id} className="row">
-                      <div className="col-md-6">{dish.dish_name} -  {dish.is_special ? (
-                          // If dish.is_special is true, show the "Remove Special Dish" div
-                          <button
-                            className="btn bg-transparent m-1"
-                            title="Remove Special Dish"
-                            style={{ cursor: "pointer"}}
-                            onClick={() => removeSpecialModal(dish._id)}
-                          >
+                      <div className="col-md-6">
+                        {dish.dish_name}
+                        {dish.is_special && (
+                          <>
                             <img
                               src={utensilsslash}
                               alt="Remove Special Dish"
-                              width={"25px"}
+                              width={"20px"}
+                              className="ml-2"
                             />
-                          </button>
-                        ) : (
-                          // If dish.is_special is false, show the "Set Special Dish" button
-                          <button
-                            type="button"
-                            className="btn bg-transparent special_Dish_btn"
-                            title="Set Special Dish"
-                            onClick={() => specialDishModal(dish._id)}
-                          >
-                            <i
-                              style={{ color: "black", fontSize: "18px" }}
-                              className="fas fa-utensils"
-                            />
-                          </button>
-                        )} </div>
-                      <div className="col-md-2 d-flex align-items-center">{dish.dish_price}</div>
+                          </>
+                        )}
+                      </div>
+                      <div className="col-md-2 d-flex align-items-center">
+                        {dish.dish_price}
+                      </div>
                       <div className="col-md-4 d-flex">
                         <button
                           type="button"
@@ -308,7 +294,6 @@ function ViewMenu({ setSection }) {
                         >
                           <img src="../../dist/img/delete-b.svg" alt="Delete" />
                         </button>
-                        
                       </div>
                     </div>
                   ))}

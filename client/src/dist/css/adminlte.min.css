@@ -1,15 +1,3 @@
-/*!
- *   AdminLTE v3.2.0
- *   Author: Colorlib
- *   Website: AdminLTE.io <https://adminlte.io>
- *   License: Open source - MIT <https://opensource.org/licenses/MIT>
- */
-/*!
- * Bootstrap v4.6.1 (https://getbootstrap.com/)
- * Copyright 2011-2021 The Bootstrap Authors
- * Copyright 2011-2021 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
- */
 :root {
     --blue: #007bff;
     --indigo: #6610f2;
@@ -5735,7 +5723,7 @@ input[type=submit].btn-block {
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
-    border-radius: .25rem;
+    border-radius: 1rem;
     transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out
 }
 
@@ -14433,8 +14421,8 @@ body:not(.layout-fixed) .main-sidebar .sidebar {
 
 .sidebar-dark-secondary .nav-sidebar>.nav-item>.nav-link.active,
 .sidebar-light-secondary .nav-sidebar>.nav-item>.nav-link.active {
-    background-color: #bbacd8;
-    color: #212529;
+    background-color: #7444fd;
+    color: white;
 }
 
 .sidebar-dark-secondary .nav-sidebar.nav-legacy>.nav-item>.nav-link.active,
