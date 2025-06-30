@@ -86,10 +86,20 @@ const addTable = (req, res) => {
 
 const updateTable = (req, res) => {
   try {
-    const tableData = req.body;
-    Table.updateOne({ _id: tableData._id }, tableData)
-      .then((data) => res.json(data))
-      .catch((err) => res.json(err));
+    const { _id, table_no, max_person } = req.body;
+    console.log(_id, table_no, max_person);
+    Table.updateOne(
+      { "tables._id": _id },
+      { $set: { "tables.$.table_no": table_no, "tables.$.max_person": max_person } },
+    )
+      .then((data) => {
+        console.log("Data", data);
+        res.json(data)
+      })
+      .catch((err) => {
+        console.log("Error : " + err);
+        res.json(err)
+      });
   } catch (error) {
     console.log(error);
   }

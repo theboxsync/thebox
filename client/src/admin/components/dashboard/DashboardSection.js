@@ -120,6 +120,22 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
       navigate("/manage-manager");
     } else if (planName === "QSR") {
       navigate("/manage-qsr");
+    } else if (planName === "Captain Panel") {
+      navigate("/manage-captain");
+    } else if (planName === "Staff Management") {
+      navigate("/staff");
+    } else if (planName === "Feedback") {
+      navigate("/feedbacks");
+    } else if (planName === "Scan For Menu") {
+      navigate("/manage-menu");
+    } else if (planName === "Restaurant Website") {
+      navigate("/manage-restaurant-website");
+    } else if (planName === "Online Order Reconciliation") {
+      navigate("/manage-online-order-reconciliation");
+    } else if (planName === "Reservation Manager") {
+      navigate("/manage-reservation-manager");
+    } else if (planName === "Payroll By The Box") {
+      navigate("/manage-payroll");
     }
   };
 
@@ -154,20 +170,30 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                             <td>
                               {subscription.status === "active" && (
                                 <button
-                                  className="btn btn-primary"
+
                                   onClick={() =>
                                     managePlan(subscription.plan_name)
                                   }
                                 >
-                                  Manage
+                                  Manage <button class="btn btn-transparent bg-transparent" title="Edit"><img src="../../dist/img/icon/edit-b.svg" alt="edit Details" /></button>
+                                  <button class="btn btn-transparent bg-transparent" title="delete"><img src="../../dist/img/icon/delete-b.svg" alt="delete Details" /></button>
                                 </button>
+
                               )}
                               {subscription.status === "expired" && (
                                 <button
-                                  className="btn btn-primary"
+
                                   onClick={() => renewPlan(subscription._id)}
                                 >
-                                  Renew
+                                  Renew <button class="btn btn-transparent bg-transparent" title="Renew"><img src="../../dist/img/icon/renew.png" width="20" alt="Renew Details" /></button>
+                                </button>
+                              )}
+                              {subscription.status === "blocked" && (
+                                <button
+
+                                  onClick={() => ("")}
+                                >
+                                  Raise inquiry <button class="btn btn-transparent bg-transparent" title="Renew"><img src="../../dist/img/icon/enquriy.png" width="20" alt="Renew Details" /></button>
                                 </button>
                               )}
                             </td>
@@ -231,18 +257,23 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                     </div>
                     <ul className="row" style={{ listStyle: "none" }}>
                       {table.tables.map((table) => (
-                        <li key={table._id}>
+                        <li key={table._id} className="pt-2">
                           <div className="container">
                             <div
-                              className={`dashboard-table d-flex justify-content-center align-items-center ${
-                                table.current_status === "Save"
-                                  ? "table-save"
-                                  : table.current_status === "KOT"
+                              className={`dashboard-table d-flex justify-content-center align-items-center ${table.current_status === "Save"
+                                ? "table-save"
+                                : table.current_status === "KOT"
                                   ? "table-kot"
                                   : ""
-                              }`}
+                                }`}
                             >
-                              <div align="center">{table.table_no}</div>
+                              <div align="center">
+                                <span style={{ fontSize: "14px" }}>No. </span>
+                                <span style={{ fontSize: "26px" }}>{table.table_no}</span> 
+                                <hr style={{ margin: "0px", padding: "0px", border: "1px solid #212529" }} />
+                                <span style={{ fontSize: "14px" }}> Max Person : </span> 
+                                <span style={{ fontSize: "16px" }}>{table.max_person}</span>
+                              </div>
                             </div>
                           </div>
                         </li>

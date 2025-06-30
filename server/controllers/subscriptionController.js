@@ -7,16 +7,16 @@ const updateExpiredSubscriptions = async () => {
   const today = new Date();
   try {
     const result = await Subscription.updateMany(
-      { end_date: { $lt: today }, status: { $ne: "expired" } },
-      { $set: { status: "expired" } }
+      { end_date: { $lt: today }, status: { $ne: "inactive" } },
+      { $set: { status: "inactive" } }
     );
-    console.log(`Updated ${result.modifiedCount} expired subscriptions`);
+    console.log(`Updated ${result.modifiedCount} inactive subscriptions`);
   } catch (error) {
     console.error("Error updating subscriptions:", error);
   }
 };
 cron.schedule("0 0 * * *", () => {
-  console.log("Running cron job to update expired subscriptions...");
+  console.log("Running cron job to update inactive subscriptions...");
   updateExpiredSubscriptions();
 });
 
@@ -64,8 +64,8 @@ const getUserSubscriptionInfo = async (req, res) => {
     const today = new Date();
     const updatedSubscriptions = await Promise.all(
       subscription.map(async (sub) => {
-        if (new Date(sub.end_date) < today && sub.status !== "expired") {
-          sub.status = "expired";
+        if (new Date(sub.end_date) < today && sub.status !== "inactive") {
+          sub.status = "inactive";
           await sub.save();
         }
         return sub;
@@ -137,7 +137,7 @@ const buySubscriptionPlan = async (req, res) => {
   }
 };
 
-const pauseSubscriptions = async (req, res) => {
+const blockSubscriptions = async (req, res) => {
   try {
     const { subscriptionIds } = req.body;
 
@@ -147,15 +147,48 @@ const pauseSubscriptions = async (req, res) => {
 
     const result = await Subscription.updateMany(
       { _id: { $in: subscriptionIds } },
-      { $set: { status: "paused" } }
+      { $set: { status: "blocked" } }
     );
 
-    res.status(200).json({ message: "Subscriptions paused", result });
+    res.status(200).json({ message: "Subscriptions blocked", result });
   } catch (error) {
-    console.error("Error pausing subscriptions:", error);
+    console.error("Error in blocking subscriptions:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+const unblockSubscription = async (req, res) => {
+  try {
+    const { subscriptionId } = req.body;
+
+    if (!subscriptionId) {
+      return res.status(400).json({ message: "No subscription ID provided" });
+    }
+
+    const subscription = await Subscription.findById(subscriptionId);
+
+    if (!subscription) {
+      return res.status(404).json({ message: "Subscription not found" });
+    }
+
+    let newStatus = "inactive";
+
+    if (!subscription.end_date || new Date(subscription.end_date) > new Date()) {
+      newStatus = "active";
+    }
+
+    subscription.status = newStatus;
+    await subscription.save();
+
+    res.status(200).json({
+      message: `Subscription status updated to ${newStatus}`,
+      subscription,
+    });
+  } catch (error) {
+    console.error("Error in unblock subscriptions:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 const expandSubscriptions = async (req, res) => {
   try {
@@ -182,7 +215,7 @@ const renewSubscription = async (req, res) => {
   try {
     const { subscriptionId } = req.body;
 
-    // Find the expired subscription
+    // Find the inactive subscription
     const subscription = await Subscription.findById(subscriptionId);
     if (!subscription) {
       return res.status(404).json({ message: "Subscription not found" });
@@ -363,7 +396,8 @@ module.exports = {
   getUserSubscriptionInfo,
   getUserSubscriptionInfoById,
   buySubscriptionPlan,
-  pauseSubscriptions,
+  blockSubscriptions,
+  unblockSubscription,
   expandSubscriptions,
   renewSubscription,
   buyCompletePlan,

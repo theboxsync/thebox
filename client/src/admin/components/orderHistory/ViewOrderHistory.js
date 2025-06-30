@@ -140,18 +140,18 @@ function ViewOrderHistory() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>CGST (${
-                  order.cgst_amount
+                  order.cgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.cgst_amount * order.bill_amount) / 100
+                  ((order.cgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>SGST (${
-                  order.sgst_amount
+                  order.sgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.sgst_amount * order.bill_amount) / 100
+                  ((order.sgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
@@ -235,12 +235,12 @@ function ViewOrderHistory() {
           <img
             src="../../dist/img/eye-b.svg"
             alt="view"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer" }} title="View"
             onClick={() => navigate(`/order-details/${row._id}`)}
           />
           <img
             src="../../dist/img/print.svg"
-            alt="Print"
+            alt="Print" title="Print"
             style={{ cursor: "pointer", marginLeft: "10px" }}
             onClick={() => handlePrint(row._id)}
           />

@@ -36,7 +36,7 @@ export default function MenuBar() {
               className="brand-text"
               style={{
                 marginLeft: "55px",
-                color: "white",
+                color: "black",
                 fontWeight: "bold",
                 fontSize: "25px",
               }}
@@ -59,7 +59,7 @@ export default function MenuBar() {
                 </div>
 
                 <div className="info">
-                  <span style={{ color: "white" }} className="d-block">
+                  <span style={{ color: "black" }} className="d-block">
                     {userData.name}
                   </span>
                 </div>

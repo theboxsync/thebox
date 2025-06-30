@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import StaffProfileModal from "./StaffProfileModal";
 import StaffDeleteModal from "./StaffDeleteModal";
 
 import { MdManageAccounts } from "react-icons/md";
+import { AuthContext } from "../../context/AuthContext";
 
 function ViewStaff({ setSection }) {
+  const { activePlans } = useContext(AuthContext);
   const [staff, setStaff] = useState([]);
   const [selectedStaffData, setSelectedStaffData] = useState({});
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -53,7 +55,7 @@ function ViewStaff({ setSection }) {
                   <h3 style={{ fontWeight: "bold" }} className="card-title">
                     Manage Staff
                   </h3>
-                  <div className="card-tools">
+                  <div className="card-tools mx-2">
                     <button
                       type="button"
                       className="btn btn-block btn-dark"
@@ -63,6 +65,19 @@ function ViewStaff({ setSection }) {
                       <img src="../dist/img/icon/add.svg" /> Add Staff
                     </button>
                   </div>
+                  {activePlans.includes("Payroll By The Box") && (
+                    <div className="card-tools mx-2">
+                      <Link to={"/staff/attendance"}>
+                        <button
+                          type="button"
+                          className="btn btn-block btn-dark"
+                        >
+                          <MdManageAccounts size={20} className="mr-1" /> Manage
+                          Attendance
+                        </button>
+                      </Link>
+                    </div>
+                  )}
                 </div>
                 <div className="card-body p-0">
                   <ul className="users-list clearfix">

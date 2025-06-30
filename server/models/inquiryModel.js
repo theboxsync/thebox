@@ -17,6 +17,9 @@ const inquirySchema = new Schema({
   restaurant_name: {
     type: String,
   },
+  purpose: {
+    type: String,
+  },
   message: {
     type: String,
   },

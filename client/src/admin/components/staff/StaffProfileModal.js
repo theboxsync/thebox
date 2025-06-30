@@ -18,8 +18,14 @@ function StaffProfileModal({ show, handleClose, data, deletestaff }) {
 
   return (
     <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Profile</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <div className="text-center">

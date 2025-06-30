@@ -4,13 +4,13 @@
 }
 
 .dashboard-table {
-  width: 70px;
-  height: 70px;
+  width: 120px;
+  height: 120px;
   font-size: 30px;
-  border: 2px solid #00000099;
+  border: 2px solid #212529;
   border-radius: 5px;
-  background-color: lightgrey;
-  color: #00000099;
+  background-color: #fff;
+  color: #212529;
 }
 
 .outline-green {
@@ -52,13 +52,13 @@
 }
 
 .table-save {
-  background-color: rgb(65, 134, 65);
-  color: white;
+  background-color:#c1f1c9 ;
+  color: #212529;
 }
 
 .table-kot {
-  background-color: rgb(238, 200, 74);
-  color: white;
+  background-color:#fae39e;
+  color: #212529;
 }
 
 /* extra css */

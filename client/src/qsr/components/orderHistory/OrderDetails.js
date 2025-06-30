@@ -28,15 +28,16 @@ function OrderDetails() {
       setLoading(false);
     }
   };
+
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_QSR_API}/order/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_QSR_API}/user/userdata`,
+        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
         { withCredentials: true }
       );
 
@@ -109,28 +110,40 @@ function OrderDetails() {
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Sub Total: </strong></td>
                 <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
-                  order.bill_amount
+                  order.sub_total
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>CGST (${
-                  order.cgst_amount
+                  order.cgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.cgst_amount * order.bill_amount) / 100
+                  ((order.cgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>SGST (${
-                  order.sgst_amount
+                  order.sgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.sgst_amount * order.bill_amount) / 100
+                  ((order.sgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Total: </strong></td>
                 <td style="text-align: right;">₹ ${order.total_amount}</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>

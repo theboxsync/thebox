@@ -4,7 +4,7 @@ import DeleteDishModal from "./DeleteDishModal";
 import EditDishModal from "./EditDishModal";
 import SpecialDishModal from "./SpecialDishModal";
 import RemoveSpecialModal from "./RemoveSpecialModal";
-import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
+import utensilsslash from "../../../dist/img/icon/specialdish.png";
 import { AuthContext } from "../../context/AuthContext";
 
 function ViewMenu({ setSection }) {
@@ -150,17 +150,16 @@ function ViewMenu({ setSection }) {
                     </button>
                   </div>
                   {/* {activePlans.includes("Scan For Menu") && ( */}
-                    <div className="card-tools mx-2">
-                      <button
-                        type="button"
-                        className="btn btn-block btn-dark"
-                        id="addBtn"
-                        onClick={() => setSection("QrForMenu")}
-                      >
-                        <img src="../../dist/img/add.svg" alt="Add" /> QR for
-                        Menu
-                      </button>
-                    </div>
+                  <div className="card-tools mx-2">
+                    <button
+                      type="button"
+                      className="btn btn-block btn-dark"
+                      id="addBtn"
+                      onClick={() => setSection("QrForMenu")}
+                    >
+                      <img src="../../dist/img/add.svg" alt="Add" /> QR for Menu
+                    </button>
+                  </div>
                   {/* )} */}
                 </div>
               </div>
@@ -258,13 +257,27 @@ function ViewMenu({ setSection }) {
 
                   {data.dishes.map((dish) => (
                     <div key={dish._id} className="row">
-                      <div className="col-md-6">{dish.dish_name}</div>
-                      <div className="col-md-2">{dish.dish_price}</div>
+                      <div className="col-md-6">
+                        {dish.dish_name}
+                        {dish.is_special && (
+                          <>
+                            <img
+                              src={utensilsslash}
+                              alt="Remove Special Dish"
+                              width={"20px"}
+                              className="ml-2"
+                            />
+                          </>
+                        )}
+                      </div>
+                      <div className="col-md-2 d-flex align-items-center">
+                        {dish.dish_price}
+                      </div>
                       <div className="col-md-4 d-flex">
                         <button
                           type="button"
-                          className="btn bg-transparent edit_Dish_btn"
-                          title="Edit"
+                          className="bg-transparent edit_Dish_btn"
+                          title="Edit" style={{ border: "none" }}
                           onClick={() => {
                             editModal(dish._id);
                           }}
@@ -273,41 +286,14 @@ function ViewMenu({ setSection }) {
                         </button>
                         <button
                           type="button"
-                          className="btn bg-transparent delete_Dish_btn"
-                          title="Delete"
+                          className="bg-transparent delete_Dish_btn"
+                          title="Delete" style={{ border: "none" }}
                           onClick={() => {
                             deleteModal(dish._id, dish.dish_name);
                           }}
                         >
                           <img src="../../dist/img/delete-b.svg" alt="Delete" />
                         </button>
-                        {dish.is_special ? (
-                          // If dish.is_special is true, show the "Remove Special Dish" div
-                          <div
-                            className="bg-transparent m-1"
-                            title="Remove Special Dish"
-                            style={{ cursor: "pointer", width: "28px" }}
-                            onClick={() => removeSpecialModal(dish._id)}
-                          >
-                            <img
-                              src={utensilsslash}
-                              alt="Remove Special Dish"
-                            />
-                          </div>
-                        ) : (
-                          // If dish.is_special is false, show the "Set Special Dish" button
-                          <button
-                            type="button"
-                            className="btn bg-transparent special_Dish_btn"
-                            title="Set Special Dish"
-                            onClick={() => specialDishModal(dish._id)}
-                          >
-                            <i
-                              style={{ color: "black", fontSize: "18px" }}
-                              className="fas fa-utensils"
-                            />
-                          </button>
-                        )}
                       </div>
                     </div>
                   ))}

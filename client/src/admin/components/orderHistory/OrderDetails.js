@@ -114,18 +114,18 @@ function OrderDetails() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>CGST (${
-                  order.cgst_amount
+                  order.cgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.cgst_amount * order.bill_amount) / 100
+                  ((order.cgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>SGST (${
-                  order.sgst_amount
+                  order.sgst_amount || 0
                 } %):</strong></td>
                 <td style="text-align: right;">₹ ${
-                  (order.sgst_amount * order.bill_amount) / 100
+                  ((order.sgst_amount || 0) * order.bill_amount) / 100
                 }</td>
               </tr>
               <tr>
@@ -134,11 +134,15 @@ function OrderDetails() {
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right;"><strong>Discount: </strong></td>
-                <td style="text-align: right;">- ₹ ${order.discount_amount || 0}</td>
+                <td style="text-align: right;">- ₹ ${
+                  order.discount_amount || 0
+                }</td>
               </tr>
               <tr>
                 <td colspan="3" style="text-align: right; border-top: 1px dashed #ccc"><strong>Paid Amount: </strong></td>
-                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${order.bill_amount}</td>
+                <td style="text-align: right; border-top: 1px dashed #ccc">₹ ${
+                  order.bill_amount
+                }</td>
               </tr>
             </tbody>
           </table>
@@ -217,7 +221,7 @@ function OrderDetails() {
 
                 <div className="mt-4">
                   <h4 className="font-weight-bold">Ordered Items</h4>
-                  <table className="table table-bordered">
+                  <table className="table table-bordered bg-white">
                     <thead>
                       <tr>
                         <th>Dish Name</th>
@@ -241,15 +245,15 @@ function OrderDetails() {
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
-                          <strong>CGST ({data.cgst_amount} %):</strong>
+                          <strong>CGST ({data.cgst_amount || 0} %):</strong>
                         </td>
-                        <td>₹ {(data.cgst_amount * data.sub_total) / 100}</td>
+                        <td>₹ {((data.cgst_amount || 0) * data.sub_total) / 100}</td>
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
-                          <strong>SGST ({data.sgst_amount} %):</strong>
+                          <strong>SGST ({data.sgst_amount || 0} %):</strong>
                         </td>
-                        <td>₹ {(data.sgst_amount * data.sub_total) / 100}</td>
+                        <td>₹ {((data.sgst_amount || 0) * data.sub_total) / 100}</td>
                       </tr>
                       <tr>
                         <td colSpan="2" className="text-right">
