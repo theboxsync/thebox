@@ -88,8 +88,8 @@ const AdminManageQSR = ({ setQsrName }) => {
       {QsrData.length === 0 ? (
         <>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="Add"
+            className=" btn-transparent bg-transparent"
+            title="Add" style={{ border: "none" }}
             onClick={() => setShowAddQsrModal(true)}
           >
             <img
@@ -103,15 +103,15 @@ const AdminManageQSR = ({ setQsrName }) => {
         QsrData.map((qsr) => (
           <div key={qsr._id}>
             <button
-              className="btn btn-transparent bg-transparent"
-              title="Edit"
+              className="btn-transparent bg-transparent"
+              title="Edit" style={{ border: "none" }}
               onClick={() => editQsrModal(qsr._id)}
             >
               <img src="../../dist/img/icon/edit-b.svg" alt="edit Details" />
             </button>
             <button
-              className="btn btn-transparent bg-transparent"
-              title="delete"
+              className="btn-transparent bg-transparent"
+              title="delete" style={{ border: "none" }}
               onClick={() => deleteQsrModal(qsr._id)}
             >
               <img

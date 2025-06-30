@@ -276,8 +276,8 @@ function ViewMenu({ setSection }) {
                       <div className="col-md-4 d-flex">
                         <button
                           type="button"
-                          className="btn bg-transparent edit_Dish_btn"
-                          title="Edit"
+                          className="bg-transparent edit_Dish_btn"
+                          title="Edit" style={{ border: "none" }}
                           onClick={() => {
                             editModal(dish._id);
                           }}
@@ -286,8 +286,8 @@ function ViewMenu({ setSection }) {
                         </button>
                         <button
                           type="button"
-                          className="btn bg-transparent delete_Dish_btn"
-                          title="Delete"
+                          className="bg-transparent delete_Dish_btn"
+                          title="Delete" style={{ border: "none" }}
                           onClick={() => {
                             deleteModal(dish._id, dish.dish_name);
                           }}

@@ -182,7 +182,7 @@ export default function ManageAttendance() {
                                     return (
                                       <>
                                         <button
-                                          className="btn btn-success"
+                                          className="btn btn-dark"
                                           type="button"
                                           onClick={() =>
                                             handleCheckIn(staff._id)

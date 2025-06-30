@@ -96,8 +96,8 @@ const AdminManagePayroll = ({ setPayrollName }) => {
   return (
     <div className="btn-group">
       <button
-        className="btn btn-transparent bg-transparent"
-        title="View"
+        className="btn-transparent bg-transparent"
+        title="View" style={{ border: "none" }}
         onClick={() => navigate("/staff/attendance")}
       >
         <img src="../../dist/img/icon/eye-b.svg" alt="View" />
@@ -107,8 +107,8 @@ const AdminManagePayroll = ({ setPayrollName }) => {
           (
             <>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="Add"
+                className="btn-transparent bg-transparent"
+              title="Add" style={{ border: "none" }}
                 onClick={() => setShowAddAttendance(true)}
               >
                 <img
@@ -122,15 +122,15 @@ const AdminManagePayroll = ({ setPayrollName }) => {
         : AttendanceData.map((att) => (
             <div key={att._id}>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="Edit"
+                className="btn-transparent bg-transparent"
+              title="Edit" style={{ border: "none" }}
                 onClick={() => editAttendanceModal(att._id)}
               >
                 <img src="../../dist/img/icon/edit-b.svg" alt="edit Details" />
               </button>
               <button
-                className="btn btn-transparent bg-transparent"
-                title="delete"
+                className=" btn-transparent bg-transparent"
+              title="delete" style={{ border: "none" }}
                 onClick={() => deleteAttendanceModal(att._id)}
               >
                 <img

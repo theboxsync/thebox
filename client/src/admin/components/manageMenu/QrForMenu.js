@@ -68,7 +68,7 @@ const QrForMenu = ({ setSection }) => {
                         id="addBtn"
                         onClick={() => setSection("ViewMenu")}
                       >
-                        <img src="../../dist/img/add.svg" alt="Add" /> View Menu
+                        <img src="../../dist/img/view.svg" alt="view" /> View Menu
                       </button>
                     </div>
                   </div>
