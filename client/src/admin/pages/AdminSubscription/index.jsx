@@ -239,7 +239,8 @@ function AdminSubscription() {
                                           "Scan For Menu" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{border:"none"}}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/manage-menu")
                                             }
@@ -254,7 +255,8 @@ function AdminSubscription() {
                                           "Restaurant Website" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-restaurant-website"
@@ -271,7 +273,8 @@ function AdminSubscription() {
                                           "Reservation Manager" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-reservation-manager"
@@ -288,7 +291,8 @@ function AdminSubscription() {
                                           "Online Order Reconciliation" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate(
                                                 "/manage-online-order-reconciliation"
@@ -305,7 +309,8 @@ function AdminSubscription() {
                                           "Feedback" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/manage-feedback")
                                             }
@@ -320,7 +325,8 @@ function AdminSubscription() {
                                           "Staff Management" && (
                                           <button
                                             className="btn-transparent bg-transparent"
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/manage-staff")
                                             }
@@ -335,7 +341,8 @@ function AdminSubscription() {
                                           "Dynamic Reports" && (
                                           <button
                                             className="btn-transparent bg-transparent "
-                                            title="View" style={{ border: "none" }}
+                                            title="View"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/dynamic-reports")
                                             }
@@ -357,7 +364,8 @@ function AdminSubscription() {
                                         Renew{" "}
                                         <button
                                           className="btn-transparent bg-transparent"
-                                          title="Renew" style={{ border: "none" }}
+                                          title="Renew"
+                                          style={{ border: "none" }}
                                         >
                                           <img
                                             src="../../dist/img/icon/renew.png"
@@ -371,29 +379,34 @@ function AdminSubscription() {
                                       (existingQueries[
                                         subscription.plan_name
                                       ] ? (
-                                        <span> <button
+                                        <span>
+                                          {" "}
+                                          <button
                                             className="btn-transparent bg-transparent"
-                                          title="Already query was sent" style={{ border: "none" }}
+                                            title="Already query was sent"
+                                            style={{ border: "none" }}
                                             onClick={() =>
                                               navigate("/dynamic-reports")
                                             }
                                           >
                                             <img
-                                              src="../../dist/img/icon/sandclock.png" width="20px"
+                                              src="../../dist/img/icon/sandclock.png"
+                                              width="20px"
                                               alt="Already query was sent"
                                             />
-                                          </button></span>
+                                          </button>
+                                        </span>
                                       ) : (
                                         <button
                                           className="btn-dark bg-transparent"
-                                          title="Raise Inquiry" style={{ border: "none" }}
+                                          title="Raise Inquiry"
+                                          style={{ border: "none" }}
                                           onClick={() =>
                                             openInquiryModal(
                                               subscription.plan_name
                                             )
                                           }
                                         >
-                                         
                                           <img
                                             src="../../dist/img/icon/enquriy.png"
                                             width="20"
@@ -412,46 +425,48 @@ function AdminSubscription() {
                         </div>
                       </div>
                     )}
-                    {subscriptionPlans.length !== userSubscription.length ||
-                      (userSubscription.some(
-                        (subscription) => subscription.status === "inactive"
-                      ) &&
-                        (() => {
-                          const filteredBasePlans = subscriptionPlans.filter(
-                            (plan) => {
-                              const isPlanActive = userSubscription.some(
-                                (subscription) =>
-                                  subscription.plan_id === plan._id &&
-                                  (subscription.status === "active" ||
-                                    subscription.status === "blocked")
-                              );
-                              return !isPlanActive;
-                            }
+                    {(() => {
+                      const filteredBasePlans = subscriptionPlans.filter(
+                        (plan) => {
+                          const existingSubscription = userSubscription.find(
+                            (subscription) => subscription.plan_id === plan._id
                           );
+                          // skip if user currently has active or blocked subscription
+                          if (
+                            existingSubscription &&
+                            (existingSubscription.status === "active" ||
+                              existingSubscription.status === "blocked")
+                          ) {
+                            return false;
+                          }
+                          // show if never purchased or status is inactive
+                          return true;
+                        }
+                      );
 
-                          return filteredBasePlans.length > 0 ? (
-                            <>
-                              <div className="card">
-                                <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-                                  <h1 className="display-4">Our Add-ons</h1>
-                                  <p className="lead">
-                                    Choose various plans to fit your needs
-                                  </p>
-                                </div>
-                                <div className="d-flex mb-3 text-center row">
-                                  {filteredBasePlans.map((plan, index) => (
-                                    <PlanCard
-                                      key={index}
-                                      plan={plan}
-                                      buyPlan={buyPlan}
-                                    />
-                                  ))}
-                                </div>
-                              </div>
-                              <hr />
-                            </>
-                          ) : null;
-                        })())}
+                      return filteredBasePlans.length > 0 ? (
+                        <>
+                          <div className="card">
+                            <div className="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+                              <h1 className="display-4">Our Add-ons</h1>
+                              <p className="lead">
+                                Choose various plans to fit your needs
+                              </p>
+                            </div>
+                            <div className="d-flex mb-3 text-center row">
+                              {filteredBasePlans.map((plan, index) => (
+                                <PlanCard
+                                  key={index}
+                                  plan={plan}
+                                  buyPlan={buyPlan}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <hr />
+                        </>
+                      ) : null;
+                    })()}
                   </div>
                 </div>
               </div>
