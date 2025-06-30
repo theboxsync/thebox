@@ -52,7 +52,7 @@ export default function InventoryDetails() {
                 </div>
 
                 <div className="invoice p-3 mb-3">
-                  <div className="row">
+                  {/* <div className="row">
                     <div className="col-12">
                       <h4>
                         <small className="float-right">
@@ -63,8 +63,8 @@ export default function InventoryDetails() {
                         </small>
                       </h4>
                     </div>
-                  </div>
-                  <div className="row">
+                  </div> */}
+                  {/* <div className="row">
                     <div className="col-12">
                       <h4>
                         <small className="float-right">
@@ -75,8 +75,8 @@ export default function InventoryDetails() {
                         </small>
                       </h4>
                     </div>
-                  </div>
-                  <div className="row">
+                  </div> */}
+                  {/* <div className="row">
                     <div className="col-12 m-3">
                       <h4>
                         <small>
@@ -84,16 +84,40 @@ export default function InventoryDetails() {
                         </small>
                       </h4>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div className="row" style={{ marginTop: "20px" }}>
                     <div className="col-12 table-responsive">
                       <table className="table">
                         <thead>
                           <tr align="center">
-                            <th colSpan="3" style={{ fontSize: "18px" }}>
-                              Inventory Items
-                            </th>
+                            <th> <h4 className="float-left">
+                              <small>
+                                <strong>Status :  </strong>{inventoryItem.status}
+                              </small>
+                            </h4></th>
+                          
+                            <th> 
+                              <div className="d-flex justify-content-end">
+                                <h4>
+                                  <small>
+                                    Date:{" "}
+                                    {new Date(
+                                      inventoryItem.request_date
+                                    ).toLocaleDateString("en-IN")}
+                                  </small>
+                                </h4>
+                                &emsp;
+                                <h4>
+                                  <small >
+                                    Time:{" "}
+                                    {new Date(
+                                      inventoryItem.request_date
+                                    ).toLocaleTimeString("en-IN")}
+                                  </small>
+                                </h4>
+                              </div> 
+                              </th>
                           </tr>
                           <tr>
                             <th>Product</th>

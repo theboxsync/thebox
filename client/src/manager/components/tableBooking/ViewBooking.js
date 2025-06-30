@@ -59,8 +59,8 @@ function ViewBooking({ setSection }) {
                         <td>1</td>
                         <td>
                           <button
-                            className="btn bg-transparent reserve_btn"
-                            style={{ float: "left" }}
+                            className="bg-transparent reserve_btn"
+                            style={{ float: "left", border:"none" }}
                             onClick={() => setShowReserveModal(true)}
                             title="Reserve"
                           >
@@ -72,8 +72,8 @@ function ViewBooking({ setSection }) {
                             method="POST"
                           >
                             <button
-                              className="btn bg-transparent"
-                              type="submit"
+                              className="bg-transparent"
+                              type="submit" style={{border:"none"}}
                               name="submit_booking_id"
                               title="View"
                               onClick={getBookingDetails}
@@ -82,8 +82,8 @@ function ViewBooking({ setSection }) {
                             </button>
                           </form>
                           <button
-                            className="btn bg-transparent complete_btn"
-                            style={{ float: "left" }}
+                            className="bg-transparent complete_btn"
+                            style={{ float: "left",border:"none" }}
                             title="Completed"
                             onClick={() => setShowCompleteModal(true)}
                           >
@@ -91,9 +91,9 @@ function ViewBooking({ setSection }) {
                           </button>
                           <button
                             type="button"
-                            className="btn bg-transparent delete_btn"
+                            className=" bg-transparent delete_btn"
                             onClick={() => setShowDeleteModal(true)}
-                            title="Delete"
+                            title="Delete" style={{border:"none"}}
                           >
                             <img src="../dist/img/delete-b.svg" />
                           </button>
@@ -106,8 +106,8 @@ function ViewBooking({ setSection }) {
                         <td>4</td>
                         <td>
                           <button
-                            className="btn bg-transparent reserve_btn"
-                            style={{ float: "left" }}
+                            className="bg-transparent reserve_btn"
+                            style={{ float: "left",border:"none" }}
                             onClick={() => setShowReserveModal(true)}
                             title="Reserve"
                           >
@@ -119,8 +119,8 @@ function ViewBooking({ setSection }) {
                             method="POST"
                           >
                             <button
-                              className="btn bg-transparent"
-                              type="submit"
+                              className=" bg-transparent"
+                              type="submit" style={{border:"none"}}
                               name="submit_booking_id"
                               title="View"
                               onClick={getBookingDetails}
@@ -129,8 +129,8 @@ function ViewBooking({ setSection }) {
                             </button>
                           </form>
                           <button
-                            className="btn bg-transparent complete_btn"
-                            style={{ float: "left" }}
+                            className=" bg-transparent complete_btn"
+                            style={{ float: "left",border:"none" }}
                             title="Completed"
                             onClick={() => setShowCompleteModal(true)}
                           >
@@ -138,9 +138,9 @@ function ViewBooking({ setSection }) {
                           </button>
                           <button
                             type="button"
-                            className="btn bg-transparent delete_btn"
+                            className=" bg-transparent delete_btn"
                             onClick={() => setShowDeleteModal(true)}
-                            title="Delete"
+                            title="Delete" style={{border:"none"}}
                           >
                             <img src="../dist/img/delete-b.svg" />
                           </button>
@@ -153,8 +153,8 @@ function ViewBooking({ setSection }) {
                         <td>2.</td>
                         <td>
                           <button
-                            className="btn bg-transparent reserve_btn"
-                            style={{ float: "left" }}
+                            className="bg-transparent reserve_btn"
+                            style={{ float: "left",border:"none" }}
                             onClick={() => setShowReserveModal(true)}
                             title="Reserve"
                           >
@@ -166,8 +166,8 @@ function ViewBooking({ setSection }) {
                             method="POST"
                           >
                             <button
-                              className="btn bg-transparent"
-                              type="submit"
+                              className=" bg-transparent"
+                              type="submit" style={{border:"none"}}
                               name="submit_booking_id"
                               title="View"
                               onClick={getBookingDetails}
@@ -176,8 +176,8 @@ function ViewBooking({ setSection }) {
                             </button>
                           </form>
                           <button
-                            className="btn bg-transparent complete_btn"
-                            style={{ float: "left" }}
+                            className=" bg-transparent complete_btn"
+                            style={{ float: "left",border:"none" }}
                             title="Completed"
                             onClick={() => setShowCompleteModal(true)}
                           >
@@ -185,9 +185,9 @@ function ViewBooking({ setSection }) {
                           </button>
                           <button
                             type="button"
-                            className="btn bg-transparent delete_btn"
+                            className=" bg-transparent delete_btn"
                             onClick={() => setShowDeleteModal(true)}
-                            title="Delete"
+                            title="Delete" style={{border:"none"}}
                           >
                             <img src="../dist/img/delete-b.svg" />
                           </button>

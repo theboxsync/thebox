@@ -4,8 +4,14 @@ import { Modal, Button, Form } from "react-bootstrap";
 function FilterModal({show, handleClose}) {
   return (
     <Modal show={show} onHide={handleClose}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title id="filterModalLabel">Inventory Filter</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Form
         className="needs-validation"

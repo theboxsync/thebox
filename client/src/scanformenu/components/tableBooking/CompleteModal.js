@@ -4,8 +4,14 @@ import { Button, Form, Modal } from "react-bootstrap";
 function CompleteModal({show, handleClose}) {
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Completed Confirmation</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <Form

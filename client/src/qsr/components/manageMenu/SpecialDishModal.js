@@ -18,8 +18,14 @@ function SpecialDishModal({ show, handleClose, data, fetchMenuData }) {
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Special Dish</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <h5>Are you sure you want set this dish as a Special Dish?</h5>

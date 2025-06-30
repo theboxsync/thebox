@@ -82,13 +82,13 @@ function ViewKOTs() {
                       <div className="d-flex justify-content-around m-2">
                         <div>
                           Area:{" "}
-                          <strong style={{ fontSize: "25px" }}>
+                          <strong style={{ fontSize: "18px" }}>
                             {data.table_area}
                           </strong>
                         </div>
                         <div>
                           Table No.:{" "}
-                          <strong style={{ fontSize: "25px" }}>
+                          <strong style={{ fontSize: "18px" }}>
                             {data.table_no}
                           </strong>
                         </div>

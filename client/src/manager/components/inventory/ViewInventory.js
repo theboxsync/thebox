@@ -106,16 +106,16 @@ function ViewInventory({ setSection }) {
       cell: (row) => (
         <div>
           <button
-            className="btn btn-transparent bg-transparent"
-            title="View Details"
+            className=" btn-transparent bg-transparent"
+            title="View Details"style={{border:"none"}}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           {row.status !== "Completed" && (
             <button
-              className="btn btn-transparent bg-transparent"
-              title="Delete"
+              className=" btn-transparent bg-transparent"
+              title="Delete" style={{ border: "none" }}
               onClick={() => deleteModal(row._id)}
             >
               <img src="../../dist/img/icon/delete-b.svg" alt="Delete" />

@@ -91,8 +91,14 @@ function PaymentModal({
 
   return (
     <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Payment</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <Form>
