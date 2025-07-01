@@ -4,8 +4,14 @@ import { Modal, Button } from "react-bootstrap";
 function DeleteModal({show, handleClose}) {
   return (
     <Modal show={show} onHide={handleClose} backdrop="static">
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Delete Booking</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <h5>Are you sure you want to delete this Booking?</h5>

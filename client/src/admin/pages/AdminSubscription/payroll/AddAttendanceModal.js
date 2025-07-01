@@ -35,8 +35,14 @@ function AddAttendanceModal({ show, handleClose, fetchAttendanceData }) {
 
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Add Attendance Panel</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={formik.handleSubmit} noValidate>

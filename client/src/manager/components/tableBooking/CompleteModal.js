@@ -4,8 +4,14 @@ import { Button, Form, Modal } from "react-bootstrap";
 function CompleteModal({show, handleClose}) {
   return (
     <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
+      <Modal.Header>
         <Modal.Title>Completed Confirmation</Modal.Title>
+        <button
+          type="button"
+          className="btn-close"
+          aria-label="Close"
+          onClick={handleClose}
+        >x</button>
       </Modal.Header>
       <Modal.Body>
         <Form
@@ -19,7 +25,7 @@ function CompleteModal({show, handleClose}) {
             <label style={{ fontWeight: "bold" }}>Payment Method</label>
           </div>
           <Form.Group className="row">
-            <div className="form-check col-md-3">
+            <div className="form-check ">
               <Form.Check
                 type="radio"
                 name="pmethod"
@@ -29,7 +35,7 @@ function CompleteModal({show, handleClose}) {
                 required
               />
             </div>
-            <div className="form-check col-md-3">
+            <div className="form-check">
               <Form.Check
                 type="radio"
                 name="pmethod"
@@ -39,7 +45,7 @@ function CompleteModal({show, handleClose}) {
                 required
               />
             </div>
-            <div className="form-check col-md-2">
+            <div className="form-check">
               <Form.Check
                 type="radio"
                 name="pmethod"
@@ -49,7 +55,7 @@ function CompleteModal({show, handleClose}) {
                 required
               />
             </div>
-            <div className="form-check col-md-2">
+            <div className="form-check">
               <Form.Check
                 type="radio"
                 name="pmethod"

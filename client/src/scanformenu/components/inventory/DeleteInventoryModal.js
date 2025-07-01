@@ -19,8 +19,14 @@ function DeleteInventoryModal({ show, handleClose, id, fetchInventoryData }) {
   return (
     <>
       <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
+        <Modal.Header>
           <Modal.Title>Delete Inventory</Modal.Title>
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={handleClose}
+          >x</button>
         </Modal.Header>
         <Modal.Body>Are you sure you want to delete this inventory?</Modal.Body>
         <Modal.Footer>
