@@ -8,7 +8,15 @@ function Secondform({ inputData, setInputData, handleGoNext }) {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
 
-  const { values, errors, touched, handleBlur, handleChange, handleSubmit, setFieldValue } = useFormik({
+  const {
+    values,
+    errors,
+    touched,
+    handleBlur,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
     initialValues: inputData,
     validationSchema: signupSchema2,
     onSubmit: (values) => {
@@ -18,23 +26,35 @@ function Secondform({ inputData, setInputData, handleGoNext }) {
   });
 
   useEffect(() => {
-    setCountries(Country.getAllCountries());
+    const allCountries = Country.getAllCountries();
+    setCountries(allCountries);
+
+    const defaultCountryCode = inputData.country || "IN"; // default to India
+
+    setFieldValue("country", defaultCountryCode); // set in formik
+    const defaultStates = State.getStatesOfCountry(defaultCountryCode);
+    setStates(defaultStates);
+
+    // optional: if you also want to pre-fill cities based on existing inputData.state
+    if (inputData.state) {
+      setCities(City.getCitiesOfState(defaultCountryCode, inputData.state));
+    }
   }, []);
 
   const handleCountryChange = (event) => {
     const countryIsoCode = event.target.value;
-    setFieldValue('country', countryIsoCode);
+    setFieldValue("country", countryIsoCode);
     setStates(State.getStatesOfCountry(countryIsoCode));
     setCities([]);
-    setFieldValue('state', '');
-    setFieldValue('city', '');
+    setFieldValue("state", "");
+    setFieldValue("city", "");
   };
 
   const handleStateChange = (event) => {
     const stateIsoCode = event.target.value;
-    setFieldValue('state', stateIsoCode);
+    setFieldValue("state", stateIsoCode);
     setCities(City.getCitiesOfState(values.country, stateIsoCode));
-    setFieldValue('city', '');
+    setFieldValue("city", "");
   };
 
   return (

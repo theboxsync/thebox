@@ -5,6 +5,7 @@ import { signupSchema1 } from "../../../schemas";
 
 function Firstform({ inputData, setInputData, handleGoNext }) {
   const [emailError, setEmailError] = useState("");
+  const [logoError, setLogoError] = useState("");
 
   const {
     values,
@@ -55,7 +56,20 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
   });
 
   const handleFileChange = (event) => {
-    setFieldValue("logo", event.target.files[0]);
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 1024 * 1024) {
+        // 1 MB
+        setLogoError("Logo must be less than 1 MB.");
+        event.target.value = ""; // optional: reset file input
+        setFieldValue("logo", null);
+      } else {
+        setLogoError(""); // clear previous error
+        setFieldValue("logo", file);
+      }
+    } else {
+      setLogoError(""); // clear error if no file selected
+    }
   };
 
   return (
@@ -90,7 +104,7 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
               required
             />
             <label className="text-danger">
-              {errors.logo && touched.logo ? errors.logo : null}
+              {logoError || (errors.logo && touched.logo ? errors.logo : null)}
             </label>
           </div>
           <div className="from-group mb-3">

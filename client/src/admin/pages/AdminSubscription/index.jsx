@@ -27,7 +27,7 @@ function AdminSubscription() {
 
   const [existingQueries, setExistingQueries] = useState({});
 
-  const [managerName, setManagerName] = useState("Hello");
+  const [managerName, setManagerName] = useState(null);
   const [qsrName, setQsrName] = useState(null);
   const [captainName, setCaptainName] = useState(null);
   const [payrollName, setPayrollName] = useState(null);
