@@ -134,6 +134,8 @@ function CustomerOrderDetail({
 
     if (orderInfo.order_status === "KOT") {
       setPaymentSection(true);
+    } else {
+      setPaymentSection(false);
     }
   }, [order, tableInfo, orderType]);
 
