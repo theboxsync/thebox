@@ -57,6 +57,7 @@ export const AuthContextProvider = ({ children }) => {
   }, []);
 
   const value = {
+    fetchUserData,
     user,
     userSubscriptions,
     activePlans,
