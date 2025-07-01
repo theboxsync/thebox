@@ -33,15 +33,21 @@ const AddTable = ({ setSection }) => {
     validationSchema: addTable,
     onSubmit: async (values) => {
       try {
-        // Check if there are any unresolved table errors
-        const hasErrors = Object.keys(tableErrors).length > 0;
+        const results = await Promise.all(
+          values.tables.map((table, index) =>
+            checkTableExists(values.area, table.table_no, index)
+          )
+        );
+
+        const hasErrors = results.includes(true);
+        console.log("hasErrors:", hasErrors);
 
         if (hasErrors) {
-          console.error("Fix table errors before submitting:", tableErrors);
-          return; // Prevent form submission
+          console.error("Fix table errors before submitting");
+          return; // Stop submit
         }
 
-        // Proceed with form submission if no errors
+        // Submit if ok
         const response = await axios.post(
           `${process.env.REACT_APP_ADMIN_API}/table/addtable`,
           values,
@@ -55,9 +61,29 @@ const AddTable = ({ setSection }) => {
     },
   });
 
-  // Check if table number already exists
   const checkTableExists = async (area, table_no, index) => {
-    if (!area || !table_no) return;
+    if (!area || !table_no) return false;
+
+    const trimmedNo = table_no.trim();
+
+    // Local duplicate check
+    const duplicateIndex = formik.values.tables.findIndex(
+      (t, i) => t.table_no.trim() === trimmedNo && i !== index
+    );
+
+    if (duplicateIndex !== -1) {
+      setTableErrors((prev) => ({
+        ...prev,
+        [index]: "Duplicate table number used in the form.",
+      }));
+      return true; // Has error
+    } else {
+      setTableErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[index];
+        return updated;
+      });
+    }
 
     try {
       const response = await axios.get(
@@ -73,15 +99,18 @@ const AddTable = ({ setSection }) => {
           ...prev,
           [index]: "Table number already exists in this area.",
         }));
+        return true; // Has error
       } else {
         setTableErrors((prev) => {
           const updatedErrors = { ...prev };
           delete updatedErrors[index];
           return updatedErrors;
         });
+        return false; // No error
       }
     } catch (error) {
       console.error("Error checking table existence:", error);
+      return true; // Treat as error to be safe
     }
   };
 
@@ -209,7 +238,12 @@ const AddTable = ({ setSection }) => {
                             className="btn btn-dark mt-4 float-right"
                             onClick={() => removeTable(index)}
                           >
-                           <img src="../../dist/img/icon/delete.svg" alt="delete Details" style={{verticalAlign:"text-top"}} />Delete
+                            <img
+                              src="../../dist/img/icon/delete.svg"
+                              alt="delete Details"
+                              style={{ verticalAlign: "text-top" }}
+                            />
+                            Delete
                           </button>
                         </div>
                       </div>
@@ -223,7 +257,11 @@ const AddTable = ({ setSection }) => {
                     className="btn btn-dark mx-2"
                     onClick={addMoreTable}
                   >
-                    <img src="../../dist/img/icon/add.svg" className="mx-1" style={{verticalAlign:"text-top"}}/>
+                    <img
+                      src="../../dist/img/icon/add.svg"
+                      className="mx-1"
+                      style={{ verticalAlign: "text-top" }}
+                    />
                     Add More Tables
                   </button>
                   <button
@@ -231,7 +269,11 @@ const AddTable = ({ setSection }) => {
                     name="submit"
                     className="btn btn-dark mx-2"
                   >
-                    <img src="../../dist/img/icon/add.svg" className="mx-1"  style={{verticalAlign:"text-top"}}/>
+                    <img
+                      src="../../dist/img/icon/add.svg"
+                      className="mx-1"
+                      style={{ verticalAlign: "text-top" }}
+                    />
                     Add
                   </button>
                 </div>

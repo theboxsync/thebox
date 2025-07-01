@@ -152,12 +152,6 @@ export default function Login(props) {
                 </span>
               </div>
             </form>
-
-            <div className="mb-1 text-right">
-              <Link to="/forgot-password" className="text-dark">
-                <b> Forgot password ? </b>
-              </Link>
-            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import SpecialDishModal from "./SpecialDishModal";
 import RemoveSpecialModal from "./RemoveSpecialModal";
-import utensilsslash from "../../../dist/img/icon/utensilsslash.svg";
+import utensilsslash from "../../../dist/img/icon/specialdish.png";
 
 function ViewMenu({ setSection }) {
   const [showSpecialModal, setShowSpecialModal] = useState(false);
@@ -272,26 +272,26 @@ function ViewMenu({ setSection }) {
                       <div className="col-md-2">{dish.dish_price}</div>
                       <div className="col-md-4">
                         {dish.is_special ? (
-                          <div
-                            className="bg-transparent m-1"
+                          <button
+                            className="bg-transparent m-2"
                             title="Remove Special Dish"
-                            style={{ cursor: "pointer", width: "32px" }}
+                            style={{ cursor: "pointer", width: "20px" ,border:"none" }}
                             onClick={() => removeSpecialModal(dish._id)}
                           >
                             <img
                               src={utensilsslash}
-                              alt="Remove Special Dish"
+                              alt="Remove Special Dish" width={"20px"}
                             />
-                          </div>
+                          </button>
                         ) : (
                           <button
                             type="button"
-                            className="btn bg-transparent special_Dish_btn"
-                            title="Set Special Dish"
+                            className="bg-transparent special_Dish_btn"
+                            title="Set Special Dish" style={{border:"none"}}
                             onClick={() => specialDishModal(dish._id)}
                           >
                             <i
-                              style={{ color: "black", fontSize: "22px" }}
+                              style={{ color: "black", fontSize: "16px" }}
                               className="fas fa-utensils"
                             />
                           </button>
@@ -300,24 +300,24 @@ function ViewMenu({ setSection }) {
                         {dish.is_available ? (
                           <button
                             type="button"
-                            className="btn bg-transparent special_Dish_btn"
-                            title="Mark as Unavailable"
+                            className="bg-transparent special_Dish_btn"
+                            title="Mark as Unavailable" style={{ border: "none" }}
                             onClick={() => markAsUnavailable(dish._id)}
                           >
                             <i
-                              style={{ color: "black", fontSize: "22px" }}
+                              style={{ color: "black", fontSize: "16px" }}
                               className="fas fa-ban"
                             />
                           </button>
                         ) : (
                           <button
                             type="button"
-                            className="btn bg-transparent special_Dish_btn"
-                            title="Set as Available"
+                            className="bg-transparent special_Dish_btn"
+                              title="Set as Available" style={{ border: "none" }}
                             onClick={() => markAsAvailable(dish._id)}
                           >
                             <i
-                              style={{ color: "black", fontSize: "22px" }}
+                              style={{ color: "black", fontSize: "16px" }}
                               className="fas fa-check-circle"
                             />
                           </button>

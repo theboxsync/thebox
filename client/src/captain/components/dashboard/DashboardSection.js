@@ -110,7 +110,7 @@ function DashboardSection({
                         </div>
                         <ul className="row" style={{ listStyle: "none" }}>
                           {table.tables.map((table) => (
-                            <li key={table._id}>
+                            <li key={table._id} className="pt-2">
                               <div className="container">
                                 <div
                                   className={`dashboard-table d-flex justify-content-center align-items-center ${
@@ -120,6 +120,8 @@ function DashboardSection({
                                       ? "table-kot"
                                       : ""
                                   }`}
+                                  onClick={() => onClickTable(table._id)}
+                                  style={{ cursor: "pointer" }}
                                 >
                                   <div align="center">
                                     <span style={{ fontSize: "14px" }}>

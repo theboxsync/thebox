@@ -234,14 +234,14 @@ function ViewOrderHistory() {
         <>
           <img
             src="../../dist/img/eye-b.svg"
-            alt="view"
+            alt="view" title="View"
             style={{ cursor: "pointer" }}
             onClick={() => navigate(`/order-details/${row._id}`)}
           />
 
           <img
             src="../../dist/img/print.svg"
-            alt="Print"
+            alt="Print" title="Print"
             style={{ cursor: "pointer", marginLeft: "10px" }}
             onClick={() => handlePrint(row._id)}
           />

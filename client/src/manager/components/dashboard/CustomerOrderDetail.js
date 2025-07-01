@@ -121,6 +121,7 @@ function CustomerOrderDetail({
             name: response.data[0].name,
             email: response.data[0].email,
             phone: response.data[0].phone,
+            address: response.data[0].address,
             date_of_birth: response.data[0].date_of_birth,
             anniversary: response.data[0].anniversary,
             tag: response.data[0].tag,

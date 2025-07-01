@@ -222,7 +222,7 @@ function OrderDetails() {
 
                 <div className="mt-4">
                   <h4 className="font-weight-bold">Ordered Items</h4>
-                  <table className="table table-bordered">
+                  <table className="table table-bordered bg-white">
                     <thead>
                       <tr>
                         <th>Dish Name</th>

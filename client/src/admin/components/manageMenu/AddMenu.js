@@ -383,6 +383,7 @@ function AddMenu({ setSection }) {
                                   <option value="g">g</option>
                                   <option value="litre">litre</option>
                                   <option value="ml">ml</option>
+                                  <option value="piece">piece</option>
                                 </select>
                                 <label className="text-danger">
                                   {formik.errors.dishes?.[index]?.unit &&

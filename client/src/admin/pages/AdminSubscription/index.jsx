@@ -27,7 +27,7 @@ function AdminSubscription() {
 
   const [existingQueries, setExistingQueries] = useState({});
 
-  const [managerName, setManagerName] = useState("Hello");
+  const [managerName, setManagerName] = useState(null);
   const [qsrName, setQsrName] = useState(null);
   const [captainName, setCaptainName] = useState(null);
   const [payrollName, setPayrollName] = useState(null);
@@ -356,14 +356,14 @@ function AdminSubscription() {
                                       </>
                                     )}
                                     {subscription.status === "inactive" && (
-                                      <button
+                                      <button className="btn-transparent bg-transparent " style={{ border: "none" }}
                                         onClick={() =>
                                           renewPlan(subscription._id)
                                         }
                                       >
-                                        Renew{" "}
+                                        {" "}
                                         <button
-                                          className="btn-transparent bg-transparent"
+                                          className="btn-transparent bg-transparent p-0"
                                           title="Renew"
                                           style={{ border: "none" }}
                                         >

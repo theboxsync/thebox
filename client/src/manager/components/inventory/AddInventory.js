@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { requestInventory } from "../../../schemas";
 import { date } from "yup";
 
+
 function AddInventory({ setSection }) {
   const [items, setItems] = useState([{ item_name: "", unit: "", item_quantity: "" }]);
 
@@ -82,10 +83,10 @@ function AddInventory({ setSection }) {
                     <h3 className="card-title">Item {index + 1}</h3>
                     <button
                       type="button"
-                      className="btn btn-danger btn-sm float-right"
+                      className="btn btn-dark btn-sm float-right"
                       onClick={() => removeItemField(index)}
                     >
-                      Remove
+                      <img src="../../dist/img/icon/delete.svg"/>delete
                     </button>
                   </div>
                   <div className="card-body row">
@@ -145,12 +146,18 @@ function AddInventory({ setSection }) {
               </div>
             ))}
             <div className="form-group col-md-12">
-              <input
+              {/* <input
                 type="button"
                 className="btn btn-dark"
                 value="+ Add More"
                 onClick={addItemField}
-              />
+              /> */}
+              <button type="button" className="btn btn-dark" onClick={addItemField}> <img
+                src="../../dist/img/add.svg"
+                alt="Add"
+                className="mx-1"
+              /> Add More</button>
+             
             </div>
             <div className="form-group col-md-12">
               <button
