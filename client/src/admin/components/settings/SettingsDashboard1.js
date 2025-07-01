@@ -23,7 +23,6 @@ function SettingsDashboard() {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [containerCharges, setContainerCharges] = useState([]);
-  const [currentStep, setCurrentStep] = useState(1);  //state to track the current step
   const [newCharge, setNewCharge] = useState({
     name: "",
     sizeValue: "",
@@ -293,7 +292,6 @@ function SettingsDashboard() {
     setContainerToDelete({ index, name, size });
     setShowDeleteContainerModal(true);
   };
-  
   return (
     <>
       <section className="content" id="viewInventory">
@@ -880,232 +878,427 @@ function SettingsDashboard() {
                 <div className="card-body p-md-5">
                   <div className="containers my-4">
                     <div className="steps">
-                      <span className={`circle ${currentStep >= 1 ? "active" : ""}`}></span>
-                      <span className={`circle ${currentStep >= 2 ? "active" : ""}`}></span>
-                      <span className={`circle ${currentStep >= 3 ? "active" : ""}`}></span>
-                      <div className="progress-bar position-absolute w-100" >
-                        <span
-                          className="indicator bg-dark d-block"
-                          style={{
-                            height: "4px",
-                            width: `${(currentStep - 1) * 50}%`,
-                            transition: "width 0.3s ease",
-                          }}
-                        ></span>
+                      <span className="circle active"></span>
+                      <span className="circle"></span>
+                      <span className="circle"></span>
+                      <div className="progress-bar">
+                        <span className="indicator"></span>
                       </div>
                     </div>
                   </div>
-                  {/* Step 1: Profile Info */}
-                  {currentStep === 1 && (
-                    <>
-                      <div className="container my-5">
-                        <h4>Profile Info</h4>
-                        <p>You can edit your Profile details here</p>
-                      </div>
-                      <div className="edit-profile">
-                        <form className="mx-3">
-                          <div className="row">
-                            <div className="form-group col-md-12">
-                              <h5>Name:</h5>
-                              {isEditingProfile ? (
-                                <input type="text" name="name" value={editableProfile.name} onChange={handleProfileChange} className="form-control" />
-                              ) : (
-                                <input type="text" name="name" value={userData.name} className="form-control" disabled />
-                              )}
+                  <div className="container my-5">
+                    <h4>Profile Info</h4>
+                    <p>You can edit your Profile details here</p>
+                  </div>
+                  <div className="edit-profile">
+                    <form className="mx-3">
+                      <div className="row">
+                            <div className="form-group  col-md-12">
+                          <h5>Name:</h5>
+                          {isEditingProfile ? (
+                            <input
+                              type="text"
+                              name="name"
+                              value={editableProfile.name}
+                              onChange={handleProfileChange}
+                              className="form-control"
+                            />
+                          ) : (
+                            // <p>{userData.name}</p>
+                            <input type="text" name="name" value={userData.name} className="form-control" />
+                          )}
                             </div>
-                            <div className="form-group col-md-12">
-                              <h5>Logo:</h5>
-                              {isEditingProfile ? (
-                                <>
-                                  <input type="file" accept="image/*" onChange={handleLogoChange} className="form-control" />
-                                  {logoFile && (
-                                    <img className="rounded" src={URL.createObjectURL(logoFile)} alt="Preview" style={{ height: "75px", marginTop: "10px" }} />
-                                  )}
-                                </>
-                              ) : userData.logo ? (
-                                <img className="rounded" src={`${process.env.REACT_APP_ADMIN_API}/uploads/${userData.logo}`} alt="Logo" style={{ maxHeight: 75 }} />
-                              ) : (
-                                <p>No logo available</p>
+                            <div className="form-group  col-md-12">
+                          <h5>Logo:</h5>
+                          {isEditingProfile ? (
+                            <>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleLogoChange}
+                                className="form-control"
+                              />
+                              {logoFile && (
+                                <img
+                                  className="rounded"
+                                  src={URL.createObjectURL(logoFile)}
+                                  alt="Preview"
+                                  style={{ height: "75px", marginTop: "10px" }}
+                                />
                               )}
+                            </>
+                          ) : userData.logo ? (
+                            <img
+                              className="rounded"
+                              src={`${process.env.REACT_APP_ADMIN_API +
+                                "/uploads/" +
+                                userData?.logo
+                                }`}
+                              alt="Logo"
+                              style={{ maxHeight: 75 }}
+                            />
+                          ) : (
+                            <p>No logo available</p>
+                          )}
                             </div>
                             <div className="form-group col-md-12">
                               <h5>Email ID:</h5>
                               {isEditingProfile ? (
-                                <input type="email" name="email" value={editableContact.email} onChange={handleContactChange} className="form-control" />
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={editableContact.email}
+                                  onChange={handleContactChange}
+                                  className="form-control"
+                                />
                               ) : (
-                                <input type="email" name="email" value={userData.email} className="form-control" disabled />
+                                // <p>{userData.email}</p>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={userData.email}
+                                  className="form-control"
+                                />
                               )}
                             </div>
                             <div className="form-group col-md-12">
                               <h5>Phone Number:</h5>
                               {isEditingProfile ? (
-                                <input type="text" name="mobile" value={editableContact.mobile} onChange={handleContactChange} className="form-control" />
+                                <input
+                                  type="text"
+                                  name="mobile"
+                                  value={editableContact.mobile}
+                                  onChange={handleContactChange}
+                                  className="form-control"
+                                />
                               ) : (
-                                <input type="text" name="mobile" value={userData.mobile} className="form-control" disabled />
+                                // <p>{userData.mobile}</p>
+                                <input
+                                  type="text"
+                                  name="mobile"
+                                  value={userData.mobile}
+                                  className="form-control"
+                                />
                               )}
                             </div>
-                          </div>
 
-                          {!isEditingProfile ? (
-                            <button type="button" className="btn btn-dark mx-2" onClick={() => setIsEditingProfile(true)}>
-                              <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" /> Edit
-                            </button>
+                            {/* <div className="form-group  col-md-12">
+                          <h5>GST Number:</h5>
+                          {isEditingProfile ? (
+                            <input
+                              type="text"
+                              name="gst_no"
+                              value={editableProfile.gst_no}
+                              onChange={handleProfileChange}
+                              className="form-control"
+                            />
                           ) : (
-                            <>
-                              <button type="button" className="btn btn-dark mx-2" onClick={saveProfileInfo}>
-                                Save
-                              </button>
-                              <button type="button" className="btn btn-dark mx-2" onClick={() => setIsEditingProfile(false)}>
-                                Cancel
-                              </button>
-                            </>
+                            // <p>{userData.gst_no || "N/A"}</p>
+                            <input type="text" name="gst no" value={userData.gst_no || "N/A"} className="form-control" />
                           )}
-                        </form>
+                            </div> */}
                       </div>
-                    </>
-                  )}
+                      {!isEditingProfile ? (
+                        <button
+                          type="button"
+                          className="btn btn-dark mx-2"
+                          onClick={() => setIsEditingProfile(true)}
+                        >
+                          <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-dark mx-2"
+                            onClick={saveProfileInfo}
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-dark mx-2"
+                            onClick={() => setIsEditingProfile(false)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                    </form>
+                  </div>
 
-                  {/* Step 2: Contact Info */}
-                  {currentStep === 2 && (
-                    <div className="edit-contact">
+                  <div className="edit-contact" style={{display:"none"}}>
+                    <div className="mt-3">
+                      {/* Address Info */}
+                     
                       <form className="mx-3">
                         <div className="row">
                           <div className="form-group col-md-12">
                             <h5>Address:</h5>
                             {isEditingAddress ? (
-                              <input type="text" name="address" value={editableAddress.address} onChange={handleAddressChange} className="form-control" />
+                              <input
+                                type="text"
+                                name="address"
+                                value={editableAddress.address}
+                                onChange={handleAddressChange}
+                                className="form-control"
+                              />
                             ) : (
-                              <input type="text" name="address" value={userData.address} className="form-control" disabled />
+                              // <p>{userData.address}</p>
+                                <input
+                                  type="text"
+                                  name="address"
+                                  value={userData.address}
+                                  className="form-control"
+                                />
                             )}
                           </div>
-
                           <div className="form-group col-md-12">
                             <h5>Country:</h5>
                             {isEditingAddress ? (
-                              <select name="country" value={editableAddress.country} onChange={handleCountryChange} className="form-control">
+                              <select
+                                name="country"
+                                value={editableAddress.country}
+                                onChange={handleCountryChange}
+                                className="form-control"
+                              >
                                 <option value="">Select Country</option>
                                 {countries.map((country) => (
-                                  <option key={country.isoCode} value={country.isoCode}>{country.name}</option>
+                                  <option
+                                    key={country.isoCode}
+                                    value={country.isoCode}
+                                  >
+                                    {country.name}
+                                  </option>
                                 ))}
                               </select>
                             ) : (
-                              <input className="form-control" value={Country.getCountryByCode(userData.country)?.name || userData.country} disabled />
+                              // <p>
+                              //   {Country.getCountryByCode(userData.country)?.name ||
+                              //     userData.country}
+                              // </p>
+                                <select
+                                  name="country"
+                                  value={userData.country}
+                                 
+                                  className="form-control"
+                                >
+                                  <option value={Country.getCountryByCode(userData.country)?.name ||
+                                         userData.country}>{Country.getCountryByCode(userData.country)?.name ||
+                                    userData.country}</option>
+                                 
+                                </select>
+
                             )}
                           </div>
-
                           <div className="form-group col-md-12">
                             <h5>State:</h5>
                             {isEditingAddress ? (
-                              <select name="state" value={editableAddress.state} onChange={handleStateChange} className="form-control">
+                              <select
+                                name="state"
+                                value={editableAddress.state}
+                                onChange={handleStateChange}
+                                className="form-control"
+                                disabled={!editableAddress.country}
+                              >
                                 <option value="">Select State</option>
                                 {states.map((state) => (
-                                  <option key={state.isoCode} value={state.isoCode}>{state.name}</option>
+                                  <option key={state.isoCode} value={state.isoCode}>
+                                    {state.name}
+                                  </option>
                                 ))}
                               </select>
                             ) : (
-                              <input className="form-control" value={State.getStateByCodeAndCountry(userData.state, userData.country)?.name || userData.state} disabled />
+                              // <p>
+                              //   {State.getStateByCodeAndCountry(
+                              //     userData.state,
+                              //     userData.country
+                              //   )?.name || userData.state}
+                              // </p>
+
+                               <select
+                                name="state"
+                               value={userData.State}
+                                
+                                className="form-control"
+                               
+                              >
+                                  <option value={State.getStateByCodeAndCountry(
+                                   userData.state,
+                                 userData.country
+                                 )?.name || userData.state}> {State.getStateByCodeAndCountry(
+                                      userData.state,
+                                      userData.country
+                                 )?.name || userData.state}</option>
+                                
+                              </select>
                             )}
                           </div>
-
                           <div className="form-group col-md-12">
                             <h5>City:</h5>
                             {isEditingAddress ? (
-                              <input type="text" name="city" value={editableAddress.city} onChange={handleCityChange} className="form-control" />
+                              <select
+                                name="city"
+                                value={editableAddress.city}
+                                onChange={handleCityChange}
+                                className="form-control"
+                                disabled={!editableAddress.state}
+                              >
+                                <option value="">Select City</option>
+                                {cities.map((city) => (
+                                  <option key={city.name} value={city.name}>
+                                    {city.name}
+                                  </option>
+                                ))}
+                              </select>
                             ) : (
-                              <input className="form-control" value={userData.city} disabled />
+                              // <p>{userData.city}</p>
+                                <select
+                                  name="city"
+                                  value={userData.city}
+                                  
+                                  className="form-control"
+                                  
+                                >
+                                  <option value={userData.city}>{userData.city}</option>
+                                  
+                                </select>
                             )}
                           </div>
 
                           <div className="form-group col-md-12">
                             <h5>Zip Code:</h5>
                             {isEditingAddress ? (
-                              <input type="text" name="pincode" value={editableAddress.pincode} onChange={handleAddressChange} className="form-control" />
+                              <input
+                                type="text"
+                                name="pincode"
+                                value={editableAddress.pincode}
+                                onChange={handleAddressChange}
+                                className="form-control"
+                              />
                             ) : (
-                              <input className="form-control" value={userData.pincode} disabled />
+                              // <p>{userData.pincode}</p>
+                                <input
+                                  type="text"
+                                  name="pincode"
+                                  value={userData.pincode}
+                                  
+                                  className="form-control"
+                                />
                             )}
                           </div>
                         </div>
-
                         {!isEditingAddress ? (
-                          <button type="button" className="btn btn-dark" onClick={() => setIsEditingAddress(true)}>
-                            <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit 
+                          <button
+                            type="button"
+                            className="btn btn-dark"
+                            onClick={() => setIsEditingAddress(true)}
+                          >
+                            <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" /> Edit Address Info
                           </button>
                         ) : (
                           <>
-                            <button type="button" className="btn btn-success mx-2" onClick={saveAddressInfo}>
+                            <button
+                              type="button"
+                              className="btn btn-success mx-2"
+                              onClick={saveAddressInfo}
+                            >
                               Save
                             </button>
-                            <button type="button" className="btn btn-secondary mx-2" onClick={() => setIsEditingAddress(false)}>
+                            <button
+                              type="button"
+                              className="btn btn-secondary mx-2"
+                              onClick={() => setIsEditingAddress(false)}
+                            >
                               Cancel
                             </button>
                           </>
                         )}
                       </form>
+
+                      
+                     
+
                     </div>
-                  )}
                    
 
-                 
-                  {/* tax info */}
-                  {/* Step 3: Tax Info */}
-                  {currentStep === 3 && (
-                    <div className="edit-tax">
-                      <form className="mx-3">
-                        <div className="row mt-4">
-                          <div className="form-group col-md-12">
-                            <h5>GST Number:</h5>
-                            {isEditingTax ? (
-                              <input type="text" name="gst_no" value={editableProfile.gst_no} onChange={handleProfileChange} className="form-control" />
-                            ) : (
-                              <input type="text" name="gst_no" value={userData.gst_no || "N/A"} className="form-control" disabled />
-                            )}
-                          </div>
-                          <div className="form-group col-md-12">
-                            <label>CGST (%)</label>
-                            <input type="number" name="cgst" value={taxInfo.cgst} onChange={(e) => setTaxInfo({ ...taxInfo, cgst: e.target.value })} className="form-control" disabled={!isEditingTax} />
-                          </div>
-                          <div className="form-group col-md-12">
-                            <label>SGST (%)</label>
-                            <input type="number" name="sgst" value={taxInfo.sgst} onChange={(e) => setTaxInfo({ ...taxInfo, sgst: e.target.value })} className="form-control" disabled={!isEditingTax} />
-                          </div>
-                        </div>
-
-                        {!isEditingTax ? (
-                          <button type="button" className="btn btn-primary mx-2" onClick={() => setIsEditingTax(true)}>
-                            <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />   Edit 
-                          </button>
-                        ) : (
-                          <>
-                            <button type="button" className="btn btn-success mx-2" onClick={updateTaxInfo}>
-                              Save
-                            </button>
-                            <button type="button" className="btn btn-secondary mx-2" onClick={() => setIsEditingTax(false)}>
-                              Cancel
-                            </button>
-                          </>
-                        )}
-                      </form>
-                    </div>
-                  )}
-
-
-                  {/* Step Buttons */}
-                  <div className="buttons pt-4 float-right">
-                   
-                    {currentStep > 1 && (
-                      <button type="button" className="btn btn-dark next" onClick={() => setCurrentStep((prev) => prev - 1)}>
-                      Go Back
-                    </button>
-                    )}
-                    {currentStep < 3 && (
-                      <button type="button" className="btn btn-dark next mx-2" onClick={() => setCurrentStep((prev) => prev + 1)}>
-                        Go Next
-                      </button>
-                    )}
-                    {currentStep === 3 && (
-                       <button type="submit" className="btn btn-dark mx-2">Submit</button>
-                    )}
                   </div>
+                  {/* tax info */}
+                  <div className="edit-tax" style={{ display: "none" }}>
+                    <form className="mx-3">
+                      <div className="row mt-4">
+                        <div className="form-group  col-md-12">
+                          <h5>GST Number:</h5>
+                          {isEditingProfile ? (
+                            <input
+                              type="text"
+                              name="gst_no"
+                              value={editableProfile.gst_no}
+                              onChange={handleProfileChange}
+                              className="form-control"
+                            />
+                          ) : (
+                            // <p>{userData.gst_no || "N/A"}</p>
+                            <input type="text" name="gst no" value={userData.gst_no || "N/A"} className="form-control" />
+                          )}
+                        </div>
+                        <div className="form-group col-md-12">
+                          <label>CGST (%)</label>
+                          <input
+                            type="number"
+                            name="cgst"
+                            value={taxInfo.cgst}
+                            onChange={(e) =>
+                              setTaxInfo({ ...taxInfo, cgst: e.target.value })
+                            }
+                            className="form-control"
+                            disabled={!isEditingTax}
+                          />
+                        </div>
+                        <div className="form-group col-md-12">
+                          <label>SGST (%)</label>
+                          <input
+                            type="number"
+                            name="sgst"
+                            value={taxInfo.sgst}
+                            onChange={(e) =>
+                              setTaxInfo({ ...taxInfo, sgst: e.target.value })
+                            }
+                            className="form-control"
+                            disabled={!isEditingTax}
+                          />
+                        </div>
+                      </div>
+                      {!isEditingTax ? (
+                        <button
+                          type="button"
+                          className="btn btn-primary mx-2"
+                          onClick={() => setIsEditingTax(true)}
+                        >
+                          <img src="../../dist/img/icon/edit.svg" alt="Edit profile Info" />  Edit Tax Info
+                        </button>
+                      ) : (
+                        <>
+                          <button
+                            type="button"
+                            className="btn btn-success mx-2"
+                            onClick={updateTaxInfo}
+                          >
+                            Save
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-secondary mx-2"
+                            onClick={() => setIsEditingTax(false)}
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      )}
+                    </form>
+                  </div>
+
+                  <div className="buttons pt-4 float-right"><button type="submit" id="next" name="next" className="btn btn-outline-dark next">Go Next</button></div>
                 </div>
                 
               </div>
