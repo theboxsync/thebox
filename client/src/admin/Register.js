@@ -196,7 +196,7 @@ export default function Register(props) {
                     )}
                   </div>
                 </div>
-                <Link to="/login" className="text-dark float-right">
+                <Link to="/login" className="text-dark float-left">
                   {" "}
                   <b>I already have a membership</b>{" "}
                 </Link>

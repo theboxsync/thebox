@@ -66,7 +66,7 @@ export default function Login(props) {
               </p>
             </div>
             <div className="card-body">
-              <p className="login-box-msg">Sign in to start your session</p>
+              <p className="login-box-msg float-left"><b>Log in to THEBOX</b></p>
 
               <form method="post" onSubmit={handleSubmit}>
                 <div className="input-group mb-2">
@@ -87,11 +87,7 @@ export default function Login(props) {
                     </div>
                   </div>
                 </div>
-                <label
-                  htmlFor="email"
-                  className="text-danger mb-1"
-                  id="emailError"
-                ></label>
+                
                 <div className="input-group mb-2">
                   <input
                     type="password"
@@ -111,7 +107,7 @@ export default function Login(props) {
                     </div>
                   </div>
                 </div>
-                <label className="text-danger mb-0" id="email_pass"></label>
+               
                 <div className="social-auth-links text-center mb-3">
                   <button
                     type="submit"
@@ -125,17 +121,18 @@ export default function Login(props) {
                 <div className="text-danger font-weight-bold">{wrongMsg}</div>
               </form>
 
-              <div className="mb-1 text-right">
+              <div className="mb-1 text-center">
                 <Link to="/forgot-password" className="text-dark ">
-                  <b> Forgot password ? </b>
+                  <b> Forgotten password ? </b>
                 </Link>
               </div>
 
               <div className="line my-4"></div>
               <div className="mb-0 text-center ">
-                <Link to="/register" className="text-dark ">
-                  <b> Sign Up </b>
+                <Link to="/register" className="btn btn-outline-primary">
+                  <b> Register </b>
                 </Link>
+                
               </div>
             </div>
           </div>

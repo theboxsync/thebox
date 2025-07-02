@@ -25,3 +25,25 @@
 
 
 
+.mb-1.text-center:hover {
+  border: 1px solid grey;
+  padding: .25rem;
+  border-radius: 25px;
+}
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.show>.btn-outline-primary.dropdown-toggle{
+  background-color: #7444fd !important;
+  color: #fff !important;
+}
+.btn-outline-primary:hover{
+  background-color: #7444fd !important;
+  color: #fff !important;
+}
+.btn.btn-outline-primary {
+  border: 1px solid #7444fd !important;
+  background-color: #fff;
+  color: #7444fd !important;
+  border-radius: 25px;
+  width: 100%;
+}
