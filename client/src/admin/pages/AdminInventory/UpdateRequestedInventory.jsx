@@ -172,7 +172,11 @@ function UpdateRequestedInventory() {
                     className="btn btn-dark"
                     onClick={addItemField}
                   >
-                    + Add More
+                    <img
+                      src="../../dist/img/add.svg"
+                      alt="Add"
+                      className="mx-1"
+                    /> Add More
                   </button>
                 </div>
                 <div className="form-group col-md-12">
