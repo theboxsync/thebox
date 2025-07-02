@@ -11,19 +11,18 @@ const {
   removeSpecialMenu,
   updateDishAvailability,
 } = require("../controllers/menuController");
-const adminAuth = require("../middlewares/adminAuth");
 
 const menuRouter = express.Router();
 
-menuRouter.route("/addmenu").post(authMiddleware, adminAuth, addMenu);
+menuRouter.route("/addmenu").post(authMiddleware, addMenu);
 menuRouter.route("/getmenudata").get(authMiddleware, getMenuData);
 menuRouter.route("/getmenu/:id").get(authMiddleware, getMenuData);
 menuRouter.route("/getmenudata/:id").get(getMenuDataById);
 menuRouter.route("/getmenucategories").get(authMiddleware, getMenuCategories);
-menuRouter.route("/updatemenu/:id").put(authMiddleware, adminAuth, updateMenu);
+menuRouter.route("/updatemenu/:id").put(authMiddleware, updateMenu);
 menuRouter
   .route("/deletemenu/:id")
-  .delete(authMiddleware, adminAuth, deleteMenu);
+  .delete(authMiddleware, deleteMenu);
 menuRouter.route("/setspecialdish/:id").put(authMiddleware, setSpecialMenu);
 menuRouter
   .route("/removespecialdish/:id")

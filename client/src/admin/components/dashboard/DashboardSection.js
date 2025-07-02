@@ -256,7 +256,7 @@ function DashboardSection({ setMainSection, setTableId, setOrderId }) {
                       {table.area}
                     </div>
                     <ul className="row" style={{ listStyle: "none" }}>
-                      {table.tables.map((table) => (
+                      {table.tables.sort((a, b) => a.table_no - b.table_no).map((table) => (
                         <li key={table._id} className="pt-2">
                           <div className="container">
                             <div

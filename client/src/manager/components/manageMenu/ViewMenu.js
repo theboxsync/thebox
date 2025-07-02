@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import DeleteDishModal from "./DeleteDishModal";
+import EditDishModal from "./EditDishModal";
 import SpecialDishModal from "./SpecialDishModal";
 import RemoveSpecialModal from "./RemoveSpecialModal";
 import utensilsslash from "../../../dist/img/icon/specialdish.png";
+import { AuthContext } from "../../context/AuthContext";
 
 function ViewMenu({ setSection }) {
+  const { activePlans } = useContext(AuthContext);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showSpecialModal, setShowSpecialModal] = useState(false);
   const [showRemoveSpecialModal, setShowRemoveSpecialModal] = useState(false);
   const [menuData, setMenuData] = useState([]);
@@ -30,7 +36,6 @@ function ViewMenu({ setSection }) {
       console.log("Error fetching menu data:", error);
     }
   };
-
   useEffect(() => {
     fetchMenuData();
   }, []);
@@ -92,6 +97,29 @@ function ViewMenu({ setSection }) {
     mealTypeFilter,
     categoryFilter,
   ]);
+
+  const [deleteModalData, setDeleteModalData] = useState({
+    id: "",
+    dish_name: "",
+  });
+  const deleteModal = (id, dish_name) => {
+    console.log("Dish name:", dish_name);
+    setShowDeleteModal(true);
+    setDeleteModalData({ ...deleteModalData, id: id, dish_name: dish_name });
+  };
+
+  const [editModalData, setEditModalData] = useState({});
+  const editModal = (id) => {
+    console.log(id);
+    axios
+      .get(`${process.env.REACT_APP_MANAGER_API}/menu/getmenudata/${id}`)
+      .then((res) => {
+        setEditModalData(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => console.log(err));
+    setShowEditModal(true);
+  };
 
   const [specialDishModalData, setSpecialDishModalData] = useState({});
   const specialDishModal = (id) => {
@@ -268,40 +296,50 @@ function ViewMenu({ setSection }) {
                           : "lightgrey",
                       }}
                     >
-                      <div className="col-md-6">{dish.dish_name}</div>
-                      <div className="col-md-2">{dish.dish_price}</div>
-                      <div className="col-md-4">
-                        {dish.is_special ? (
-                          <button
-                            className="bg-transparent m-2"
-                            title="Remove Special Dish"
-                            style={{ cursor: "pointer", width: "20px" ,border:"none" }}
-                            onClick={() => removeSpecialModal(dish._id)}
-                          >
+                      <div className="col-md-6">
+                        {dish.dish_name}
+                        {dish.is_special && (
+                          <>
                             <img
                               src={utensilsslash}
-                              alt="Remove Special Dish" width={"20px"}
+                              alt="Remove Special Dish"
+                              width={"20px"}
+                              className="ml-2"
                             />
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className="bg-transparent special_Dish_btn"
-                            title="Set Special Dish" style={{border:"none"}}
-                            onClick={() => specialDishModal(dish._id)}
-                          >
-                            <i
-                              style={{ color: "black", fontSize: "16px" }}
-                              className="fas fa-utensils"
-                            />
-                          </button>
+                          </>
                         )}
+                      </div>
+                      <div className="col-md-2">{dish.dish_price}</div>
+                      <div className="col-md-4 d-flex">
+                        <button
+                          type="button"
+                          className="bg-transparent edit_Dish_btn"
+                          title="Edit"
+                          style={{ border: "none" }}
+                          onClick={() => {
+                            editModal(dish._id);
+                          }}
+                        >
+                          <img src="../../dist/img/edit-b.svg" alt="Edit" />
+                        </button>
+                        <button
+                          type="button"
+                          className="bg-transparent delete_Dish_btn"
+                          title="Delete"
+                          style={{ border: "none" }}
+                          onClick={() => {
+                            deleteModal(dish._id, dish.dish_name);
+                          }}
+                        >
+                          <img src="../../dist/img/delete-b.svg" alt="Delete" />
+                        </button>
 
                         {dish.is_available ? (
                           <button
                             type="button"
                             className="bg-transparent special_Dish_btn"
-                            title="Mark as Unavailable" style={{ border: "none" }}
+                            title="Mark as Unavailable"
+                            style={{ border: "none" }}
                             onClick={() => markAsUnavailable(dish._id)}
                           >
                             <i
@@ -313,7 +351,8 @@ function ViewMenu({ setSection }) {
                           <button
                             type="button"
                             className="bg-transparent special_Dish_btn"
-                              title="Set as Available" style={{ border: "none" }}
+                            title="Set as Available"
+                            style={{ border: "none" }}
                             onClick={() => markAsAvailable(dish._id)}
                           >
                             <i
@@ -331,6 +370,23 @@ function ViewMenu({ setSection }) {
           ))}
         </div>
       </section>
+
+      <DeleteDishModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        data={deleteModalData}
+        fetchMenuData={fetchMenuData}
+      />
+
+      <EditDishModal
+        show={showEditModal}
+        handleClose={() => {
+          setEditModalData({});
+          setShowEditModal(false);
+        }}
+        data={editModalData}
+        fetchMenuData={fetchMenuData}
+      />
 
       <SpecialDishModal
         show={showSpecialModal}

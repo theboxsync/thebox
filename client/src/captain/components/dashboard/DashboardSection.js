@@ -109,46 +109,48 @@ function DashboardSection({
                           {table.area}
                         </div>
                         <ul className="row" style={{ listStyle: "none" }}>
-                          {table.tables.map((table) => (
-                            <li key={table._id} className="pt-2">
-                              <div className="container">
-                                <div
-                                  className={`dashboard-table d-flex justify-content-center align-items-center ${
-                                    table.current_status === "Save"
-                                      ? "table-save"
-                                      : table.current_status === "KOT"
-                                      ? "table-kot"
-                                      : ""
-                                  }`}
-                                  onClick={() => onClickTable(table._id)}
-                                  style={{ cursor: "pointer" }}
-                                >
-                                  <div align="center">
-                                    <span style={{ fontSize: "14px" }}>
-                                      No.{" "}
-                                    </span>
-                                    <span style={{ fontSize: "26px" }}>
-                                      {table.table_no}
-                                    </span>
-                                    <hr
-                                      style={{
-                                        margin: "0px",
-                                        padding: "0px",
-                                        border: "1px solid #212529",
-                                      }}
-                                    />
-                                    <span style={{ fontSize: "14px" }}>
-                                      {" "}
-                                      Max Person :{" "}
-                                    </span>
-                                    <span style={{ fontSize: "16px" }}>
-                                      {table.max_person}
-                                    </span>
+                          {table.tables
+                            .sort((a, b) => a.table_no - b.table_no)
+                            .map((table) => (
+                              <li key={table._id} className="pt-2">
+                                <div className="container">
+                                  <div
+                                    className={`dashboard-table d-flex justify-content-center align-items-center ${
+                                      table.current_status === "Save"
+                                        ? "table-save"
+                                        : table.current_status === "KOT"
+                                        ? "table-kot"
+                                        : ""
+                                    }`}
+                                    onClick={() => onClickTable(table._id)}
+                                    style={{ cursor: "pointer" }}
+                                  >
+                                    <div align="center">
+                                      <span style={{ fontSize: "14px" }}>
+                                        No.{" "}
+                                      </span>
+                                      <span style={{ fontSize: "26px" }}>
+                                        {table.table_no}
+                                      </span>
+                                      <hr
+                                        style={{
+                                          margin: "0px",
+                                          padding: "0px",
+                                          border: "1px solid #212529",
+                                        }}
+                                      />
+                                      <span style={{ fontSize: "14px" }}>
+                                        {" "}
+                                        Max Person :{" "}
+                                      </span>
+                                      <span style={{ fontSize: "16px" }}>
+                                        {table.max_person}
+                                      </span>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            </li>
-                          ))}
+                              </li>
+                            ))}
                         </ul>
                         <hr />
                       </div>
