@@ -32,12 +32,12 @@ function OrderDetails() {
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
+        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
         { withCredentials: true }
       );
 

@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { signupSchema2 } from "../../../schemas";
 import { Country, State, City } from "country-state-city";
 
-function Secondform({ inputData, setInputData, handleGoNext }) {
+function Secondform({ inputData, setInputData, handleGoNext, handleGoBack }) {
   const [countries, setCountries] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
@@ -168,12 +168,19 @@ function Secondform({ inputData, setInputData, handleGoNext }) {
               {errors.pincode && touched.pincode ? errors.pincode : null}
             </label>
           </div>
-          <div className="buttons">
+          <div className="buttons d-flex justify-content-between">
+            <button
+              type="button"
+              className="btn btn-outline-dark back"
+              onClick={handleGoBack}
+            >
+              Back
+            </button>
             <button
               type="submit"
               id="next"
               name="next"
-              className="btn btn-outline-dark next"
+              className="btn btn-outline-dark next ml-2"
             >
               Go Next
             </button>

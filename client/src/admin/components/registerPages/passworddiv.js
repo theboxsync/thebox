@@ -2,15 +2,14 @@ import React from "react";
 import { useFormik } from "formik";
 import { signupSchema3 } from "../../../schemas";
 
-
-function Passworddiv({ inputData, setInputData, handleGoNext }) {
+function Passworddiv({ inputData, setInputData, handleGoNext, handleGoBack }) {
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: inputData,
       validationSchema: signupSchema3,
       onSubmit: (values) => {
         setInputData({ ...inputData, ...values });
-        
+
         handleGoNext();
       },
     });
@@ -70,13 +69,19 @@ function Passworddiv({ inputData, setInputData, handleGoNext }) {
               <span id="message"></span>
             </div>
           </div>
-          
-          <div className="social-auth-links mt-2 mb-3">
+
+          <div className="social-auth-links mt-2 mb-3 d-flex justify-content-between">
+            <button
+              type="button"
+              className="btn btn-outline-dark back"
+              onClick={handleGoBack}
+            >
+              Back
+            </button>
             <button
               type="submit"
               id="next"
-              className="btn btn-block btn-dark"
-              style={{ Width: "160px" }}
+              className="btn btn-dark mx-2"
             >
               <i className="fas fa-registered mr-2"></i> Register
             </button>

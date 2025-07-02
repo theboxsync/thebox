@@ -264,12 +264,12 @@ function CustomerOrderDetail({
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_QSR_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
+        `${process.env.REACT_APP_QSR_API}/user/userdata`,
         { withCredentials: true }
       );
 

@@ -35,7 +35,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
           formData.append("dish_imgs", values.dish_img);
 
           const uploadRes = await axios.post(
-            `${process.env.REACT_APP_ADMIN_API}/upload/uploadmenuimages`,
+            `${process.env.REACT_APP_MANAGER_API}/upload/uploadmenuimages`,
             formData,
             {
               withCredentials: true,
@@ -49,7 +49,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
         const payload = { ...values, dish_img };
 
         await axios.put(
-          `${process.env.REACT_APP_ADMIN_API}/menu/updatemenu/${data._id}`,
+          `${process.env.REACT_APP_MANAGER_API}/menu/updatemenu/${data._id}`,
           payload,
           { withCredentials: true }
         );
@@ -127,7 +127,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
             <br />
             {formik.values.dish_img !== null && previewImg === null && (
               <img
-                src={`${process.env.REACT_APP_ADMIN_API}/uploads/menu/${formik.values.dish_img}`}
+                src={`${process.env.REACT_APP_MANAGER_API}/uploads/menu/${formik.values.dish_img}`}
                 alt="Current"
                 className="img-thumbnail my-2"
                 style={{ maxWidth: "100px" }}
