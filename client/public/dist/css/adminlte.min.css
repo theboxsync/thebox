@@ -4255,6 +4255,7 @@ input[type=submit].btn-block {
     margin-right: 1rem
 }
 
+
 .custom-control-input {
     position: absolute;
     left: 0;
@@ -33964,15 +33965,15 @@ html.maximized-card {
 
 .dark-mode .btn-primary:hover {
     color: #fff;
-    background-color: #bbacd8;
-    border-color:#bbacd8
+    background-color: #7444fd;
+    border-color:#7444fd
 }
 
 .dark-mode .btn-primary.focus,
 .dark-mode .btn-primary:focus {
     color: #fff;
-    background-color: #bbacd8;
-    border-color: #bbacd8;
+    background-color: #7444fd;
+    border-color: #7444fd;
     box-shadow: 0 0 0 0 rgba(92, 126, 162, .5)
 }
 
@@ -36985,9 +36986,10 @@ a.disabled.mailbox-attachment-close {
     display: flex;
     -ms-flex-direction: column;
     flex-direction: column;
-    height: 100vh;
+    /* height: 100vh; */
     -ms-flex-pack: center;
-    justify-content: center
+    justify-content: center;
+    align-items: center;
 }
 
 .login-box,

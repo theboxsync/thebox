@@ -78,6 +78,55 @@ export default function Register(props) {
       .finally(() => setIsLoading(false));
   };
 
+
+  const pageDisplay = () => {
+    switch (formpage) {
+      case 0:
+        return (
+          <Firstform
+            inputData={inputData}
+            setInputData={setInputData}
+            handleGoNext={handleGoNext}
+          />
+        );
+      case 1:
+        return (
+          <Secondform
+            inputData={inputData}
+            setInputData={setInputData}
+            handleGoNext={handleGoNext}
+          />
+        );
+      case 2:
+        return (
+          <Passworddiv
+            inputData={inputData}
+            setInputData={setInputData}
+            handleGoNext={handleGoNext}
+          />
+        );
+    }
+  };
+  // Handle the resize event for dynamic viewport height
+  useEffect(() => {
+    const resizeDivHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Set initial height
+    resizeDivHeight();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', resizeDivHeight);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', resizeDivHeight);
+    };
+  }, []);
+
+
   return (
     <>
       {isLoading && <Loading />}
@@ -147,7 +196,7 @@ export default function Register(props) {
                     )}
                   </div>
                 </div>
-                <Link to="/login" className="text-dark float-right">
+                <Link to="/login" className="text-dark float-left">
                   {" "}
                   <b>I already have a membership</b>{" "}
                 </Link>
