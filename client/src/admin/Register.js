@@ -78,7 +78,7 @@ export default function Register(props) {
       .finally(() => setIsLoading(false));
   };
 
-<<<<<<< HEAD
+
   const pageDisplay = () => {
     switch (formpage) {
       case 0:
@@ -126,8 +126,7 @@ export default function Register(props) {
     };
   }, []);
 
-=======
->>>>>>> fa7a395de0b56c39b0f03c24397f2d780a5adda9
+
   return (
     <>
       {isLoading && <Loading />}
