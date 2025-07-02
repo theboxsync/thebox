@@ -24,7 +24,7 @@ export default function Register(props) {
     password: "", 
     mobile: "", 
     address: "", 
-    country: "", 
+    country: "IN", 
     state: "", 
     city: "", 
     pincode: "", 

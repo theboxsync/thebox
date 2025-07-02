@@ -7,7 +7,7 @@ function DeleteContainerModal({
   handleClose,
   data,
   resetdata,
-  fetchUserData,
+  fetchUser,
   setContainerCharges,
   containerCharges,
 }) {
@@ -19,7 +19,7 @@ function DeleteContainerModal({
         { data: { index }, withCredentials: true }
       );
       setContainerCharges(containerCharges.filter((_, i) => i !== index));
-      fetchUserData();
+      fetchUser();
       resetdata();
       handleClose();
     } catch (error) {

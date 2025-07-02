@@ -24,7 +24,7 @@ function SettingsDashboard() {
 
   const navigate = useNavigate();
 
-  const fetchUserData = async () => {
+  const fetchUser = async () => {
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
@@ -254,7 +254,7 @@ function SettingsDashboard() {
   };
 
   useEffect(() => {
-    fetchUserData();
+    fetchUser();
     setCountries(Country.getAllCountries());
     // fetchCharges();
   }, []);

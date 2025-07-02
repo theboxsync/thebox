@@ -73,7 +73,7 @@ function ViewTables({ setSection }) {
                         <div className="card-body">
                           <div className="row">
                             <div className="col-md-4">
-                              <b> Taable No </b>
+                              <b> Table No </b>
                             </div>
                             <div className="col-md-4">
                               <b> Max Person </b>
@@ -83,7 +83,7 @@ function ViewTables({ setSection }) {
                             </div>
                           </div>
 
-                          {table.tables.map((t) => (
+                          {table.tables.sort((a, b) => a.table_no - b.table_no).map((t) => (
                             <div key={t._id} className="row">
                               <div className="col-md-4">{t.table_no}</div>
                               <div className="col-md-4 d-flex align-items-center">

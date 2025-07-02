@@ -142,6 +142,8 @@ function DashboardSection({
                                       ? "table-kot"
                                       : ""
                                   }`}
+                                  onClick={() => onClickTable(table._id)}
+                                  style={{ cursor: "pointer" }}
                                 >
                                   <div align="center">
                                     <span style={{ fontSize: "14px" }}>

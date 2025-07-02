@@ -1,5 +1,5 @@
 // EditDishModal.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useFormik } from "formik";
 import axios from "axios";
@@ -8,6 +8,13 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
   const [previewImg, setPreviewImg] = useState(null);
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
 
+  useEffect(() => {
+    if (data.quantity) {
+      setShowAdvancedOptions(true);
+    } else {
+      setShowAdvancedOptions(false);
+    }
+  }, [data.quantity]);
   const formik = useFormik({
     initialValues: {
       dish_name: data.dish_name || "",
@@ -48,6 +55,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
         );
 
         fetchMenuData();
+        formik.resetForm();
         handleClose();
       } catch (err) {
         console.error("Error updating dish:", err);
@@ -57,8 +65,6 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
 
   const handleCheckboxChange = (index) => {
     setShowAdvancedOptions((prev) => !prev);
-    formik.setFieldValue("quantity", "");
-    formik.setFieldValue("unit", "");
   };
 
   const handleSpecialDishChange = (event) => {
@@ -175,6 +181,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
                   <option value="g">g</option>
                   <option value="litre">litre</option>
                   <option value="ml">ml</option>
+                  <option value="piece">piece</option>
                 </Form.Select>
               </Form.Group>
             </>
