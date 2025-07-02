@@ -3,10 +3,18 @@ import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 
+import Loading from "../Loading";
+
 function RejectRequestModal({ show, handleClose, id, fetchInventoryData }) {
+  const [Loading, setLoading] = useState(false);
   const rejectInventory = () => {
+    setLoading(true);
     axios
-      .post(`${process.env.REACT_APP_ADMIN_API}/inventory/rejectinventoryrequest/${id}`)
+      .post(
+        `${process.env.REACT_APP_ADMIN_API}/inventory/rejectinventoryrequest/${id}`,
+        null,
+        { withCredentials: true }
+      )
       .then((res) => {
         console.log("Inventory rejected:", res.data);
         handleClose(); // Close the modal
@@ -14,8 +22,12 @@ function RejectRequestModal({ show, handleClose, id, fetchInventoryData }) {
       })
       .catch((err) => {
         console.error("Error rejecting inventory:", err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
+  if (Loading) return <Loading />;
 
   return (
     <Modal show={show} onHide={handleClose}>
@@ -26,7 +38,9 @@ function RejectRequestModal({ show, handleClose, id, fetchInventoryData }) {
           className="btn-close"
           aria-label="Close"
           onClick={handleClose}
-        >x</button>
+        >
+          x
+        </button>
       </Modal.Header>
       <Modal.Body>
         Are you sure you want to reject this inventory request?

@@ -52,12 +52,12 @@
 }
 
 .table-save {
-  background-color:#c1f1c9 ;
+  background-color: #c1f1c9;
   color: #212529;
 }
 
 .table-kot {
-  background-color:#fae39e;
+  background-color: #fae39e;
   color: #212529;
 }
 
@@ -113,4 +113,16 @@
     padding: 8px;
     text-align: left;
   }
+}
+
+/* Hide arrows in input type=number (Chrome, Safari, Edge, Opera) */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Hide arrows in Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

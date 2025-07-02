@@ -17,6 +17,7 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
     setFieldValue,
   } = useFormik({
     initialValues: inputData,
+    enableReinitialize: true, 
     validationSchema: signupSchema1,
     onSubmit: async (values) => {
       try {
@@ -44,7 +45,13 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
             setEmailError("Email is already registered.");
           } else {
             setEmailError("");
-            setInputData({ ...inputData, ...values, logo: logoPath });
+            setInputData({
+              ...inputData,
+              ...values,
+              logo: values.logo,
+              logoPath,
+              logoPreview: URL.createObjectURL(values.logo),
+            });
             handleGoNext();
           }
         }
@@ -101,8 +108,20 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
               accept="image/*"
               onChange={handleFileChange}
               onBlur={handleBlur}
-              required
             />
+            {/* Preview Image */}
+            {(values.logo || inputData.logoPreview) && (
+              <img
+                src={
+                  values.logo
+                    ? URL.createObjectURL(values.logo)
+                    : inputData.logoPreview
+                }
+                alt="Preview"
+                style={{ maxWidth: "100px", maxHeight: "100px" }}
+              />
+            )}
+
             <label className="text-danger">
               {logoError || (errors.logo && touched.logo ? errors.logo : null)}
             </label>
@@ -139,7 +158,7 @@ function Firstform({ inputData, setInputData, handleGoNext }) {
               {errors.mobile && touched.mobile ? errors.mobile : null}
             </label>
           </div>
-          <div className="buttons">
+          <div className="buttons d-flex justify-content-end">
             <button
               type="submit"
               id="next"

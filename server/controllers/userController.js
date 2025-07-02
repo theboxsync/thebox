@@ -154,7 +154,7 @@ const getUserData = async (req, res) => {
       const user = req.user;
       const fetchuser = await User.findOne({ _id: user._id });
       const userdata = {};
-      if(req.user.Role === "Admin") {
+      if (req.user.Role === "Admin") {
         userdata.restaurant_code = fetchuser.restaurant_code;
         userdata.name = fetchuser.name;
         userdata.logo = fetchuser.logo;
@@ -181,6 +181,8 @@ const getUserData = async (req, res) => {
         userdata.state = fetchuser.state;
         userdata.city = fetchuser.city;
         userdata.pincode = fetchuser.pincode;
+        userdata.taxInfo = fetchuser.taxInfo;
+        userdata.containerCharges = fetchuser.containerCharges;
       }
 
       res.send(userdata);

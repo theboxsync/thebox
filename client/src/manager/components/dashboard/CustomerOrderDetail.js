@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Country, State, City } from "country-state-city";
 
 import DineInSection from "./DineInSection";
 import DeliverySection from "./DeliverySection";
@@ -20,6 +19,7 @@ function CustomerOrderDetail({
   orderType,
 }) {
   const [tableInfo, setTableInfo] = useState({});
+  const [orderActionsShow, setOrderActionsShow] = useState(true);
   const [paymentSection, setPaymentSection] = useState(false);
   const [printSection, setPrintSection] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -32,6 +32,12 @@ function CustomerOrderDetail({
   });
   const [taxRates, setTaxRates] = useState({});
 
+  const hasIncompleteItems = order.order_items
+    ? order.order_items.some(
+        (item) => item.status !== "Completed" && item.status !== "Cancelled"
+      )
+    : false;
+
   // Fetch Tax Info
   useEffect(() => {
     axios
@@ -39,9 +45,11 @@ function CustomerOrderDetail({
         withCredentials: true,
       })
       .then((response) => {
+        console.log("User Dataaaaa : ", response.data);
+        const taxInfo = response.data.taxInfo || {};
         setTaxRates({
-          cgst: response.data.taxInfo.cgst,
-          sgst: response.data.taxInfo.sgst,
+          cgst: taxInfo.cgst || 0,
+          sgst: taxInfo.sgst || 0,
         });
       })
       .catch((error) => {
@@ -132,7 +140,7 @@ function CustomerOrderDetail({
         });
     }
 
-    if (orderInfo.order_status === "KOT") {
+    if (firstOrder.order_status === "KOT") {
       setPaymentSection(true);
     } else {
       setPaymentSection(false);
@@ -258,6 +266,7 @@ function CustomerOrderDetail({
         setShowPaymentModal(false);
         setPaymentSection(false);
         setPrintSection(true);
+        setOrderActionsShow(false);
       }
     } catch (error) {
       console.log("Error saving order:", error);
@@ -267,12 +276,12 @@ function CustomerOrderDetail({
   const handlePrint = async (orderId) => {
     try {
       const orderResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/order/getorderdata/${orderId}`,
+        `${process.env.REACT_APP_MANAGER_API}/order/getorderdata/${orderId}`,
         { withCredentials: true }
       );
 
       const userResponse = await axios.get(
-        `${process.env.REACT_APP_ADMIN_API}/user/userdata`,
+        `${process.env.REACT_APP_MANAGER_API}/user/userdata`,
         { withCredentials: true }
       );
 
@@ -495,31 +504,38 @@ function CustomerOrderDetail({
             id="error-message"
           ></div>
           <div className="d-flex justify-content-between align-items-center p-2">
-            <div>
-              <button
-                className="btn mx-2"
-                type="button"
-                onClick={() => orderController("Save")}
-              >
-                Save
-              </button>
-              <button
-                className="btn mx-2"
-                type="button"
-                onClick={() => orderController("KOT")}
-              >
-                KOT
-              </button>
-              {orderId && (
+            {orderActionsShow === true &&
+            order.order_items &&
+            order.order_items.length > 0 ? (
+              <div>
                 <button
                   className="btn mx-2"
                   type="button"
-                  onClick={() => orderController("Cancelled")}
+                  onClick={() => orderController("Save")}
                 >
-                  Cancel Order
+                  Save
                 </button>
-              )}
-            </div>
+                <button
+                  className="btn mx-2"
+                  type="button"
+                  onClick={() => orderController("KOT")}
+                >
+                  KOT
+                </button>
+
+                {orderId && hasIncompleteItems && (
+                  <button
+                    className="btn mx-2"
+                    type="button"
+                    onClick={() => orderController("Cancelled")}
+                  >
+                    Cancel Order
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div></div>
+            )}
 
             <div className="mx-5">
               <label className="m-0">
@@ -545,12 +561,12 @@ function CustomerOrderDetail({
                       Print
                     </button>
                   )}
-                  <button
+                  {/* <button
                     className="btn mx-2"
                     onClick={() => setMainSection("DashboardSection")}
                   >
                     Go To Dashboard
-                  </button>
+                  </button> */}
                 </>
               ) : (
                 <></>

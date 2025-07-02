@@ -82,15 +82,18 @@ const editDish = Yup.object({
 });
 
 const requestInventory = Yup.object({
-  items: Yup.array().of(
-    Yup.object().shape({
-      item_name: Yup.string().required("Item Name is required"),
-      unit: Yup.string().required("Unit is required"),
-      item_quantity: Yup.string()
-        .required("Item Quantity is required")
-        .matches(/[0-9]$/, "Quantity must be number"),
-    })
-  ),
+  items: Yup.array()
+    .of(
+      Yup.object().shape({
+        item_name: Yup.string().required("Item Name is required"),
+        unit: Yup.string().required("Unit is required"),
+        item_quantity: Yup.number()
+          .typeError("Quantity must be a number") // handles non-numeric input
+          .required("Item Quantity is required")
+          .positive("Quantity must be greater than 0"),
+      })
+    )
+    .min(1, "At least one item is required"), // optional: at least one item
   status: Yup.string().required("Status is required"),
 });
 
@@ -125,7 +128,13 @@ const completeInventory = Yup.object().shape({
   bill_number: Yup.string().required("Bill number is required"),
   vendor_name: Yup.string().required("Vendor name is required"),
   category: Yup.string().required("Category is required"),
-  bill_files: Yup.string().required("Bill files is required"),
+  bill_files: Yup.mixed().test(
+    "fileRequired",
+    "Bill files are required",
+    function (value) {
+      return value && value.length > 0;
+    }
+  ),
   total_amount: Yup.number()
     .required("Total amount is required")
     .positive("Total amount must be positive"),
@@ -149,7 +158,7 @@ const completeInventory = Yup.object().shape({
           .when("completed", {
             is: true,
             then: (schema) => schema.required("Price is required"),
-            otherwise: (schema) => schema.notRequired(),  
+            otherwise: (schema) => schema.notRequired(),
           }),
       })
     )

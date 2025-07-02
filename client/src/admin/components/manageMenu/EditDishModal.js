@@ -22,7 +22,7 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
       description: data.description || "",
       quantity: data.quantity || "",
       unit: data.unit || "",
-      dish_img: null,
+      dish_img: data.dish_img || null,
       is_special: data.is_special || false,
     },
     enableReinitialize: true,
@@ -55,7 +55,6 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
         );
 
         fetchMenuData();
-        formik.resetForm();
         handleClose();
       } catch (err) {
         console.error("Error updating dish:", err);
@@ -72,7 +71,12 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
   };
 
   return (
-    <Modal show={show} onHide={handleClose} backdrop="static" keyboard={false}>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header>
         <Modal.Title>Edit Dish</Modal.Title>
         <button
@@ -120,12 +124,15 @@ function EditDishModal({ show, handleClose, data, fetchMenuData }) {
 
           <Form.Group className="mb-3">
             <Form.Label>Dish Image</Form.Label>
-            <img
-              src={`${process.env.REACT_APP_ADMIN_API}/uploads/${formik.values.dish_img}`}
-              alt="Current"
-              className="img-thumbnail mt-2"
-              style={{ maxWidth: "100px" }}
-            />
+            <br />
+            {formik.values.dish_img !== null && previewImg === null && (
+              <img
+                src={`${process.env.REACT_APP_ADMIN_API}/uploads/menu/${formik.values.dish_img}`}
+                alt="Current"
+                className="img-thumbnail my-2"
+                style={{ maxWidth: "100px" }}
+              />
+            )}
             <Form.Control
               type="file"
               name="dish_img"

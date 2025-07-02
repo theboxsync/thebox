@@ -4,8 +4,12 @@ import axios from "axios";
 import DataTable from "react-data-table-component";
 import DeleteInventoryModal from "./DeleteInventoryModal";
 
+import Loading from "../Loading";
+
 function InventoryHistory({ setSection }) {
   const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   // State for completed and rejected inventory
   const [completedInventory, setCompletedInventory] = useState([]);
@@ -31,6 +35,7 @@ function InventoryHistory({ setSection }) {
   const [deleteId, setDeleteId] = useState(null);
 
   const fetchInventoryData = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/inventory/getinventorydata`,
@@ -51,6 +56,8 @@ function InventoryHistory({ setSection }) {
       setFilteredRejectedInventory(rejected);
     } catch (error) {
       console.error("Error fetching inventory history:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,13 +168,15 @@ function InventoryHistory({ setSection }) {
   const completedColumns = [
     {
       name: "Requested Date",
-      selector: (row) => formatToISTshort(row.request_date),
+      selector: (row) => new Date(row.request_date),
       sortable: true,
+      format: (row) => formatToISTshort(row.request_date),
     },
     {
       name: "Bill Date",
-      selector: (row) => formatToISTshort(row.bill_date),
+      selector: (row) => new Date(row.bill_date),
       sortable: true,
+      format: (row) => formatToISTshort(row.bill_date),
     },
     { name: "Bill Number", selector: (row) => row.bill_number, sortable: true },
     { name: "Vendor Name", selector: (row) => row.vendor_name, sortable: true },
@@ -196,21 +205,24 @@ function InventoryHistory({ setSection }) {
         <div>
           <button
             className="btn-transparent bg-transparent"
-            title="View Details"  style={{border:"none"}}
+            title="View Details"
+            style={{ border: "none" }}
             onClick={() => navigate(`/inventory/complete-details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
             className="btn-transparent bg-transparent"
-            title="Edit" style={{border:"none"}}
+            title="Edit"
+            style={{ border: "none" }}
             onClick={() => navigate(`/inventory/completed-update/${row._id}`)}
           >
             <img src="../../dist/img/edit-b.svg" alt="Edit" />
           </button>
           <button
             className="btn-transparent bg-transparent"
-            title="Delete"  style={{border:"none"}}
+            title="Delete"
+            style={{ border: "none" }}
             onClick={() => handleDelete(row._id)}
           >
             <img src="../../dist/img/delete-b.svg" alt="Delete" />
@@ -224,8 +236,9 @@ function InventoryHistory({ setSection }) {
   const rejectedColumns = [
     {
       name: "Requested Date",
-      selector: (row) => formatToIST(row.request_date),
+      selector: (row) => new Date(row.request_date),
       sortable: true,
+      format: (row) => formatToISTshort(row.request_date),
     },
     {
       name: "Items",
@@ -243,14 +256,16 @@ function InventoryHistory({ setSection }) {
         <>
           <button
             className="btn-transparent bg-transparent"
-            title="View Details"  style={{border:"none"}}
+            title="View Details"
+            style={{ border: "none" }}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
             className="btn-transparent bg-transparent"
-            title="Delete"  style={{border:"none"}}
+            title="Delete"
+            style={{ border: "none" }}
             onClick={() => handleDelete(row._id)}
           >
             <img src="../../dist/img/delete-b.svg" alt="Delete" />
@@ -272,6 +287,8 @@ function InventoryHistory({ setSection }) {
     setCompletedEndDate("");
   };
 
+  if (loading) return <Loading />;
+
   return (
     <section className="content">
       <div className="container-fluid">
@@ -281,7 +298,8 @@ function InventoryHistory({ setSection }) {
             <div className="card-tools">
               <button
                 type="button"
-                className="btn-dark mx-2"  style={{border:"none"}}
+                className="btn-dark mx-2"
+                style={{ border: "none" }}
                 onClick={() => setSection("ViewInventory")}
               >
                 <img
@@ -293,7 +311,8 @@ function InventoryHistory({ setSection }) {
               </button>
               <button
                 type="button"
-                className="btn-dark"  style={{border:"none"}}
+                className="btn-dark"
+                style={{ border: "none" }}
                 onClick={() => setSection("AddInventory")}
               >
                 <img src="../../dist/img/add.svg" alt="Add" className="mx-1" />
@@ -352,6 +371,8 @@ function InventoryHistory({ setSection }) {
             <DataTable
               columns={completedColumns}
               data={filteredCompletedInventory}
+              defaultSortFieldId={1} // first column
+              defaultSortAsc={false} // newest first
               pagination
               highlightOnHover
               responsive
@@ -408,6 +429,8 @@ function InventoryHistory({ setSection }) {
             <DataTable
               columns={rejectedColumns}
               data={filteredRejectedInventory}
+              defaultSortFieldId={1}
+              defaultSortAsc={false}
               pagination
               highlightOnHover
               responsive

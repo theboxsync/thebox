@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
 import { addInventory } from "../../../schemas";
 
-function AddInventory({ setSection }) {
-  const navigate = useNavigate();
+import Loading from "../Loading";
 
-  // Initial values for the form
+function AddInventory({ setSection }) {
+  const [loading, setLoading] = useState(false);
+
   const initialValues = {
     request_date: "",
     bill_date: "",
@@ -30,6 +30,7 @@ function AddInventory({ setSection }) {
   };
 
   const uploadFiles = async (files) => {
+    setLoading(true);
     const formData = new FormData();
     Array.from(files).forEach((file) => {
       formData.append("bill_files", file);
@@ -51,6 +52,8 @@ function AddInventory({ setSection }) {
       console.error("File upload failed:", error);
       alert("Failed to upload files. Please try again.");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +74,7 @@ function AddInventory({ setSection }) {
     initialValues,
     validationSchema: addInventory,
     onSubmit: async (values) => {
+      setLoading(true);
       try {
         console.log("Submitted", values);
         // Step 1: Upload the files
@@ -81,7 +85,8 @@ function AddInventory({ setSection }) {
 
         const requestData = {
           ...values,
-          bill_files: fileNames, 
+          bill_files: fileNames,
+          request_date: new Date().toISOString(),
         };
         await axios.post(
           `${process.env.REACT_APP_ADMIN_API}/inventory/addinventory`,
@@ -93,9 +98,16 @@ function AddInventory({ setSection }) {
       } catch (error) {
         console.error("Error updating inventory:", error);
         alert("Failed to update inventory. Please try again.");
+      } finally {
+        setLoading(false);
       }
     },
   });
+
+  useEffect(() => {
+    const unpaid = values.total_amount - values.paid_amount;
+    setFieldValue("unpaid_amount", isNaN(unpaid) ? 0 : unpaid);
+  }, [values.total_amount, values.paid_amount]);
 
   const [filePreviews, setFilePreviews] = useState([]); // Store preview data
 
@@ -142,6 +154,8 @@ function AddInventory({ setSection }) {
     setFieldValue("items", updatedItems);
   };
 
+  if(loading) return <Loading />
+
   return (
     <section className="content">
       <div className="container-fluid">
@@ -149,7 +163,7 @@ function AddInventory({ setSection }) {
           <div className="col-12">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">Complete Inventory Request</h3>
+                <h3 className="card-title">Add Inventory</h3>
                 <div className="card-tools">
                   <button
                     type="button"
@@ -246,7 +260,7 @@ function AddInventory({ setSection }) {
                       onChange={(event) => {
                         const files = event.target.files;
                         setFieldValue("bill_files", files);
-                        previewFiles(files); // Generate previews
+                        previewFiles(files);
                       }}
                       onBlur={handleBlur}
                       className="form-control"
@@ -289,17 +303,9 @@ function AddInventory({ setSection }) {
                       type="number"
                       name="total_amount"
                       value={values.total_amount}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue(
-                          "unpaid_amount",
-                          calculateUnpaidAmount(
-                            e.target.value,
-                            values.paid_amount
-                          )
-                        );
-                      }}
+                      onChange={handleChange}
                       onBlur={handleBlur}
+                      onWheel={(e) => e.target.blur()}
                       className="form-control"
                     />
                     {touched.total_amount && errors.total_amount && (
@@ -312,17 +318,9 @@ function AddInventory({ setSection }) {
                       type="number"
                       name="paid_amount"
                       value={values.paid_amount}
-                      onChange={(e) => {
-                        handleChange(e);
-                        setFieldValue(
-                          "unpaid_amount",
-                          calculateUnpaidAmount(
-                            values.total_amount,
-                            e.target.value
-                          )
-                        );
-                      }}
+                      onChange={handleChange}
                       onBlur={handleBlur}
+                      onWheel={(e) => e.target.blur()}
                       className="form-control"
                     />
                     {touched.paid_amount && errors.paid_amount && (
@@ -374,7 +372,13 @@ function AddInventory({ setSection }) {
                             className="btn btn-dark float-right"
                             onClick={() => removeItem(index)}
                           >
-                           <button className="btn btn-transparent bg-transparent p-0"><img src="../../dist/img/delete.svg" alt="delete" /></button> Delete
+                            <button className="btn btn-transparent bg-transparent p-0">
+                              <img
+                                src="../../dist/img/delete.svg"
+                                alt="delete"
+                              />
+                            </button>{" "}
+                            Delete
                           </button>
                         </div>
                       </div>
@@ -428,15 +432,21 @@ function AddInventory({ setSection }) {
                         <input
                           type="number"
                           name={`items.${index}.item_price`}
-                          value={item.item_price}
+                          value={item.item_price ?? ""}
                           onChange={handleChange}
                           onBlur={handleBlur}
+                          onWheel={(e) => e.target.blur()}
                           className="form-control"
                         />
                         {touched.items?.[index]?.item_price &&
                           errors.items?.[index]?.item_price && (
                             <div className="text-danger">
-                              {errors.items[index].item_price}
+                              {typeof errors.items[index].item_price ===
+                              "string"
+                                ? errors.items[index].item_price
+                                : JSON.stringify(
+                                    errors.items[index].item_price
+                                  )}
                             </div>
                           )}
                       </div>
@@ -449,19 +459,44 @@ function AddInventory({ setSection }) {
                       className="btn btn-dark"
                       onClick={addItem}
                     >
-                       <img
+                      <img
                         src="../../dist/img/add.svg"
                         alt="Add"
                         className="mx-1"
-                      /> Add More Item
+                      />{" "}
+                      Add More Item
                     </button>
                   </div>
+                  {touched.items && errors.items && (
+                    <>
+                      {/* Show array-level error if errors.items is a string */}
+                      {typeof errors.items === "string" && (
+                        <div className="text-danger">{errors.items}</div>
+                      )}
+
+                      {/* Show per-item errors if errors.items is an array */}
+                      {Array.isArray(errors.items) &&
+                        errors.items.map(
+                          (itemError, index) =>
+                            itemError && (
+                              <div key={index} className="text-danger">
+                                {Object.entries(itemError).map(
+                                  ([field, errorMsg]) => (
+                                    <div key={field}>{`Item ${
+                                      index + 1
+                                    } (${field}): ${errorMsg}`}</div>
+                                  )
+                                )}
+                              </div>
+                            )
+                        )}
+                    </>
+                  )}
                   <div className="form-group">
                     <button
                       type="submit"
                       name="submit"
                       className="btn btn-dark mt-4"
-                      
                     >
                       <img
                         src="../../dist/img/add.svg"

@@ -39,6 +39,10 @@ function ViewInventory({ setSection }) {
         }),
       }));
 
+      inventoryWithDates.sort(
+        (a, b) => b.request_date_obj - a.request_date_obj
+      );
+
       setInventoryData(inventoryWithDates);
       setFilteredData(inventoryWithDates);
     } catch (error) {
@@ -85,8 +89,9 @@ function ViewInventory({ setSection }) {
   const columns = [
     {
       name: "Requested Date",
-      selector: (row) => row.formatted_date,
+      selector: (row) => row.request_date_obj, // keep the actual Date object
       sortable: true,
+      format: (row) => row.formatted_date, // show formatted date in table
     },
     {
       name: "Items",
@@ -107,7 +112,8 @@ function ViewInventory({ setSection }) {
         <div>
           <button
             className=" btn-transparent bg-transparent"
-            title="View Details"style={{border:"none"}}
+            title="View Details"
+            style={{ border: "none" }}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
@@ -115,7 +121,8 @@ function ViewInventory({ setSection }) {
           {row.status !== "Completed" && (
             <button
               className=" btn-transparent bg-transparent"
-              title="Delete" style={{ border: "none" }}
+              title="Delete"
+              style={{ border: "none" }}
               onClick={() => deleteModal(row._id)}
             >
               <img src="../../dist/img/icon/delete-b.svg" alt="Delete" />

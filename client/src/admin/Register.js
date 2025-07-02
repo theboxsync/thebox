@@ -17,17 +17,17 @@ export default function Register(props) {
 
   const data = {
     restaurant_code: "",
-    name: "", 
-    logo: "", 
-    gst_no: "", 
-    email: "", 
-    password: "", 
-    mobile: "", 
-    address: "", 
-    country: "IN", 
-    state: "", 
-    city: "", 
-    pincode: "", 
+    name: "",
+    logo: "",
+    gst_no: "",
+    email: "",
+    password: "",
+    mobile: "",
+    address: "",
+    country: "IN",
+    state: "",
+    city: "",
+    pincode: "",
     active: "",
   };
 
@@ -57,6 +57,10 @@ export default function Register(props) {
     }
   };
 
+  const handleGoBack = () => {
+    setFormpage(formpage - 1);
+  };
+
   const handleSubmit = () => {
     setIsLoading(true);
     console.log(inputData);
@@ -73,6 +77,7 @@ export default function Register(props) {
       .catch((err) => console.log(err))
       .finally(() => setIsLoading(false));
   };
+
 
   const pageDisplay = () => {
     switch (formpage) {
@@ -102,6 +107,25 @@ export default function Register(props) {
         );
     }
   };
+  // Handle the resize event for dynamic viewport height
+  useEffect(() => {
+    const resizeDivHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Set initial height
+    resizeDivHeight();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', resizeDivHeight);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', resizeDivHeight);
+    };
+  }, []);
+
 
   return (
     <>
@@ -121,19 +145,7 @@ export default function Register(props) {
           <div className="col-md-9 col-sm-12 col-12">
             <div className="card card-outline p-md-5">
               <div className="card-body p-md-5">
-                <p
-                  className="login-box-msg float-right my-4"
-                  style={{ fontWeight: "bold" }}
-                >
-                  1 Month Free Trial
-                </p>
                 <div>
-                  {/* <form
-                    action="/login"
-                    method="post"
-                    encType="multipart/form-data"
-                    onSubmit={(e) => handleSubmit(e)}
-                  > */}
                   <div className="containers my-4">
                     <div className="steps">
                       <span
@@ -154,15 +166,37 @@ export default function Register(props) {
                   <div className="container my-5">
                     <h4>Registration form</h4>
                     <p>
-                      Fill in the data below. It will take a couple of minutes
-                      for the registration.
+                      You're one step away from getting started. Fill in the
+                      form below to complete your registration.
                     </p>
                   </div>
-                  <div id="registerPages">{pageDisplay()}</div>
-
-                  {/* </form> */}
+                  <div id="registerPages">
+                    {formpage === 0 && (
+                      <Firstform
+                        inputData={inputData}
+                        setInputData={setInputData}
+                        handleGoNext={handleGoNext}
+                      />
+                    )}
+                    {formpage === 1 && (
+                      <Secondform
+                        inputData={inputData}
+                        setInputData={setInputData}
+                        handleGoNext={handleGoNext}
+                        handleGoBack={handleGoBack}
+                      />
+                    )}
+                    {formpage === 2 && (
+                      <Passworddiv
+                        inputData={inputData}
+                        setInputData={setInputData}
+                        handleGoNext={handleGoNext}
+                        handleGoBack={handleGoBack}
+                      />
+                    )}
+                  </div>
                 </div>
-                <Link to="/login" className="text-dark float-right">
+                <Link to="/login" className="text-dark float-left">
                   {" "}
                   <b>I already have a membership</b>{" "}
                 </Link>

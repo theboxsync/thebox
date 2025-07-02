@@ -9,7 +9,7 @@ const addinventory = new Schema({
     type: Date,
   },
   bill_number: {
-    type: Number,
+    type: String,
   },
   vendor_name: {
     type: String,

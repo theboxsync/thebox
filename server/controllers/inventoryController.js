@@ -80,40 +80,38 @@ const deleteInventory = (req, res) => {
 
 const completeInventoryRequest = async (req, res) => {
   const { _id, bill_images, items, remainingItems, ...updateData } = req.body;
+  console.log("Completed inventory request", req.body);
 
   try {
-    // Find the inventory by ID
     const inventory = await Inventory.findById(_id);
     if (!inventory) {
       return res.status(404).json({ message: "Inventory not found" });
     }
 
-    // Check if remainingItems is empty
     if (remainingItems.length === 0) {
-      // Delete the inventory if no remaining items
+      // All items completed → delete inventory
       await Inventory.findByIdAndDelete(_id);
-      return res
-        .status(200)
-        .json({ message: "Inventory deleted successfully" });
+      console.log("Inventory deleted because no remaining items");
+    } else {
+      // Some items remaining → update inventory
+      inventory.items = remainingItems;
+      console.log("Updating inventory with remaining items:", remainingItems);
+      await inventory.save();
     }
 
-    // Update inventory with remaining items
-    inventory.items = remainingItems;
-    console.log("Remaining items: " + inventory.items); // Keep remaining items as requested
-    await inventory.save();
-
-    // Add completed items with bill details
+    // Always add completed items as a new completed record
     const completedItems = {
       ...updateData,
       bill_images,
       items,
       status: "Completed",
     };
-
+    console.log("Creating completed inventory record:", completedItems);
     await Inventory.create(completedItems);
 
     res.status(200).json({ message: "Inventory updated successfully" });
   } catch (error) {
+    console.error("Error updating inventory:", error);
     res.status(500).json({ message: "Error updating inventory", error });
   }
 };

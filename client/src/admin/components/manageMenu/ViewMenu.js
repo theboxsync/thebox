@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import DeleteDishModal from "./DeleteDishModal";
 import EditDishModal from "./EditDishModal";
@@ -277,7 +277,8 @@ function ViewMenu({ setSection }) {
                         <button
                           type="button"
                           className="bg-transparent edit_Dish_btn"
-                          title="Edit" style={{ border: "none" }}
+                          title="Edit"
+                          style={{ border: "none" }}
                           onClick={() => {
                             editModal(dish._id);
                           }}
@@ -287,7 +288,8 @@ function ViewMenu({ setSection }) {
                         <button
                           type="button"
                           className="bg-transparent delete_Dish_btn"
-                          title="Delete" style={{ border: "none" }}
+                          title="Delete"
+                          style={{ border: "none" }}
                           onClick={() => {
                             deleteModal(dish._id, dish.dish_name);
                           }}
@@ -312,7 +314,10 @@ function ViewMenu({ setSection }) {
       />
       <EditDishModal
         show={showEditModal}
-        handleClose={() => setShowEditModal(false)}
+        handleClose={() => {
+          setEditModalData({});
+          setShowEditModal(false);
+        }}
         data={editModalData}
         fetchMenuData={fetchMenuData}
       />

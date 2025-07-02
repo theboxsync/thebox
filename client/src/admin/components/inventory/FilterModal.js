@@ -1,5 +1,5 @@
-import React from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+
 
 function FilterModal({show, handleClose}) {
   return (
