@@ -116,7 +116,10 @@ function UpdateRequestedInventory() {
                           className="btn btn-dark btn-sm float-right"
                           onClick={() => removeItemField(index)}
                         >
-                          <button className="btn btn-transparent bg-transparent p-0"><img src="../../dist/img/delete.svg" alt="delete" /></button> Delete
+                          <button className="btn btn-transparent bg-transparent p-0">
+                            <img src="../../dist/img/delete.svg" alt="delete" />
+                          </button>{" "}
+                          Delete
                         </button>
                       </div>
                       <div className="card-body row">
@@ -128,8 +131,12 @@ function UpdateRequestedInventory() {
                             className="form-control"
                             value={item.item_name}
                             onChange={(e) => handleItemChange(index, e)}
-                            required
                           />
+                          {formik.touched.items && formik.errors.items && (
+                            <div className="text-danger">
+                              {formik.errors.items[index].item_name}
+                            </div>
+                          )}
                         </div>
                         <div className="form-group col-md-4">
                           <label>Weight Type</label>
@@ -138,7 +145,6 @@ function UpdateRequestedInventory() {
                             className="form-control custom-select"
                             value={item.unit}
                             onChange={(e) => handleItemChange(index, e)}
-                            required
                           >
                             <option value="" disabled>
                               Select Option
@@ -150,6 +156,11 @@ function UpdateRequestedInventory() {
                             <option value="nos">Nos</option>
                             <option value="Pieces">Pieces</option>
                           </select>
+                          {formik.touched.items && formik.errors.items && (
+                            <div className="text-danger">
+                              {formik.errors.items[index].unit}
+                            </div>
+                          )}
                         </div>
                         <div className="form-group col-md-4">
                           <label>Quantity</label>
@@ -159,8 +170,12 @@ function UpdateRequestedInventory() {
                             className="form-control"
                             value={item.item_quantity}
                             onChange={(e) => handleItemChange(index, e)}
-                            required
                           />
+                          {formik.touched.items && formik.errors.items && (
+                            <div className="text-danger">
+                              {formik.errors.items[index].item_quantity}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -176,12 +191,14 @@ function UpdateRequestedInventory() {
                       src="../../dist/img/add.svg"
                       alt="Add"
                       className="mx-1"
-                    /> Add More
+                    />{" "}
+                    Add More
                   </button>
                 </div>
                 <div className="form-group col-md-12">
                   <button type="submit" className="btn btn-dark">
-                   <img src="../../dist/img/add.svg" alt="Add" class="mx-1" /> Update Inventory
+                    <img src="../../dist/img/add.svg" alt="Add" class="mx-1" />{" "}
+                    Update Inventory
                   </button>
                 </div>
               </div>

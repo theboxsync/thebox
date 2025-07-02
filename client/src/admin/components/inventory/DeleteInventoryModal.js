@@ -1,12 +1,17 @@
-import React from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import axios from "axios";
 
+import Loading from "../Loading";
+
 function DeleteInventoryModal({ show, handleClose, id, fetchInventoryData }) {
+  const [Loading, setLoading] = useState(false);
   const deleteInventory = (id) => {
+    setLoading(true);
     axios
-      .delete(`${process.env.REACT_APP_ADMIN_API}/inventory/deleteinventory/${id}`)
+      .delete(
+        `${process.env.REACT_APP_ADMIN_API}/inventory/deleteinventory/${id}`
+      )
       .then((res) => {
         console.log(res.data);
         handleClose();
@@ -14,8 +19,12 @@ function DeleteInventoryModal({ show, handleClose, id, fetchInventoryData }) {
       })
       .catch((err) => {
         console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
+  if (Loading) return <Loading />;
   return (
     <>
       <Modal show={show} onHide={handleClose}>
@@ -26,7 +35,9 @@ function DeleteInventoryModal({ show, handleClose, id, fetchInventoryData }) {
             className="btn-close"
             aria-label="Close"
             onClick={handleClose}
-          >x</button>
+          >
+            x
+          </button>
         </Modal.Header>
         <Modal.Body>Are you sure you want to delete this inventory?</Modal.Body>
         <Modal.Footer>

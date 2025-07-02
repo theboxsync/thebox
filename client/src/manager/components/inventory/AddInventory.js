@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { requestInventory } from "../../../schemas";
-import { date } from "yup";
 
 
 function AddInventory({ setSection }) {
@@ -98,7 +97,6 @@ function AddInventory({ setSection }) {
                         className="form-control"
                         value={item.item_name}
                         onChange={(e) => handleItemChange(index, e)}
-                        required
                       />
                       {formik.errors.items?.[index]?.item_name && formik.touched.items?.[index]?.item_name && (
                         <label className="text-danger">{formik.errors.items[index].item_name}</label>
@@ -111,7 +109,6 @@ function AddInventory({ setSection }) {
                         className="form-control custom-select"
                         value={item.unit}
                         onChange={(e) => handleItemChange(index, e)}
-                        required
                       >
                         <option value="" disabled>
                           Select Option
@@ -130,12 +127,11 @@ function AddInventory({ setSection }) {
                     <div className="form-group col-md-4">
                       <label htmlFor={`item_quantity_${index}`}>Quantity</label>
                       <input
-                        type="text"
+                        type="number"
                         name="item_quantity"
                         className="form-control"
                         value={item.item_quantity}
                         onChange={(e) => handleItemChange(index, e)}
-                        required
                       />
                       {formik.errors.items?.[index]?.item_quantity && formik.touched.items?.[index]?.item_quantity && (
                         <label className="text-danger">{formik.errors.items[index].item_quantity}</label>

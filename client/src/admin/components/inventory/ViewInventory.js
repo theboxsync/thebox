@@ -6,9 +6,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import FilterModal from "./FilterModal";
 import RejectRequestModal from "./RejectRequestModal";
+import Loading from "../Loading";
 
 function ViewInventory({ setSection }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [inventoryData, setInventoryData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [searchText, setSearchText] = useState("");
@@ -19,6 +21,7 @@ function ViewInventory({ setSection }) {
   const [selectedInventoryId, setSelectedInventoryId] = useState(null);
 
   const fetchInventoryData = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/inventory/getinventorydata`,
@@ -41,10 +44,16 @@ function ViewInventory({ setSection }) {
           }),
         }));
 
+      requestedInventory.sort(
+        (a, b) => b.request_date_obj - a.request_date_obj
+      );
+
       setInventoryData(requestedInventory);
       setFilteredData(requestedInventory);
     } catch (error) {
       console.error("Error fetching inventory data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,8 +89,9 @@ function ViewInventory({ setSection }) {
   const columns = [
     {
       name: "Requested Date",
-      selector: (row) => row.formatted_date,
+      selector: (row) => row.request_date_obj, // keep the actual Date object
       sortable: true,
+      format: (row) => row.formatted_date, // show formatted date in table
     },
     {
       name: "Items",
@@ -102,14 +112,16 @@ function ViewInventory({ setSection }) {
         <div>
           <button
             className="btn-transparent bg-transparent"
-            title="View Details" style={{border:"none"}}
+            title="View Details"
+            style={{ border: "none" }}
             onClick={() => navigate(`/inventory/details/${row._id}`)}
           >
             <img src="../../dist/img/icon/eye-b.svg" alt="View Details" />
           </button>
           <button
             className="btn-transparent bg-transparent"
-            title="Complete" style={{border:"none"}}
+            title="Complete"
+            style={{ border: "none" }}
             onClick={() =>
               navigate("/inventory/complete", { state: { id: row._id } })
             }
@@ -118,7 +130,8 @@ function ViewInventory({ setSection }) {
           </button>
           <button
             className="btn-transparent bg-transparent"
-            title="Reject"  style={{border:"none", backgroundColor:"none"}}
+            title="Reject"
+            style={{ border: "none", backgroundColor: "none" }}
             onClick={() => openRejectModal(row._id)}
           >
             <img src="../../dist/img/icon/cancel-b.svg" alt="Reject" />
@@ -158,6 +171,9 @@ function ViewInventory({ setSection }) {
     },
   };
 
+  if (loading) {
+    return <Loading />;
+  }
   return (
     <>
       <section className="content" id="viewInventory">

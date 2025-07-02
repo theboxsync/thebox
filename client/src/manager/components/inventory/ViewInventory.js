@@ -39,9 +39,11 @@ function ViewInventory({ setSection }) {
         }),
       }));
 
-      setInventoryData(
-        inventoryWithDates.sort((a, b) => b.request_date - a.request_date)
+      inventoryWithDates.sort(
+        (a, b) => b.request_date_obj - a.request_date_obj
       );
+
+      setInventoryData(inventoryWithDates);
       setFilteredData(inventoryWithDates);
     } catch (error) {
       console.error("Error fetching inventory data:", error);
@@ -87,8 +89,9 @@ function ViewInventory({ setSection }) {
   const columns = [
     {
       name: "Requested Date",
-      selector: (row) => row.formatted_date,
+      selector: (row) => row.request_date_obj, // keep the actual Date object
       sortable: true,
+      format: (row) => row.formatted_date, // show formatted date in table
     },
     {
       name: "Items",

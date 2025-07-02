@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
 
 import Navbar from "../../components/NavBar";
 import MenuBar from "../../components/MenuBar";
 import Footer from "../../components/Footer";
+import Loading from "../../components/Loading";
 
 import { completeInventory } from "../../../schemas";
 
 function CompleteInventory() {
   const { state } = useLocation(); // Receives prefilled data from ViewInventory
   const navigate = useNavigate();
+  const [Loading, setLoading] = useState(false);
 
   // Initial values for the form
   const [initialValues, setInitialValues] = useState({
@@ -36,6 +37,7 @@ function CompleteInventory() {
   });
 
   const fetchInventoryData = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(
         `${process.env.REACT_APP_ADMIN_API}/inventory/getinventorydata/${state.id}`,
@@ -45,10 +47,13 @@ function CompleteInventory() {
     } catch (error) {
       console.error("Error fetching inventory data:", error);
       return null;
+    } finally {
+      setLoading(false);
     }
   };
 
   const uploadFiles = async (files) => {
+    setLoading(true);
     const formData = new FormData();
     Array.from(files).forEach((file) => {
       formData.append("bill_files", file);
@@ -70,6 +75,8 @@ function CompleteInventory() {
       console.error("File upload failed:", error);
       alert("Failed to upload files. Please try again.");
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +104,7 @@ function CompleteInventory() {
     enableReinitialize: true,
     validationSchema: completeInventory,
     onSubmit: async (values) => {
+      setLoading(true);
       try {
         let fileNames = [];
         if (values.bill_files) {
@@ -123,9 +131,16 @@ function CompleteInventory() {
       } catch (error) {
         console.error("Error updating inventory:", error);
         alert("Failed to update inventory. Please try again.");
+      } finally {
+        setLoading(false);
       }
     },
   });
+
+  useEffect(() => {
+    const unpaid = values.total_amount - values.paid_amount;
+    setFieldValue("unpaid_amount", isNaN(unpaid) ? 0 : unpaid);
+  }, [values.total_amount, values.paid_amount]);
 
   const [filePreviews, setFilePreviews] = useState([]); // Store preview data
 
@@ -154,6 +169,10 @@ function CompleteInventory() {
 
     setFilePreviews(previews); // Update previews state
   };
+
+  if(Loading){
+    return <Loading />
+  }
 
   return (
     <div className="wrapper">
@@ -304,7 +323,6 @@ function CompleteInventory() {
                                   }}
                                 />
                               )}
-                              <p style={{ fontSize: "12px" }}>{file.name}</p>
                             </div>
                           ))}
                         </div>
@@ -314,20 +332,13 @@ function CompleteInventory() {
                         <input
                           type="number"
                           name="total_amount"
-                          value={values.total_amount}
-                          onChange={(e) => {
-                            handleChange(e);
-                            setFieldValue(
-                              "unpaid_amount",
-                              calculateUnpaidAmount(
-                                e.target.value,
-                                values.paid_amount
-                              )
-                            );
-                          }}
+                          value={values.total_amount ?? ""}
+                          onChange={handleChange}
                           onBlur={handleBlur}
+                          onWheel={(e) => e.target.blur()}
                           className="form-control"
                         />
+
                         {touched.total_amount && errors.total_amount && (
                           <div className="text-danger">
                             {errors.total_amount}
@@ -339,18 +350,10 @@ function CompleteInventory() {
                         <input
                           type="number"
                           name="paid_amount"
-                          value={values.paid_amount}
-                          onChange={(e) => {
-                            handleChange(e);
-                            setFieldValue(
-                              "unpaid_amount",
-                              calculateUnpaidAmount(
-                                values.total_amount,
-                                e.target.value
-                              )
-                            );
-                          }}
+                          value={values.paid_amount ?? ""}
+                          onChange={handleChange}
                           onBlur={handleBlur}
+                          onWheel={(e) => e.target.blur()}
                           className="form-control"
                         />
                         {touched.paid_amount && errors.paid_amount && (
@@ -388,7 +391,7 @@ function CompleteInventory() {
                                 className="mx-2"
                                 checked={item.completed}
                                 onChange={(e) => {
-                                  console.log("ohhho")
+                                  console.log("ohhho");
                                   setFieldValue(
                                     `items.${index}.completed`,
                                     e.target.checked
@@ -397,7 +400,7 @@ function CompleteInventory() {
                                     setFieldValue(
                                       `items.${index}.item_price`,
                                       0
-                                    ); // Reset price if unchecked
+                                    );
                                   }
                                 }}
                               />
@@ -466,9 +469,10 @@ function CompleteInventory() {
                               <input
                                 type="number"
                                 name={`items.${index}.item_price`}
-                                value={item.item_price || 0}
+                                value={item.item_price ?? ""}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                onWheel={(e) => e.target.blur()}
                                 className="form-control"
                               />
                               {touched.items?.[index]?.item_price &&
@@ -487,7 +491,33 @@ function CompleteInventory() {
                           <hr style={{ border: "1px solid #ccc" }} />
                         </div>
                       ))}
-                      
+
+                      {touched.items && errors.items && (
+                        <>
+                          {/* Show array-level error if errors.items is a string */}
+                          {typeof errors.items === "string" && (
+                            <div className="text-danger">{errors.items}</div>
+                          )}
+
+                          {/* Show per-item errors if errors.items is an array */}
+                          {Array.isArray(errors.items) &&
+                            errors.items.map(
+                              (itemError, index) =>
+                                itemError && (
+                                  <div key={index} className="text-danger">
+                                    {Object.entries(itemError).map(
+                                      ([field, errorMsg]) => (
+                                        <div key={field}>{`Item ${
+                                          index + 1
+                                        } (${field}): ${errorMsg}`}</div>
+                                      )
+                                    )}
+                                  </div>
+                                )
+                            )}
+                        </>
+                      )}
+
                       <button
                         type="submit"
                         className="btn btn-success mt-4"
