@@ -20,6 +20,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <title>The Box</title>
+  <script>
+    const resizeDivHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    window.addEventListener('resize', resizeDivHeight);
+    resizeDivHeight(); // Initial call to set the value
+
+  </script>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
@@ -28,6 +38,7 @@
   <script src="../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="../plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
   <script src="../dist/js/adminlte.js"></script>
+  
 </body>
 
 </html>

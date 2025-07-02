@@ -37,6 +37,24 @@ export default function Login(props) {
         .catch((err) => console.error(err));
     }
   }
+  // Handle the resize event for dynamic viewport height
+  useEffect(() => {
+    const resizeDivHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    // Set initial height
+    resizeDivHeight();
+
+    // Recalculate on window resize
+    window.addEventListener('resize', resizeDivHeight);
+
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('resize', resizeDivHeight);
+    };
+  }, []);
   return (
     <>
       <div className="login-page">

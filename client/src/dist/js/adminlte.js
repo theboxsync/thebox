@@ -3067,3 +3067,15 @@
 
 }));
 //# sourceMappingURL=adminlte.js.map
+
+
+// login page
+
+// This will ensure the div takes the full height of the viewport, even with mobile UI issues
+const resizeDivHeight = () => {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+};
+
+window.addEventListener('resize', resizeDivHeight);
+resizeDivHeight(); // Initial call to set the value
