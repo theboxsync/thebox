@@ -5,6 +5,22 @@ const Table = require("../models/tableModel");
 
 const cron = require("node-cron");
 
+cron.schedule("0 0 * * *", async () => {
+  try {
+    const today = new Date();
+    const dateOnly = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+
+    await TokenCounter.deleteMany({ date: { $lt: dateOnly } });
+    console.log("Token counter reset successfully.");
+  } catch (error) {
+    console.error("Error resetting token counter:", error);
+  }
+});
+
 const addCustomer = (req, res) => {
   try {
     const customerData = { ...req.body, restaurant_id: req.user };
@@ -36,22 +52,6 @@ const getOrderData = (req, res) => {
     console.log(error);
   }
 };
-
-cron.schedule("0 0 * * *", async () => {
-  try {
-    const today = new Date();
-    const dateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
-
-    await TokenCounter.deleteMany({ date: { $lt: dateOnly } });
-    console.log("Token counter reset successfully.");
-  } catch (error) {
-    console.error("Error resetting token counter:", error);
-  }
-});
 
 const generateToken = async (restaurant_id, source) => {
   const today = new Date();
@@ -229,138 +229,6 @@ const orderController = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-// const orderController = async (req, res) => {
-//   try {
-//     console.log(req.body);
-//     let orderData = { ...req.body.orderInfo, restaurant_id: req.user };
-//     const { table_id: tableId, customerInfo } = req.body;
-//     const orderId = orderData.order_id; 
-//     let savedOrder;
-
-//     if (customerInfo.phone !== "" || customerInfo.email !== "") {
-//       const customer = new Customer(customerInfo);
-//       const savedCustomer = await customer.save();
-//       orderData = { ...orderData, customer_id: savedCustomer._id };
-//     }
-
-//     if (orderData.order_status === "KOT" || orderData.order_source === "QSR") {
-//       orderData.order_items = orderData.order_items.map((item) => ({
-//         ...item,
-//         status: item.status === "Pending" ? "Preparing" : item.status,
-//       }));
-//     }
-
-//     if (orderData.order_status === "Cancelled") {
-//       orderData.order_items = orderData.order_items.map((item) => ({
-//         ...item,
-//         status: "Cancelled",
-//       }));
-
-//       savedOrder = await Order.findByIdAndUpdate(orderId, orderData, {
-//         new: true,
-//       });
-
-//       if (!savedOrder) {
-//         return res.status(404).json({ message: "Order not found" });
-//       }
-
-//       return res.status(200).json({
-//         status: "success",
-//         message: "Order updated successfully",
-//         order: savedOrder,
-//       });
-//     }
-
-//     if (orderData.order_type === "Dine In") {
-//       if (!tableId) {
-//         return res
-//           .status(400)
-//           .json({ message: "Table ID is required for Dine In orders" });
-//       }
-
-//       const tableDocument = await Table.findOne({ "tables._id": tableId });
-
-//       if (!tableDocument) {
-//         return res.status(404).json({ message: "Table not found" });
-//       }
-
-//       const table = tableDocument.tables.id(tableId);
-
-//       if (!table) {
-//         return res.status(404).json({ message: "Table not found" });
-//       }
-
-//       if (table.current_status === "Empty" || table.order_id === null) {
-//         const newOrder = new Order(orderData);
-//         savedOrder = await newOrder.save();
-//         table.current_status = savedOrder.order_status;
-//         table.order_id = savedOrder._id;
-//       } else {
-//         savedOrder = await Order.findByIdAndUpdate(table.order_id, orderData, {
-//           new: true,
-//         });
-//         if (savedOrder.order_status !== "Paid") {
-//           table.current_status = savedOrder.order_status;
-//         } else {
-//           table.current_status = "Empty";
-//           table.order_id = null;
-//         }
-//       }
-      
-//       await tableDocument.save();
-
-//       return res.status(200).json({
-//         status: "success",
-//         message: "Order processed successfully",
-//         order: savedOrder,
-//         table: tableDocument,
-//       });
-//     } else {
-//       if (
-//         orderData.order_type === "Takeaway" ||
-//         orderData.order_type === "QSR Dine In"
-//       ) {
-//         if (!orderId) {
-//           orderData.token = await generateToken(
-//             req.user,
-//             orderData.order_source
-//           );
-//         }
-//       }
-//       if (orderId) {
-//         savedOrder = await Order.findByIdAndUpdate(orderId, orderData, {
-//           new: true,
-//         });
-
-//         if (!savedOrder) {
-//           return res.status(404).json({ message: "Order not found" });
-//         }
-
-//         return res.status(200).json({
-//           status: "success",
-//           message: "Order updated successfully",
-//           order: savedOrder,
-//         });
-//       } else {
-//         const newOrder = new Order(orderData);
-//         savedOrder = await newOrder.save();
-//         const insertedOrderId = savedOrder._id;
-
-//         return res.status(200).json({
-//           status: "success",
-//           message: "Order created successfully",
-//           order: savedOrder,
-//           orderId: insertedOrderId,
-//         });
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error processing order:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
 
 const orderHistory = async (req, res) => {
   try {
